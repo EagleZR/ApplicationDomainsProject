@@ -1,10 +1,14 @@
-from ledger.HTTPError import HTTPError
-from ledger.databasecontroller.DummyDatabaseController import DummyDatabaseController
+from ledger import databasecontroller
 from flask import (Flask, request, jsonify)
+from ledger.HTTPError import HTTPError
+import configparser
+import os.path
 import logging
 
 app = Flask(__name__)
-db = DummyDatabaseController()
+config = configparser.ConfigParser()
+config.read(os.path.dirname(os.path.realpath(__file__)) + '\\config.ini')
+db = databasecontroller.get_database(config['database']['database_type'])
 
 
 @app.route('/')
@@ -53,4 +57,5 @@ def handle_http_error(error):
 
 
 if __name__ == "__main__":
-    app.run(host='markzeagler.com', debug=True)
+    logging.basicConfig(filename=os.getcwd() + "error.log")
+    app.run(host=config['host']['hostname'], debug=True)
