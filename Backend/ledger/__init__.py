@@ -5,6 +5,8 @@ import configparser
 import os.path
 import logging
 
+log = logging.getLogger(__name__)
+log.setLevel(logging.getLevelName('INFO'))
 app = Flask(__name__)
 config = configparser.ConfigParser()
 config.read(os.path.dirname(os.path.realpath(__file__)) + '\\config.ini')
@@ -18,7 +20,7 @@ def hello_world():
 
 @app.route('/info', methods=['GET'])
 def site_info():
-    logging.info("Got a " + request.method + " for " + request.url + "from " + request.host_url)
+    log.info("Got a " + request.method + " for " + request.url + "from " + request.host_url)
     if request.method == 'GET':
         return jsonify({"response": "It worked!"})
     raise get_error_response(400, "Only GET requests are valid for this address")
@@ -26,7 +28,7 @@ def site_info():
 
 @app.route('/login', methods=['POST'])
 def login():
-    logging.info("Got a " + request.method + " for " + request.url + "from " + request.host_url)
+    log.info("Got a " + request.method + " for " + request.url + "from " + request.host_url)
     if request.method == 'POST':
         json_data = request.get_json()
         if json_data is not None:
