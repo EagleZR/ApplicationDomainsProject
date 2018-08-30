@@ -56,7 +56,16 @@ def register():
             email = json_data.get('email')
             password = json_data.get('password')
             name = json_data.get('name')
-            db.add_user(email, password, name)
+            if db.add_user(email, password, name):
+                user_id = db.get_user_id(email, password)
+                auth_token = db.get_user_auth_token(email, password)
+                if (user_id is None) or (auth_token is None):
+                    raise get_error_response(403, "The account was not registered successfully")
+                response = jsonify({"user_id": user_id, "auth_token": auth_token})
+                response.status_code = 200
+                return response
+            else:
+                raise get_error_response(403, "The account was not registered successfully")
         else:
             raise get_error_response(400, "Please include the email, password, ")
     else:
