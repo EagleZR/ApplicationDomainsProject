@@ -65,6 +65,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db = sqlite3.connect(database_file_name)
         cursor = db.cursor()
 
+        print(hash_password(password))
+
         cursor.execute(
             '''Select USER_ID from USERS where EMAIL = '%s' and PASSWORD_HASH = '%s' ''' % (
                 email, hash_password(password)))
@@ -110,5 +112,5 @@ def get_auth_token():
 
 def hash_password(password):
     m = hashlib.sha256()
-    m.update(password)
-    return m.digest()
+    m.update(password.encode())
+    return str(m.hexdigest())
