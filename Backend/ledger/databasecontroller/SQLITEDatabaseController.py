@@ -2,6 +2,8 @@ from ledger.databasecontroller.AbstractDatabaseController import AbstractDatabas
 import logging
 import os.path
 import sqlite3
+import hashlib
+import secrets
 
 database_file_name = os.path.dirname(os.path.realpath(__file__)) + '\\sqlitedb.db'
 
@@ -26,28 +28,31 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         except sqlite3.OperationalError:
             self.log.warning("Creating user table.")
             cursor.execute(
-                '''Create Table If Not Exists Users(USER_ID integer primary key autoincrement, USERNAME TEXT not null, 
-                PASSWORD_HASH TEXT not null, AUTH_TOKEN TEXT not null, ACCOUNT_TYPE Text not null );''')
-            # print('''Insert into Users(USERNAME, PASSWORD_HASH, AUTH_TOKEN, ACCOUNT_TYPE) values (%s, %s, %s, %s);''' %
-            #       ("u32ser", "asdkjhasdkjh", get_auth_token(), "user"))
-            # cursor.execute(
-            #     '''Insert into Users(USERNAME, PASSWORD_HASH, AUTH_TOKEN, ACCOUNT_TYPE) values (%s, %s, %s, %s);''' %
-            #     ("u32ser", "asdkjhasdkjh", get_auth_token(), "user"))
-            # cursor.execute('''SELECT * FROM Users;''')
+                '''Create Table If Not Exists Users(USER_ID integer primary key autoincrement, NAME TEXT not null, 
+                EMAIL TEXT not null, PASSWORD_HASH TEXT not null, AUTH_TOKEN TEXT not null, ACCOUNT_TYPE Text not null 
+                );''')
             db.commit()
         cursor.close()
         db.close()
         # TODO Add tables as they're designed
 
-    def add_user(self, username, password_hash):
+    def add_user(self, email, password, name):
         try:
-            account_type = "pending"
             db = sqlite3.connect(database_file_name)
+            check_cursor = db.cursor()
+
+            check_cursor.execute('''Select * from Users where EMAIL = '%s';''' % (email,))
+            num = len(check_cursor.fetchall())
+            if num > 0:
+                raise DuplicateEmailException("A user with the email " + email + " already exists.")
+            check_cursor.close()
+
             cursor = db.cursor()
-            dictionary = {"username": username, "password_hash": password_hash, "auth_token": get_auth_token(),
-                          "account_type": account_type}
-            insert_text = '''Insert into Users (USERNAME, PASSWORD_HASH, AUTH_TOKEN, ACCOUNT_TYPE) values
-                ('{username}', '{password_hash}', '{auth_token}', '{account_type}');'''.format(**dictionary)
+
+            dictionary = {"name": name, "email": email, "password_hash": hash_password(password),
+                          "auth_token": get_auth_token(), "account_type": self.default_account_type}
+            insert_text = '''Insert into Users (NAME, EMAIL, PASSWORD, AUTH_TOKEN, ACCOUNT_TYPE) values
+                ('{name}', '{email}', '{password_hash}', '{auth_token}', '{account_type}');'''.format(**dictionary)
             cursor.execute(insert_text)
             db.commit()
             cursor.close()
@@ -56,11 +61,13 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         except sqlite3.OperationalError:
             return False
 
-    def get_user_id(self, username, password_hash):
+    def get_user_id(self, email, password):
         db = sqlite3.connect(database_file_name)
         cursor = db.cursor()
+
         cursor.execute(
-            '''Select USER_ID from USERS where USERNAME = '%s' and PASSWORD_HASH = '%s' ''' % (username, password_hash))
+            '''Select USER_ID from USERS where EMAIL = '%s' and PASSWORD_HASH = '%s' ''' % (
+                email, hash_password(password)))
         results = list()
         results.extend(cursor.fetchall())
         if len(results) > 1:
@@ -71,11 +78,13 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             return None
         return results[0]
 
-    def get_user_auth_token(self, username, password_hash):
+    def get_user_auth_token(self, email, password):
         db = sqlite3.connect(database_file_name)
         cursor = db.cursor()
+
         cursor.execute(
-            '''Select AUTH_TOKEN from USERS where USERNAME = '?' and PASSWORD_HASH = '?' ''', (username, password_hash))
+            '''Select AUTH_TOKEN from USERS where EMAIL = '%s' and PASSWORD_HASH = '%s' ''' % (
+                email, hash_password(password)))
         results = list()
         results.extend(cursor.fetchall())
         if len(results) > 1:
@@ -90,5 +99,16 @@ class InvalidUserType(Exception):
         Exception.__init__(message)
 
 
+class DuplicateEmailException(Exception):
+    def __init__(self, message):
+        Exception.__init__(message)
+
+
 def get_auth_token():
-    return "Auth_token"  # TODO Make this actually real
+    return secrets.token_urlsafe()
+
+
+def hash_password(password):
+    m = hashlib.sha256()
+    m.update(password)
+    return m.digest()
