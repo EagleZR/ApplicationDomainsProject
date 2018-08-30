@@ -5,6 +5,9 @@ class DummyDatabaseController(AbstractDatabaseController):
     def __init__(self):
         AbstractDatabaseController.__init__(self)
 
+    def add_user(self, username, password_hash):
+        return True
+
     def get_user_auth_token(self, username, password_hash):
         if username is "admin":
             return 1000

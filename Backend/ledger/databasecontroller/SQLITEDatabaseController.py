@@ -39,19 +39,22 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db.close()
         # TODO Add tables as they're designed
 
-    def add_user(self, username, password_hash, account_type="deactivated"):
-        if account_type not in self.account_types:
-            raise InvalidUserType("The user type " + account_type + " is not an approved account type")
-        db = sqlite3.connect(database_file_name)
-        cursor = db.cursor()
-        dictionary = {"username": username, "password_hash": password_hash, "auth_token": get_auth_token(),
-                      "account_type": account_type}
-        insert_text = '''Insert into Users (USERNAME, PASSWORD_HASH, AUTH_TOKEN, ACCOUNT_TYPE) values
-            ('{username}', '{password_hash}', '{auth_token}', '{account_type}');'''.format(**dictionary)
-        cursor.execute(insert_text)
-        db.commit()
-        cursor.close()
-        db.close()
+    def add_user(self, username, password_hash):
+        try:
+            account_type = "pending"
+            db = sqlite3.connect(database_file_name)
+            cursor = db.cursor()
+            dictionary = {"username": username, "password_hash": password_hash, "auth_token": get_auth_token(),
+                          "account_type": account_type}
+            insert_text = '''Insert into Users (USERNAME, PASSWORD_HASH, AUTH_TOKEN, ACCOUNT_TYPE) values
+                ('{username}', '{password_hash}', '{auth_token}', '{account_type}');'''.format(**dictionary)
+            cursor.execute(insert_text)
+            db.commit()
+            cursor.close()
+            db.close()
+            return True
+        except sqlite3.OperationalError:
+            return False
 
     def get_user_id(self, username, password_hash):
         db = sqlite3.connect(database_file_name)
