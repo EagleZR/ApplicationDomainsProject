@@ -17,3 +17,7 @@ class AbstractDatabaseController(abc.ABC):
     @abc.abstractmethod
     def get_user_auth_token(self, email, password):
         pass
+
+    @abc.abstractmethod
+    def get_login_data(self, email, password):
+        pass

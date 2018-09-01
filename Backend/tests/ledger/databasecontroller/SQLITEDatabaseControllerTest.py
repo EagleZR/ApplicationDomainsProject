@@ -66,3 +66,13 @@ class SQLITEDatabaseControllerTest(unittest.TestCase):
         self.assertTrue(db.user_exists("user1"))
         self.assertTrue(db.user_exists("user2"))
         self.assertTrue(db.user_exists("user3"))
+
+    def test_get_login_data(self):
+        db = SQLITEDatabaseController()
+        email = "user1"
+        password = "dfiuohsdfiu"
+        name = "Roger"
+        self.assertTrue(db.add_user(email, password, name))
+        user_id, auth_token = db.get_login_data(email, password)
+        self.assertTrue(user_id is not None)
+        self.assertTrue(auth_token is not None)

@@ -34,8 +34,9 @@ def login():
         if json_data is not None:
             email = json_data.get('email')
             password = json_data.get('password')
-            user_id = db.get_user_id(email, password)
-            auth_token = db.get_user_auth_token(email, password)
+            # user_id = db.get_user_id(email, password)
+            # auth_token = db.get_user_auth_token(email, password)
+            user_id, auth_token = db.get_login_data(email, password)
             if (user_id is None) or (auth_token is None):
                 raise get_error_response(403, "The email/password is invalid")
             response = jsonify({"user_id": user_id, "auth_token": auth_token})

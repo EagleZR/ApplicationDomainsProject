@@ -101,6 +101,22 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         return len(response) > 0
 
+    def get_login_data(self, email, password):
+        db = sqlite3.connect(self.database_file_name)
+        cursor = db.cursor()
+
+        cursor.execute(
+            '''Select USER_ID, AUTH_TOKEN from USERS where EMAIL = '%s' and PASSWORD_HASH = '%s' ''' % (
+                email, hash_password(password)))
+        results = list()
+        results.extend(cursor.fetchall())
+        if len(results) > 1:
+            self.log.error("Multiple results from get_user_id select statement.")
+        if len(results) is 0:
+            return None
+        print(results[0])
+        return results[0]
+
 
 class InvalidUserType(Exception):
     def __init__(self, message):

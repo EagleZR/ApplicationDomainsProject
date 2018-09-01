@@ -2,30 +2,42 @@ from ledger.databasecontroller.AbstractDatabaseController import AbstractDatabas
 
 
 class DummyDatabaseController(AbstractDatabaseController):
+
     def __init__(self):
         AbstractDatabaseController.__init__(self)
 
-    def add_user(self, username, password, name):
+    def add_user(self, email, password, name):
         return True
 
-    def get_user_auth_token(self, username, password):
-        if username is "admin":
+    def get_user_auth_token(self, email, password):
+        if email is "admin":
             return 1000
-        if username is "manager":
+        if email is "manager":
             return 500
-        if username is "user":
+        if email is "user":
             return 250
-        if username is "invalid":
+        if email is "invalid":
             return None
         return 100
 
-    def get_user_id(self, username, password):
-        if username is "admin":
+    def get_user_id(self, email, password):
+        if email is "admin":
             return 100
-        if username is "manager":
+        if email is "manager":
             return 50
-        if username is "user":
+        if email is "user":
             return 25
-        if username is "invalid":
+        if email is "invalid":
             return None
         return 1
+
+    def get_login_data(self, email, password):
+        if email is "admin":
+            return 100, 1000
+        if email is "manager":
+            return 50, 500
+        if email is "user":
+            return 25, 250
+        if email is "invalid":
+            return None
+        return 1, 10
