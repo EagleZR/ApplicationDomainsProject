@@ -52,9 +52,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             db.commit()
             cursor.close()
 
-            if self.user_exists(email):
-                return True
-            return False
+            return self.user_exists(email)
         except sqlite3.OperationalError:
             return False
 
@@ -101,10 +99,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         check_cursor.close()
         db.close()
 
-        num = len(response)
-        if num > 0:
-            return True
-        return False
+        return len(response) > 0
 
 
 class InvalidUserType(Exception):
