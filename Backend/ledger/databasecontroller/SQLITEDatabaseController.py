@@ -5,22 +5,22 @@ import sqlite3
 import hashlib
 import secrets
 
-database_file_name = os.path.dirname(os.path.realpath(__file__)) + '\\sqlitedb.db'
-
 
 class SQLITEDatabaseController(AbstractDatabaseController):
+    database_file_name = os.path.dirname(os.path.realpath(__file__)) + '\\sqlitedb.db'
+
     def __init__(self):
         AbstractDatabaseController.__init__(self)
         self.log = logging.getLogger(__name__)
         self.log.setLevel(logging.getLevelName('INFO'))
-        if not os.path.isfile(database_file_name):
+        if not os.path.isfile(self.database_file_name):
             self.log.warning("The database did not exist, a new one is being created.")
         self.verify_tables_columns()
 
     def verify_tables_columns(self):
         # Make sure each table exists and possess the correct columns. If possible, add the tables.
         self.log.info("Verifying database structure.")
-        db = sqlite3.connect(database_file_name)
+        db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
         try:
             cursor.execute('''SELECT * FROM Users''')
@@ -38,34 +38,29 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
     def add_user(self, email, password, name):
         try:
-            db = sqlite3.connect(database_file_name)
-            check_cursor = db.cursor()
-
-            check_cursor.execute('''Select * from Users where EMAIL = '%s';''' % (email,))
-            num = len(check_cursor.fetchall())
-            if num > 0:
+            if self.user_exists(email):
                 raise DuplicateEmailException("A user with the email " + email + " already exists.")
-            check_cursor.close()
 
+            db = sqlite3.connect(self.database_file_name)
             cursor = db.cursor()
-
-            dictionary = {"name": name, "email": email, "password_hash": hash_password(password),
-                          "auth_token": get_auth_token(), "account_type": self.default_account_type}
-            insert_text = '''Insert into Users (NAME, EMAIL, PASSWORD, AUTH_TOKEN, ACCOUNT_TYPE) values
-                ('{name}', '{email}', '{password_hash}', '{auth_token}', '{account_type}');'''.format(**dictionary)
+            parameter_dictionary = {"name": name, "email": email, "password_hash": hash_password(password),
+                                    "auth_token": generate_auth_token(), "account_type": self.default_account_type}
+            insert_text = '''Insert into Users (NAME, EMAIL, PASSWORD_HASH, AUTH_TOKEN, ACCOUNT_TYPE) values
+                ('{name}', '{email}', '{password_hash}', '{auth_token}', '{account_type}');'''.format(
+                **parameter_dictionary)
             cursor.execute(insert_text)
             db.commit()
             cursor.close()
-            db.close()
-            return True
+
+            if self.user_exists(email):
+                return True
+            return False
         except sqlite3.OperationalError:
             return False
 
     def get_user_id(self, email, password):
-        db = sqlite3.connect(database_file_name)
+        db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
-
-        print(hash_password(password))
 
         cursor.execute(
             '''Select USER_ID from USERS where EMAIL = '%s' and PASSWORD_HASH = '%s' ''' % (
@@ -81,7 +76,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         return results[0]
 
     def get_user_auth_token(self, email, password):
-        db = sqlite3.connect(database_file_name)
+        db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
         cursor.execute(
@@ -95,18 +90,36 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             return None
         return results[0]
 
+    def user_exists(self, email):
+        db = sqlite3.connect(self.database_file_name)
+        check_cursor = db.cursor()
+
+        parameter_dictionary = {"email": email}
+        check_cursor.execute('''Select * from Users where EMAIL = '{email}';'''.format(**parameter_dictionary))
+        response = check_cursor.fetchall()
+
+        check_cursor.close()
+        db.close()
+
+        num = len(response)
+        if num > 0:
+            return True
+        return False
+
 
 class InvalidUserType(Exception):
     def __init__(self, message):
-        Exception.__init__(message)
+        Exception.__init__(self)
+        self.message = message
 
 
 class DuplicateEmailException(Exception):
     def __init__(self, message):
-        Exception.__init__(message)
+        Exception.__init__(self)
+        self.message = message
 
 
-def get_auth_token():
+def generate_auth_token():
     return secrets.token_urlsafe()
 
 

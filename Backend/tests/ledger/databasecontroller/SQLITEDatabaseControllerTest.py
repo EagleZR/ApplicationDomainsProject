@@ -22,7 +22,7 @@ class SQLITEDatabaseControllerTest(unittest.TestCase):
         email = "user1"
         password = "dfiuohsdfiu"
         name = "Roger"
-        db.add_user(email, password, name)
+        self.assertTrue(db.add_user(email, password, name))
         db.get_user_id(email, password)
         # Only fails if an exception was thrown
 
@@ -31,7 +31,7 @@ class SQLITEDatabaseControllerTest(unittest.TestCase):
         email = "user2"
         password = "efbkwbkwe"
         name = "Emily"
-        db.add_user(email, password, name)
+        self.assertTrue(db.add_user(email, password, name))
         db.get_user_auth_token(email, password)
         # Only fails if an exception was thrown
 
@@ -40,6 +40,29 @@ class SQLITEDatabaseControllerTest(unittest.TestCase):
         email = "user3"
         password = "fdkijhsdsf"
         name = "Antonio"
-        db.add_user(email, password, name)
+        self.assertTrue(db.add_user(email, password, name))
         with self.assertRaises(DuplicateEmailException) as context:
-            db.add_user(email, password, name)
+            self.assertFalse(db.add_user(email, password, name))
+
+    def test_multiple_users(self):
+        db = SQLITEDatabaseController()
+        email = "user1"
+        password = "dfiuohsdfiu"
+        name = "Roger"
+        self.assertTrue(db.add_user(email, password, name))
+
+        db = SQLITEDatabaseController()
+        email = "user2"
+        password = "efbkwbkwe"
+        name = "Emily"
+        self.assertTrue(db.add_user(email, password, name))
+
+        db = SQLITEDatabaseController()
+        email = "user3"
+        password = "fdkijhsdsf"
+        name = "Antonio"
+        self.assertTrue(db.add_user(email, password, name))
+
+        self.assertTrue(db.user_exists("user1"))
+        self.assertTrue(db.user_exists("user2"))
+        self.assertTrue(db.user_exists("user3"))
