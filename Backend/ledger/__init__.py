@@ -18,7 +18,9 @@ def hello_world():
 
 @app.route('/info', methods=['GET', 'POST', 'PUT'])
 def site_info():
-    logging.info("Got a " + request.method + " for " + request.url + "from " + request.host_url)
+    logging.info("Got a " + request.method + " for " + request.url + " from " + request.host_url + (" with data " +
+                                                                                                   dict2string(
+                                                                                                       request.get_json()) if request is not None else ""))
     if request.method == 'GET':
         return jsonify({"response": "It worked!"})
     raise get_error_response(400, "Only GET requests are valid for this address")
@@ -26,7 +28,9 @@ def site_info():
 
 @app.route('/signin', methods=['GET', 'POST', 'PUT'])
 def login():
-    logging.info("Got a " + request.method + " for " + request.url + "from " + request.host_url)
+    logging.info("Got a " + request.method + " for " + request.url + " from " + request.host_url + (" with data " +
+                                                                                                   dict2string(
+                                                                                                       request.get_json()) if request is not None else ""))
     if request.method == 'PUT':
         json_data = request.get_json()
         if json_data is not None:
@@ -46,7 +50,10 @@ def login():
 
 @app.route('/register', methods=['GET', 'POST', 'PUT'])
 def register():
-    logging.info("Got a " + request.method + " for " + request.url + "from " + request.host_url)
+    logging.info(
+        "Got a " + request.method + " for " + request.url + " from " + request.host_url + (" with data " +
+                                                                                          dict2string(
+                                                                                              request.get_json()) if request is not None else ""))
     if request.method == 'PUT':
         json_data = request.get_json()
         if json_data is not None:
@@ -88,6 +95,20 @@ def handle_http_error(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
+
+
+def dict2string(dictionary):
+    if dictionary is None:
+        return ""
+    return_string = "{"
+    for key in list(dictionary.keys()):
+        return_string += key + ": "
+        if dictionary[key] is dict:
+            return_string += dict2string(dictionary[key])
+        else:
+            return_string += dictionary[key] + ", "
+    return_string += "}"
+    return return_string
 
 
 if __name__ == "__main__":
