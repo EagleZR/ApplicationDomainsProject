@@ -7,6 +7,8 @@ class DummyDatabaseController(AbstractDatabaseController):
         AbstractDatabaseController.__init__(self)
 
     def add_user(self, email, password, name):
+        if email == "invalid" and password == "invalid":
+            return False
         return True
 
     def get_user_auth_token(self, email, password):
