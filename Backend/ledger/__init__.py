@@ -73,9 +73,9 @@ def register():
 @app.route('/account', methods=['GET', 'POST', 'PUT'])
 def account():
     if request.method == 'GET':
-        pass
+        pass  # TODO Retrieve all account data from the DB, process it, and return
     elif request.method == 'PUT':
-        pass
+        pass  # Analyze request data for what changed and save it to the db
     else:
         raise get_error_response(400, "Only GET and PUT requests are valid for this address")
 
