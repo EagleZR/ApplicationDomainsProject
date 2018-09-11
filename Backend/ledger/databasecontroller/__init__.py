@@ -1,4 +1,5 @@
 from ledger.databasecontroller import SQLITEDatabaseController, DummyDatabaseController, AbstractDatabaseController
+import logging
 
 
 def get_database(database_type):
@@ -9,7 +10,11 @@ def get_database(database_type):
     :return: The controller for the specified form of database.
     :rtype: AbstractDatabaseController.AbstractDatabaseController
     """
-    if database_type is 'dummy':
+    if database_type == 'dummy':
+        logging.info("Creating a dummy db")
         return DummyDatabaseController.DummyDatabaseController()
-    elif database_type is 'sqlite':
+    elif database_type == 'sqlite':
+        logging.info("Creating a sqlite db")
         return SQLITEDatabaseController.SQLITEDatabaseController()
+    else:
+        logging.info("No db created")

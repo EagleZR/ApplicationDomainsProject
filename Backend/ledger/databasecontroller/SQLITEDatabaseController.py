@@ -3,7 +3,6 @@ import logging
 import os.path
 import sqlite3
 import hashlib
-import secrets
 
 
 class SQLITEDatabaseController(AbstractDatabaseController):
@@ -11,22 +10,20 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
     def __init__(self):
         AbstractDatabaseController.__init__(self)
-        self.log = logging.getLogger(__name__)
-        self.log.setLevel(logging.getLevelName('INFO'))
         if not os.path.isfile(self.database_file_name):
-            self.log.warning("The database did not exist, a new one is being created.")
+            logging.warning("The database did not exist, a new one is being created.")
         self.verify_tables_columns()
 
     def verify_tables_columns(self):
         # Make sure each table exists and possess the correct columns. If possible, add the tables.
-        self.log.info("Verifying database structure.")
+        logging.info("Verifying database structure.")
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
         try:
             cursor.execute('''SELECT * FROM Users''')
-            self.log.warning("User table already exists.")
+            logging.warning("User table already exists.")
         except sqlite3.OperationalError:
-            self.log.warning("Creating user table.")
+            logging.warning("Creating user table.")
             cursor.execute(
                 '''Create Table If Not Exists Users(USER_ID integer primary key autoincrement, NAME TEXT not null, 
                 EMAIL TEXT not null, PASSWORD_HASH TEXT not null, AUTH_TOKEN TEXT not null, ACCOUNT_TYPE Text not null 
@@ -66,9 +63,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         results = list()
         results.extend(cursor.fetchall())
         if len(results) > 1:
-            self.log.error("Multiple results from get_user_id select statement. Results:")
+            logging.error("Multiple results from get_user_id select statement. Results:")
             for result in results:
-                self.log.error(result)
+                logging.error(result)
         if len(results) is 0:
             return None
         return results[0]
@@ -83,7 +80,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         results = list()
         results.extend(cursor.fetchall())
         if len(results) > 1:
-            self.log.error("Multiple results from get_user_id select statement.")
+            logging.error("Multiple results from get_user_id select statement.")
         if len(results) is 0:
             return None
         return results[0]
@@ -111,7 +108,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         results = list()
         results.extend(cursor.fetchall())
         if len(results) > 1:
-            self.log.error("Multiple results from get_user_id select statement.")
+            logging.error("Multiple results from get_user_id select statement.")
         if len(results) is 0:
             return None
         print(results[0])
@@ -131,7 +128,8 @@ class DuplicateEmailException(Exception):
 
 
 def generate_auth_token():
-    return secrets.token_urlsafe()
+    pass
+    # return secrets.token_urlsafe()
 
 
 def hash_password(password):

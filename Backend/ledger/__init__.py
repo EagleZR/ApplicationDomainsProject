@@ -5,12 +5,10 @@ import configparser
 import os.path
 import logging
 
-log = logging.getLogger(__name__)
-log.setLevel(logging.getLevelName('INFO'))
-app = Flask(__name__)
 config = configparser.ConfigParser()
-config.read(os.path.dirname(os.path.realpath(__file__)) + '\\config.ini')
+config.read(os.path.dirname(os.path.realpath(__file__)) + '/config.ini')
 db = databasecontroller.get_database(config['database']['database_type'])
+app = Flask(__name__)
 
 
 @app.route('/')
@@ -18,24 +16,22 @@ def hello_world():
     return 'Hello World'
 
 
-@app.route('/info', methods=['GET'])
+@app.route('/info', methods=['GET', 'POST', 'PUT'])
 def site_info():
-    log.info("Got a " + request.method + " for " + request.url + "from " + request.host_url)
+    logging.info("Got a " + request.method + " for " + request.url + "from " + request.host_url)
     if request.method == 'GET':
         return jsonify({"response": "It worked!"})
     raise get_error_response(400, "Only GET requests are valid for this address")
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/signin', methods=['GET', 'POST', 'PUT'])
 def login():
-    log.info("Got a " + request.method + " for " + request.url + "from " + request.host_url)
-    if request.method == 'POST':
+    logging.info("Got a " + request.method + " for " + request.url + "from " + request.host_url)
+    if request.method == 'PUT':
         json_data = request.get_json()
         if json_data is not None:
             email = json_data.get('email')
             password = json_data.get('password')
-            # user_id = db.get_user_id(email, password)
-            # auth_token = db.get_user_auth_token(email, password)
             user_id, auth_token = db.get_login_data(email, password)
             if (user_id is None) or (auth_token is None):
                 raise get_error_response(403, "The email/password is invalid")
@@ -45,13 +41,13 @@ def login():
         else:
             raise get_error_response(400, "Please include both the username and the password")
     else:
-        raise get_error_response(400, "Only POST requests are valid for this address")
+        raise get_error_response(400, "Only PUT requests are valid for this address")
 
 
-@app.route('/register', methods=['POST'])
+@app.route('/register', methods=['GET', 'POST', 'PUT'])
 def register():
-    log.info("Got a " + request.method + " for " + request.url + "from " + request.host_url)
-    if request.method == 'POST':
+    logging.info("Got a " + request.method + " for " + request.url + "from " + request.host_url)
+    if request.method == 'PUT':
         json_data = request.get_json()
         if json_data is not None:
             email = json_data.get('email')
@@ -70,7 +66,17 @@ def register():
         else:
             raise get_error_response(400, "Please include the email, password, ")
     else:
-        raise get_error_response(400, "Only POST requests are valid for this address")
+        raise get_error_response(400, "Only PUT requests are valid for this address")
+
+
+@app.route('/account', methods=['GET', 'POST', 'PUT'])
+def account():
+    if request.method == 'GET':
+        pass
+    elif request.method == 'PUT':
+        pass
+    else:
+        raise get_error_response(400, "Only GET and PUT requests are valid for this address")
 
 
 def get_error_response(status_code, message):
