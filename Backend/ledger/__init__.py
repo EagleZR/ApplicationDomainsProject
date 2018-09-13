@@ -1,5 +1,5 @@
 from ledger import databasecontroller
-from flask import (Flask, request, jsonify, Response)
+from flask import (Flask, request, jsonify)
 from ledger.HTTPError import HTTPError
 import configparser
 import os.path

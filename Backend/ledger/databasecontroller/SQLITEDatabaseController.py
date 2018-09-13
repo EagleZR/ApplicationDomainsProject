@@ -3,6 +3,7 @@ import logging
 import os.path
 import sqlite3
 import hashlib
+import secrets
 
 
 class SQLITEDatabaseController(AbstractDatabaseController):
@@ -129,7 +130,7 @@ class DuplicateEmailException(Exception):
 
 def generate_auth_token():
     pass
-    # return secrets.token_urlsafe()
+    return secrets.token_urlsafe()
 
 
 def hash_password(password):
