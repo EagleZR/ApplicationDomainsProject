@@ -64,7 +64,10 @@ def register():
                 auth_token = db.get_user_auth_token(email, password)
                 if (user_id is None) or (auth_token is None):
                     raise get_error_response(403, "The account was not registered successfully")
-                response = jsonify({"user_id": user_id, "auth_token": auth_token})
+                # response = jsonify({"user_id": user_id, "auth_token": auth_token})
+                # The account will need to be activated by an admin before the user can log in
+                response = jsonify({
+                    "message": "An admin will need to activate the account before logging in is permitted"})
                 response.status_code = 200
                 return response
             else:
@@ -77,8 +80,23 @@ def register():
 
 @app.route('/account', methods=['GET', 'POST', 'PUT'])
 def account():
+    auth_token = request.headers['auth_token']
+    user_id = request.headers['user_id']
+    data = request.get_json()
+
     if request.method == 'GET':
-        pass  # TODO Retrieve all account data from the DB, process it, and return
+        if data is not None:
+            if data.get('request') is "get_all":
+                if db.get_account_type(auth_token, user_id) == "admin":
+                    response = jsonify({"users": db.get_all_user_accounts()})
+                    response.status_code = 200
+                    return response
+                else:
+                    raise get_error_response(403, "This user is not authorized to view this data.")
+            else:
+                pass
+        else:
+            pass
     elif request.method == 'PUT':
         pass  # Analyze request data for what changed and save it to the db
     else:

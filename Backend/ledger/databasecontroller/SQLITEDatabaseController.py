@@ -133,7 +133,20 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         return results[0]
 
     def get_all_user_accounts(self):
-        pass
+        db = sqlite3.connect(self.database_file_name)
+        cursor = db.cursor()
+
+        cursor.execute('''Select USER_ID, NAME, EMAIL, ACCOUNT_TYPE from USERS ''')
+
+        results = list()
+        results.extend(cursor.fetchall())
+        if len(results) is 0:
+            return None
+        results_dict_list = list()
+        for result in results:
+            results_dict_list.append(
+                {"user_id": result[0], "name": result[1], "email": result[2], "account_type": result[3]})
+        return results_dict_list
 
 
 class InvalidUserType(Exception):

@@ -56,4 +56,8 @@ class DummyDatabaseController(AbstractDatabaseController):
         return "user"
 
     def get_all_user_accounts(self):
-        pass
+        return [{"user_id": 1, "name": "admin", "email": "admin@email.com", "account_type": "admin"},
+                {"user_id": 2, "name": "manager", "email": "manager@email.com", "account_type": "manager"},
+                {"user_id": 3, "name": "user", "email": "user@email.com", "account_type": "user"},
+                {"user_id": 4, "name": "deactivated", "email": "deactivated@email.com", "account_type": "deactivated"},
+                {"user_id": 5, "name": "new", "email": "new@email.com", "account_type": "new"}]

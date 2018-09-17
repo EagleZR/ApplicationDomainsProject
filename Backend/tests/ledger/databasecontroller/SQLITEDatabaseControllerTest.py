@@ -79,3 +79,56 @@ class SQLITEDatabaseControllerTest(unittest.TestCase):
         user_id, auth_token = db.get_login_data(email, password)
         self.assertTrue(user_id is not None)
         self.assertTrue(auth_token is not None)
+
+    def test_invalid_user_login(self):
+        db = SQLITEDatabaseController()
+        email = "user1"
+        password = "dfiuohsdfiu"
+        name = "Roger"
+        self.assertTrue(db.add_user(email, password, name))
+        user_id, auth_token = db.get_login_data(email + "fgdfgdf", password + "fsfdsfs")
+        self.assertTrue(user_id is None)
+        self.assertTrue(auth_token is None)
+
+    def test_get_all_users(self):
+        emails = list()
+        names = list()
+        db = SQLITEDatabaseController()
+        email = "user1"
+        password = "dfiuohsdfiu"
+        name = "Roger"
+        self.assertTrue(db.add_user(email, password, name))
+        emails.append(email)
+        names.append(name)
+
+        db = SQLITEDatabaseController()
+        email = "user2"
+        password = "efbkwbkwe"
+        name = "Emily"
+        self.assertTrue(db.add_user(email, password, name))
+        emails.append(email)
+        names.append(name)
+
+        db = SQLITEDatabaseController()
+        email = "user3"
+        password = "fdkijhsdsf"
+        name = "Antonio"
+        self.assertTrue(db.add_user(email, password, name))
+        emails.append(email)
+        names.append(name)
+
+        users = db.get_all_user_accounts()
+        self.assertEqual(len(emails), len(users))
+        self.assertEqual(len(names), len(users))
+
+        for user_email in emails:
+            self.assertTrue(user_list_contains("email", user_email, users))
+        for user_name in names:
+            self.assertTrue(user_list_contains("name", user_name, users))
+
+
+def user_list_contains(category, value, users):
+    for user in users:
+        if user[category] == value:
+            return True
+    return False
