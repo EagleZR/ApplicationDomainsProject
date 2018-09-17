@@ -3,7 +3,7 @@ import abc
 
 class AbstractDatabaseController(abc.ABC):
     def __init__(self):
-        self.account_types = ["admin", "manager", "user", "deactivated", "pending"]
+        self.account_types = ["admin", "manager", "user", "deactivated", "new"]
         # New users have to change their password
         self.default_account_type = "pending"
 
