@@ -5,6 +5,8 @@ import configparser
 import os.path
 import logging
 
+from ledger.databasecontroller.SQLITEDatabaseController import DuplicateEmailException
+
 config = configparser.ConfigParser()
 config.read(os.path.dirname(os.path.realpath(__file__)) + '/config.ini')
 db = databasecontroller.get_database(config['database']['database_type'])
@@ -90,6 +92,22 @@ def handle_http_error(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
+
+
+@app.errorhandler(DuplicateEmailException)
+def handle_duplicate_user_error(error):
+    logging.info(error.message)
+    response = jsonify({"error_message": error.message})
+    response.status_code = 400
+    return response
+
+
+@app.errorhandler(Exception)
+def handle_any_error(error):
+    logging.info(error)
+    if error.message is not None:
+        logging.info(error.message)
+    # TODO Print exception and stack trace
 
 
 def dict2string(dictionary):
