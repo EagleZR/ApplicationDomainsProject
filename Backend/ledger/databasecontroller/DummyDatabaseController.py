@@ -43,3 +43,17 @@ class DummyDatabaseController(AbstractDatabaseController):
         if email is "invalid":
             return None
         return 1, 10
+
+    def get_account_type(self, auth_token, user_id):
+        if auth_token is "admin":
+            return "admin"
+        if auth_token is "manager":
+            return "manager"
+        if auth_token is "user":
+            return "user"
+        if auth_token is "invalid":
+            return None
+        return "user"
+
+    def get_all_user_accounts(self):
+        pass

@@ -35,6 +35,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         # TODO Add tables as they're designed
 
     def add_user(self, email, password, name):
+        logging.info("Adding user with email: " + email + ", password: " + password + ", name: " + name)
         try:
             if self.user_exists(email):
                 raise DuplicateEmailException("A user with the email " + email + " already exists.")
@@ -111,9 +112,28 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         if len(results) > 1:
             logging.error("Multiple results from get_user_id select statement.")
         if len(results) is 0:
-            return None
+            return None, None
         print(results[0])
         return results[0]
+
+    def get_account_type(self, auth_token, user_id):
+        db = sqlite3.connect(self.database_file_name)
+        cursor = db.cursor()
+
+        cursor.execute(
+            '''Select ACCOUNT_TYPE from USERS where AUTH_TOKEN = '%s' and USER_ID = '%s' ''' % (
+                auth_token, user_id))
+        results = list()
+        results.extend(cursor.fetchall())
+        if len(results) > 1:
+            logging.error("Multiple results from get_user_id select statement.")
+        if len(results) is 0:
+            return None, None
+        print(results[0])
+        return results[0]
+
+    def get_all_user_accounts(self):
+        pass
 
 
 class InvalidUserType(Exception):

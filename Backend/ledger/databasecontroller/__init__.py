@@ -11,10 +11,10 @@ def get_database(database_type):
     :rtype: AbstractDatabaseController.AbstractDatabaseController
     """
     if database_type == 'dummy':
-        logging.info("Creating a dummy db")
+        logging.info("Creating a dummy db controller")
         return DummyDatabaseController.DummyDatabaseController()
     elif database_type == 'sqlite':
-        logging.info("Creating a sqlite db")
+        logging.info("Creating a sqlite db controller")
         return SQLITEDatabaseController.SQLITEDatabaseController()
     else:
         logging.info("No db created")
