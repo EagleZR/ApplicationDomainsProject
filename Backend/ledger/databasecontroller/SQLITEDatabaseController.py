@@ -76,7 +76,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                     logging.error(result)
             if len(results) is 0:
                 return None
-            return results[0]
+            return results[0][0]
 
         if auth_token is not None:
             cursor.execute(
@@ -89,7 +89,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                     logging.error(result)
             if len(results) is 0:
                 return None
-            return results[0]
+            return results[0][0]
 
         raise HTTPError(500, "A get_user_id request was sent to the database without email, password, or auth_token")
 
