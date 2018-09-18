@@ -34,3 +34,7 @@ class AbstractDatabaseController(abc.ABC):
     @abc.abstractmethod
     def set_account_type(self, user_id, account_type):
         pass
+
+    @abc.abstractmethod
+    def verify_user(self, auth_token, user_id):
+        pass

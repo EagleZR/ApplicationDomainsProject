@@ -176,6 +176,15 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db.commit()
         cursor.close()
 
+    def verify_user(self, auth_token, user_id):
+        db = sqlite3.connect(self.database_file_name)
+        cursor = db.cursor()
+
+        cursor.execute(
+            '''SELECT EMAIL FROM USERS WHERE AUTH_TOKEN is '%s' and USER_ID is '%s' ''' % (auth_token, user_id))
+
+        return len(cursor.fetchall()) == 1
+
 
 class InvalidUserType(HTTPError):
     def __init__(self, message):

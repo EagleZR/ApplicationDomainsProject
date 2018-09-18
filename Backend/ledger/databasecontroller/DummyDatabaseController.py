@@ -56,3 +56,6 @@ class DummyDatabaseController(AbstractDatabaseController):
 
     def set_account_type(self, user_id, account_type):
         return True
+
+    def verify_user(self, auth_token, user_id):
+        return True

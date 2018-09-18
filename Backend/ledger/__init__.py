@@ -84,6 +84,9 @@ def account(user_id):
     requester_user_id = request.headers['user_id']
     data = request.get_json()
 
+    if not verify_user(requester_auth_token, requester_user_id):
+        raise get_error_response(403, "The requester is not a verified user")
+
     if request.method == 'GET':
         if user_id == 'all':
             if db.get_account_type(requester_user_id) == 'admin':
@@ -146,6 +149,10 @@ def log_request(request):
     if request is not None:
         logging.info("Data: " + dict2string(request.get_json()))
     logging.info(str(request))
+
+
+def verify_user(auth_token, user_id):
+    return db.verify_user(auth_token, user_id)
 
 
 if __name__ == "__main__":
