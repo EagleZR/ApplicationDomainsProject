@@ -118,8 +118,9 @@ class SQLITEDatabaseControllerTest(unittest.TestCase):
         names.append(name)
 
         users = db.get_all_user_accounts()
-        self.assertEqual(len(emails), len(users))
-        self.assertEqual(len(names), len(users))
+        self.assertEqual(len(emails) + 1,
+                         len(users))  # Admin is automatically created, so there will be 1 more user in the db
+        self.assertEqual(len(names) + 1, len(users))
 
         for user_email in emails:
             self.assertTrue(user_list_contains("email", user_email, users))
