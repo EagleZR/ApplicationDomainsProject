@@ -177,8 +177,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         cursor.close()
 
     def verify_user(self, auth_token, user_id):
-        logging.debug("Verifying user " + user_id + " with aut_token " + auth_token)
-        
+        logging.debug("Verifying user " + (user_id if user_id is not None else "None") + " with aut_token " + (
+            auth_token if auth_token is not None else "None"))
+
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
