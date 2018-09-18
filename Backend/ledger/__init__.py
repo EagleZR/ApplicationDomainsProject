@@ -21,6 +21,7 @@ def hello_world():
 @app.route('/info', methods=['GET', 'POST', 'PUT'])
 def site_info():
     log_request(request)
+
     if request.method == 'GET':
         return jsonify({"response": "It worked!"})
     raise get_error_response(400, "Only GET requests are valid for this address")
@@ -29,6 +30,7 @@ def site_info():
 @app.route('/signin', methods=['GET', 'POST', 'PUT'])
 def login():
     log_request(request)
+
     if request.method == 'PUT':
         json_data = request.get_json()
         if json_data is not None:
@@ -80,8 +82,10 @@ def register():
 
 @app.route('/account/<user_id>', methods=['GET', 'POST', 'PUT'])
 def account(user_id):
-    requester_auth_token = request.headers['auth_token']
-    requester_user_id = request.headers['user_id']
+    log_request(request)
+
+    requester_auth_token = request.headers.get('auth_token')
+    requester_user_id = request.headers.get('user_id')
     data = request.get_json()
 
     if not verify_user(requester_auth_token, requester_user_id):
