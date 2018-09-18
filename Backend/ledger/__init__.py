@@ -164,7 +164,7 @@ def verify_user(auth_token, user_id):
 
 
 def get_header_verification_data(request):
-    auth_token = request.headers.get('Authorization')
+    auth_token = request.headers.get('Authorization')[7:]
 
     logging.debug("Extracted Authorization: " + auth_token)
 
