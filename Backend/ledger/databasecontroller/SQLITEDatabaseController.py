@@ -1,4 +1,4 @@
-from ledger import HTTPError
+from ledger.HTTPError import HTTPError
 from ledger.databasecontroller.AbstractDatabaseController import AbstractDatabaseController
 import logging
 import os.path
@@ -167,14 +167,12 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
 class InvalidUserType(HTTPError):
     def __init__(self, message):
-        Exception.__init__(self)
-        self.message = message
+        super(HTTPError, self).__init__(self, message)
 
 
 class DuplicateEmailException(HTTPError):
     def __init__(self, message):
-        Exception.__init__(self)
-        self.message = message
+        super(HTTPError, self).__init__(self, message)
 
 
 def generate_auth_token():
