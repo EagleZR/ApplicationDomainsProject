@@ -150,13 +150,13 @@ def dict2string(dictionary):
 
 
 def log_request(request):
-    logging.info("Got a " + request.method + " for " + request.url)
-    logging.info("Headers: " + dict2string(request.headers))
+    logging.debug("Got a " + request.method + " for " + request.url)
+    logging.debug("Headers: " + dict2string(request.headers))
     if request is not None:
-        logging.info("JSON Data: " + dict2string(request.get_json()))
-        logging.info("Data: " + str(request.data))
-        logging.info("Form: " + dict2string(request.form))
-    logging.info(str(request))
+        logging.debug("JSON Data: " + dict2string(request.get_json()))
+        logging.debug("Data: " + str(request.data))
+        logging.debug("Form: " + dict2string(request.form))
+    logging.debug(str(request))
 
 
 def verify_user(auth_token, user_id):
@@ -164,10 +164,12 @@ def verify_user(auth_token, user_id):
 
 
 def get_header_verification_data(request):
-    auth_token = request.authorization
+    auth_token = request.headers.get('Authorization')
+
+    logging.debug("Extracted Authorization: " + auth_token)
 
     if auth_token is None:
-        raise get_error_response(400, "The auth_token must be sent in the header")
+        raise get_error_response(400, "The authorization must be sent in the header")
 
     return auth_token
 
