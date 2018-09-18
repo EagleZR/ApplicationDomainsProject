@@ -119,6 +119,7 @@ def handle_http_error(error):
         response.status_code = 400
     return response
 
+
 # Flask uses exceptions for redirecting and other operations, so can't catch all like this
 # @app.errorhandler(Exception)
 # def handle_any_error(error):
@@ -136,13 +137,13 @@ def handle_http_error(error):
 def dict2string(dictionary):
     if dictionary is None:
         return ""
-    return_string = "{"
+    return_string = "{\n"
     for key in list(dictionary.keys()):
         return_string += key + ": "
         if dictionary[key] is dict:
             return_string += dict2string(dictionary[key])
         else:
-            return_string += dictionary[key] + ", "
+            return_string += dictionary[key] + ", \n"
     return_string += "}"
     return return_string
 
@@ -151,7 +152,9 @@ def log_request(request):
     logging.info("Got a " + request.method + " for " + request.url)
     logging.info("Headers: " + dict2string(request.headers))
     if request is not None:
-        logging.info("Data: " + dict2string(request.get_json()))
+        logging.info("JSON Data: " + dict2string(request.get_json()))
+        logging.info("Data: " + dict2string(request.data))
+        logging.info("Form: " + dict2string(request.form))
     logging.info(str(request))
 
 
