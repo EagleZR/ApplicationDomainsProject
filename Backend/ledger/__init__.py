@@ -78,25 +78,20 @@ def register():
         raise get_error_response(400, "Only PUT requests are valid for this address")
 
 
-@app.route('/account', methods=['GET', 'POST', 'PUT'])
-def account():
-    auth_token = request.headers['auth_token']
-    user_id = request.headers['user_id']
+@app.route('/account/<user_id>', methods=['GET', 'POST', 'PUT'])
+def account(user_id):
+    requester_auth_token = request.headers['auth_token']
+    requester_user_id = request.headers['user_id']
     data = request.get_json()
 
     if request.method == 'GET':
-        if data is not None:
-            if data.get('request') is "get_all":
-                if db.get_account_type(auth_token, user_id) == "admin":
-                    response = jsonify({"users": db.get_all_user_accounts()})
-                    response.status_code = 200
-                    return response
-                else:
-                    raise get_error_response(403, "This user is not authorized to view this data.")
+        if user_id == 'all':
+            if db.get_account_type(requester_user_id) == 'admin':
+                db.get_all_user_accounts()
             else:
-                pass
+                raise get_error_response(403, "This user is not authorized to view this information.")
         else:
-            pass
+            logging.info("This functionality has not been programmed yet (/account/<user_id>)")
     elif request.method == 'PUT':
         pass  # Analyze request data for what changed and save it to the db
     else:
