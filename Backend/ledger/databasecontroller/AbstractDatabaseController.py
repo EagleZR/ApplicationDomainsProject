@@ -24,9 +24,13 @@ class AbstractDatabaseController(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_account_type(self, auth_token, user_id):
+    def get_account_type(self, user_id):
         pass
 
     @abc.abstractmethod
     def get_all_user_accounts(self):
+        pass
+
+    @abc.abstractmethod
+    def set_account_type(self, user_id, account_type):
         pass

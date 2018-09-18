@@ -5,7 +5,7 @@ import configparser
 import os.path
 import logging
 
-from ledger.databasecontroller.SQLITEDatabaseController import DuplicateEmailException
+from ledger.databasecontroller.SQLITEDatabaseController import DuplicateEmailException, InvalidUserType
 
 config = configparser.ConfigParser()
 config.read(os.path.dirname(os.path.realpath(__file__)) + '/config.ini')
@@ -37,7 +37,7 @@ def login():
             user_id, auth_token = db.get_login_data(email, password)
             if (user_id is None) or (auth_token is None):
                 raise get_error_response(403, "The email/password is invalid.")
-            account_type = db.get_account_type(auth_token, user_id)
+            account_type = db.get_account_type(user_id)
             if account_type == "deactivated" or account_type == "pending":
                 raise get_error_response(403, "The user account is not active. Please contact an administrator.")
             response = jsonify({"user_id": user_id, "auth_token": auth_token})
@@ -111,24 +111,24 @@ def get_error_response(status_code, message):
 def handle_http_error(error):
     logging.info(error.message)
     response = jsonify(error.to_dict())
-    response.status_code = error.status_code
+    try:
+        response.status_code = error.status_code
+    except AttributeError:
+        response.status_code = 400
     return response
 
-
-@app.errorhandler(DuplicateEmailException)
-def handle_duplicate_user_error(error):
-    logging.info(error.message)
-    response = jsonify({"error_message": error.message})
-    response.status_code = 400
-    return response
-
-
-@app.errorhandler(Exception)
-def handle_any_error(error):
-    logging.info(error)
-    if error.message is not None:
-        logging.info(error.message)
-    # TODO Print exception and stack trace
+# Flask uses exceptions for redirecting and other operations, so can't catch all like this
+# @app.errorhandler(Exception)
+# def handle_any_error(error):
+#     logging.info(error)
+#     try:
+#         logging.info(error.message)
+#         response = jsonify({"message": error.message})
+#     except AttributeError:
+#         response = jsonify({"message": "none"})
+#     response.status_code = 500
+#     # TODO Print exception and stack trace
+#     return response
 
 
 def dict2string(dictionary):

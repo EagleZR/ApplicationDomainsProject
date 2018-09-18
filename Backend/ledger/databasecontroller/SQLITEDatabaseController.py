@@ -1,3 +1,4 @@
+from ledger import HTTPError
 from ledger.databasecontroller.AbstractDatabaseController import AbstractDatabaseController
 import logging
 import os.path
@@ -30,6 +31,10 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 EMAIL TEXT not null, PASSWORD_HASH TEXT not null, AUTH_TOKEN TEXT not null, ACCOUNT_TYPE Text not null 
                 );''')
             db.commit()
+            self.add_user("admin", "password2018", "admin")
+            user_id, auth_token = self.get_login_data("admin", "password2018")
+            self.set_account_type(user_id, "admin")
+
         cursor.close()
         db.close()
         # TODO Add tables as they're designed
@@ -116,13 +121,12 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         print(results[0])
         return results[0]
 
-    def get_account_type(self, auth_token, user_id):
+    def get_account_type(self, user_id):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
         cursor.execute(
-            '''Select ACCOUNT_TYPE from USERS where AUTH_TOKEN = '%s' and USER_ID = '%s' ''' % (
-                auth_token, user_id))
+            '''Select ACCOUNT_TYPE from USERS where USER_ID = '%s' ''' % user_id)
         results = list()
         results.extend(cursor.fetchall())
         if len(results) > 1:
@@ -148,14 +152,26 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 {"user_id": result[0], "name": result[1], "email": result[2], "account_type": result[3]})
         return results_dict_list
 
+    def set_account_type(self, user_id, account_type):
+        db = sqlite3.connect(self.database_file_name)
+        cursor = db.cursor()
 
-class InvalidUserType(Exception):
+        cursor.execute('''UPDATE USERS SET ACCOUNT_TYPE = '%s' where USER_ID is '%s' ''' % (
+            account_type, user_id))
+
+        db.commit()
+        cursor.close()
+        
+        return self.get_account_type(user_id) == account_type
+
+
+class InvalidUserType(HTTPError):
     def __init__(self, message):
         Exception.__init__(self)
         self.message = message
 
 
-class DuplicateEmailException(Exception):
+class DuplicateEmailException(HTTPError):
     def __init__(self, message):
         Exception.__init__(self)
         self.message = message

@@ -44,15 +44,7 @@ class DummyDatabaseController(AbstractDatabaseController):
             return None
         return 1, 10
 
-    def get_account_type(self, auth_token, user_id):
-        if auth_token is "admin":
-            return "admin"
-        if auth_token is "manager":
-            return "manager"
-        if auth_token is "user":
-            return "user"
-        if auth_token is "invalid":
-            return None
+    def get_account_type(self, user_id):
         return "user"
 
     def get_all_user_accounts(self):
@@ -61,3 +53,6 @@ class DummyDatabaseController(AbstractDatabaseController):
                 {"user_id": 3, "name": "user", "email": "user@email.com", "account_type": "user"},
                 {"user_id": 4, "name": "deactivated", "email": "deactivated@email.com", "account_type": "deactivated"},
                 {"user_id": 5, "name": "new", "email": "new@email.com", "account_type": "new"}]
+
+    def set_account_type(self, user_id, account_type):
+        return True

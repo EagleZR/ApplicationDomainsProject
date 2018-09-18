@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuite errors="1" failures="0" name="pytest" skips="0" tests="1" time="0.160"><testcase classname="" file="Backend/tests/ledger/databasecontroller/SQLITEDatabaseControllerTest.py" name="Backend.tests.ledger.databasecontroller.SQLITEDatabaseControllerTest" time="0"><error message="collection failure">ImportError while importing test module &apos;E:\Users\Mark Zeagler\Documents\GitHub\ApplicationDomainsProject\Backend\tests\ledger\databasecontroller\SQLITEDatabaseControllerTest.py&apos;.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+Backend\tests\ledger\databasecontroller\SQLITEDatabaseControllerTest.py:7: in &lt;module&gt;
+    from ledger.databasecontroller.SQLITEDatabaseController import SQLITEDatabaseController
+E   ModuleNotFoundError: No module named &apos;ledger.databasecontroller.SQLITEDatabaseController&apos;</error></testcase></testsuite>
