@@ -153,16 +153,28 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         return results_dict_list
 
     def set_account_type(self, user_id, account_type):
+        self.update_data("USERS", "ACCOUNT_TYPE", user_id, "USER_ID", account_type)
+
+        return self.get_account_type(user_id) == account_type
+
+    def update_data(self, table, field, identifier_type, identifier, data):
+        """Updates data in a given table and given column (field) where the data in the identifier_type column matches
+        the given identifier
+
+        :param table: The table whose data will be edited
+        :param field: The field (column) of the data to be edited
+        :param identifier_type: The name of the column which will be used as the identifier
+        :param identifier: The identifier used to select the correct line whose data will be edited
+        :param data: The data to be updated
+        """
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
-        cursor.execute('''UPDATE USERS SET ACCOUNT_TYPE = '%s' where USER_ID is '%s' ''' % (
-            account_type, user_id))
+        cursor.execute('''UPDATE %s SET %s = '%s' where %s is '%s' ''' % (
+            table, field, data, identifier_type, identifier))
 
         db.commit()
         cursor.close()
-        
-        return self.get_account_type(user_id) == account_type
 
 
 class InvalidUserType(HTTPError):
