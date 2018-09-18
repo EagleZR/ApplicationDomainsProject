@@ -8,7 +8,7 @@ import secrets
 
 
 class SQLITEDatabaseController(AbstractDatabaseController):
-    database_file_name = os.path.dirname(os.path.realpath(__file__)) + '\\sqlitedb.db'
+    database_file_name = os.path.dirname(os.path.realpath(__file__)) + '/sqlitedb.db'
 
     def __init__(self):
         AbstractDatabaseController.__init__(self)
