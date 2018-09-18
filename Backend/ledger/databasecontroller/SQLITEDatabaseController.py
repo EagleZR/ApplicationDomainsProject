@@ -199,6 +199,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
     #     field_string = field_string.
 
     def verify_user(self, auth_token, user_id):
+        logging.debug(user_id if user_id is not None else "None")
+        logging.debug(auth_token if auth_token is not None else "None")
         logging.debug("Verifying user " + user_id if user_id is not None else "None" + " with auth_token " +
                                                                               auth_token if auth_token is not None else "None")
 
