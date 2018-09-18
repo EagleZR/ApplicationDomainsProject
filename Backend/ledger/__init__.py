@@ -84,8 +84,8 @@ def register():
 def account(user_id):
     log_request(request)
 
-    requester_auth_token = request.headers.get('auth_token')
-    requester_user_id = request.headers.get('user_id')
+    requester_auth_token, requester_user_id = get_header_verification_data(request)
+
     data = request.get_json()
 
     if not verify_user(requester_auth_token, requester_user_id):
@@ -157,6 +157,20 @@ def log_request(request):
 
 def verify_user(auth_token, user_id):
     return db.verify_user(auth_token, user_id)
+
+
+def get_header_verification_data(request):
+    auth_token = request.headers.get('auth_token')
+    user_id = request.headers.get('user_id')
+
+    if auth_token is None and user_id is None:
+        raise get_error_response(400, "The auth_token and user_id must be sent in the header")
+    if auth_token is None:
+        raise get_error_response(400, "The auth_token must be sent in the header")
+    if user_id is None:
+        raise get_error_response(400, "The user_id must be sent in the header")
+
+    return auth_token, user_id
 
 
 if __name__ == "__main__":
