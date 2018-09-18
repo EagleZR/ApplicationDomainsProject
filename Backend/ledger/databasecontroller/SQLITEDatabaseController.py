@@ -183,7 +183,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         cursor.execute(
             '''SELECT EMAIL FROM USERS WHERE AUTH_TOKEN is '%s' and USER_ID is '%s' ''' % (auth_token, user_id))
 
-        return len(cursor.fetchall()) == 1
+        results = cursor.fetchall()
+        logging.debug("There are " + str(len(results)) + " who match this verification information")
+        return len(results) == 1
 
 
 class InvalidUserType(HTTPError):
