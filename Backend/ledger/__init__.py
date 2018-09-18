@@ -153,7 +153,7 @@ def log_request(request):
     logging.info("Headers: " + dict2string(request.headers))
     if request is not None:
         logging.info("JSON Data: " + dict2string(request.get_json()))
-        logging.info("Data: " + request.data)
+        logging.info("Data: " + str(request.data))
         logging.info("Form: " + dict2string(request.form))
     logging.info(str(request))
 
