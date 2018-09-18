@@ -12,7 +12,7 @@ class AbstractDatabaseController(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_user_id(self, email, password):
+    def get_user_id(self, email=None, password=None, auth_token=None):
         pass
 
     @abc.abstractmethod

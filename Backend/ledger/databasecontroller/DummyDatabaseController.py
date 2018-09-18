@@ -22,7 +22,7 @@ class DummyDatabaseController(AbstractDatabaseController):
             return None
         return 100
 
-    def get_user_id(self, email, password):
+    def get_user_id(self, email=None, password=None, auth_token=None):
         if email is "admin":
             return 100
         if email is "manager":

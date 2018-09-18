@@ -60,22 +60,38 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         except sqlite3.OperationalError:
             return False
 
-    def get_user_id(self, email, password):
+    def get_user_id(self, email=None, password=None, auth_token=None):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
-        cursor.execute(
-            '''Select USER_ID from USERS where EMAIL = '%s' and PASSWORD_HASH = '%s' ''' % (
-                email, hash_password(password)))
-        results = list()
-        results.extend(cursor.fetchall())
-        if len(results) > 1:
-            logging.error("Multiple results from get_user_id select statement. Results:")
-            for result in results:
-                logging.error(result)
-        if len(results) is 0:
-            return None
-        return results[0]
+        if email is not None and password is not None:
+            cursor.execute(
+                '''Select USER_ID from USERS where EMAIL = '%s' and PASSWORD_HASH = '%s' ''' % (
+                    email, hash_password(password)))
+            results = list()
+            results.extend(cursor.fetchall())
+            if len(results) > 1:
+                logging.error("Multiple results from get_user_id select statement. Results:")
+                for result in results:
+                    logging.error(result)
+            if len(results) is 0:
+                return None
+            return results[0]
+
+        if auth_token is not None:
+            cursor.execute(
+                '''Select USER_ID from USERS where AUTH_TOKEN = '%s' ''' % (auth_token))
+            results = list()
+            results.extend(cursor.fetchall())
+            if len(results) > 1:
+                logging.error("Multiple results from get_user_id select statement. Results:")
+                for result in results:
+                    logging.error(result)
+            if len(results) is 0:
+                return None
+            return results[0]
+
+        raise HTTPError(500, "A get_user_id request was sent to the database without email, password, or auth_token")
 
     def get_user_auth_token(self, email, password):
         db = sqlite3.connect(self.database_file_name)
@@ -175,6 +191,12 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         db.commit()
         cursor.close()
+
+    # def get_data(self, table, field_list, identifier_type_list, identifier_list):
+    #     field_string = ""
+    #     for i in range(0, len(field_list)):
+    #         field_string += field_list[i] + ", "
+    #     field_string = field_string.
 
     def verify_user(self, auth_token, user_id):
         logging.debug("Verifying user " + (user_id if user_id is not None else "None") + " with aut_token " + (
