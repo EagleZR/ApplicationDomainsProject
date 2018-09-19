@@ -33,7 +33,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             db.commit()
             self.add_user("admin", "password2018", "admin")
             user_id, auth_token = self.get_login_data("admin", "password2018")
-            self.set_account_type(user_id, "admin")
+            if not self.set_account_type(user_id, "admin"):
+                logging.error("The database was not able to set the default admin's account type")
 
         cursor.close()
         db.close()
