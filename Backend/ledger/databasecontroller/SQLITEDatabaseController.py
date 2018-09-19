@@ -134,7 +134,6 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             logging.error("Multiple results from get_user_id select statement.")
         if len(results) is 0:
             return None, None
-        print(results[0])
         return results[0]
 
     def get_account_type(self, user_id):
@@ -149,8 +148,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             logging.error("Multiple results from get_user_id select statement.")
         if len(results) is 0:
             return None, None
-        print(results[0])
-        return results[0]
+        return results[0][0]
 
     def get_all_user_accounts(self):
         db = sqlite3.connect(self.database_file_name)
