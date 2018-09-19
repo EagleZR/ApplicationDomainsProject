@@ -97,7 +97,7 @@ def account(user_id):
             user_type = db.get_account_type(requester_user_id)
             logging.debug("User type: " + user_type)
             if user_type == 'admin':
-                db.get_all_user_accounts()
+                return jsonify({"message": db.get_all_user_accounts()})
             else:
                 raise get_error_response(403, "This user is not authorized to view this information.")
         else:
