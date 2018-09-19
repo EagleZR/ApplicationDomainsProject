@@ -82,8 +82,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             return results[0][0]
 
         if auth_token is not None:
-            cursor.execute(
-                '''Select USER_ID from USERS where AUTH_TOKEN = '%s' ''' % (auth_token))
+            command = '''Select USER_ID from USERS where AUTH_TOKEN = '%s' ''' % auth_token
+            print(command)
+            cursor.execute(command)
             results = list()
             results.extend(cursor.fetchall())
             if len(results) > 1:
