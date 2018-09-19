@@ -100,6 +100,10 @@ def account(user_id):
                 return jsonify({"message": db.get_all_user_accounts()})
             else:
                 raise get_error_response(403, "This user is not authorized to view this information.")
+        elif user_id == 'info':
+            response = jsonify({"message": {"account_types": db.account_types}})
+            response.status_code = 200
+            return response
         else:
             logging.info("This functionality has not been programmed yet (/account/<user_id>)")
     elif request.method == 'PUT':
