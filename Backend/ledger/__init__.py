@@ -40,7 +40,7 @@ def login():
             if (user_id is None) or (auth_token is None):
                 raise get_error_response(403, "The email/password is invalid.")
             account_type = db.get_account_type(user_id)
-            if account_type == "deactivated" or account_type == "pending":
+            if account_type == "deactivated" or account_type == "new":
                 raise get_error_response(403, "The user account is not active. Please contact an administrator.")
             response = jsonify({"message": {"user_id": user_id, "auth_token": auth_token}})
             response.status_code = 200
