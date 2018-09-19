@@ -132,8 +132,7 @@ def account(user_id):
         else:
             logging.info("The POST request does not contain any data")
             raise get_error_response(400, "The POST request does not contain any data")
-    else:
-        raise get_error_response(400, "Only GET and PUT requests are valid for this address")
+    raise get_error_response(400, "Only GET and PUT requests are valid for this address")
 
 
 def get_error_response(status_code, message):
