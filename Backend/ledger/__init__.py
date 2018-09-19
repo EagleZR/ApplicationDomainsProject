@@ -93,6 +93,12 @@ def register():
 def account(user_id):
     log_request(request)
 
+    if request.method == 'GET' and user_id == 'info':
+        # Short circuit the authentication
+        response = jsonify({"message": {"account_types": db.account_types}})
+        response.status_code = 200
+        return response
+
     requester_auth_token = get_header_verification_data(request)
     requester_user_id = db.get_user_id(auth_token=requester_auth_token)
     user_type = db.get_account_type(requester_user_id)
@@ -109,10 +115,6 @@ def account(user_id):
                 return jsonify({"message": db.get_all_user_accounts()})
             else:
                 raise get_error_response(403, "This user is not authorized to view this information.")
-        elif user_id == 'info':
-            response = jsonify({"message": {"account_types": db.account_types}})
-            response.status_code = 200
-            return response
         else:
             logging.info("This functionality has not been programmed yet (/account/<user_id>)")
     elif request.method == 'PUT':
