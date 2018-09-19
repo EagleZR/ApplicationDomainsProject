@@ -141,6 +141,21 @@ def account(user_id):
                         response = jsonify({"message": "The account was not updated"})
                         response.status_code = 500
                         return response
+                elif category == 'password':
+                    logging.info(
+                        "An admin (user_id: " + str(requester_user_id) + ") is changing the password for a user "
+                                                                         "(user_id: " + str(user_id) + ") to " + str(
+                            value))
+                    if db.set_account_type(user_id, value):
+                        logging.info("The account was updated successfully")
+                        response = jsonify({"message": "The account was updated successfully"})
+                        response.status_code = 200
+                        return response
+                    else:
+                        logging.error("The account was not updated")
+                        response = jsonify({"message": "The account was not updated"})
+                        response.status_code = 500
+                        return response
                 else:
                     logging.info("This functionality has not been programmed yet (/account/<user_id>)")
             else:

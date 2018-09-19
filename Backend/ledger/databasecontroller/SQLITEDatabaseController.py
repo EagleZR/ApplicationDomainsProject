@@ -175,6 +175,11 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         return self.get_account_type(user_id) == account_type
 
+    def update_password(self, user_id, new_password):
+        self.update_data("USERS", "PASSWORD_HASH", "USER_ID", user_id, hash_password(new_password))
+
+        return True
+
     def update_data(self, table, field, identifier_type, identifier, data):
         """Updates data in a given table and given column (field) where the data in the identifier_type column matches
         the given identifier

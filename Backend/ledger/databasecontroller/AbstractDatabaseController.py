@@ -38,3 +38,7 @@ class AbstractDatabaseController(abc.ABC):
     @abc.abstractmethod
     def verify_user(self, auth_token, user_id):
         pass
+
+    @abc.abstractmethod
+    def update_password(self, user_id, new_password):
+        pass

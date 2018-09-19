@@ -59,3 +59,6 @@ class DummyDatabaseController(AbstractDatabaseController):
 
     def verify_user(self, auth_token, user_id):
         return True
+
+    def update_password(self, user_id, new_password):
+        return True
