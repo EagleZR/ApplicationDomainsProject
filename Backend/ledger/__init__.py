@@ -86,6 +86,7 @@ def account(user_id):
 
     requester_auth_token = get_header_verification_data(request)
     requester_user_id = db.get_user_id(auth_token=requester_auth_token)
+    user_type = db.get_account_type(requester_user_id)
 
     data = request.get_json()
 
@@ -94,7 +95,6 @@ def account(user_id):
 
     if request.method == 'GET':
         if user_id == 'all':
-            user_type = db.get_account_type(requester_user_id)
             logging.debug("User type: " + user_type)
             if user_type == 'admin':
                 return jsonify({"message": db.get_all_user_accounts()})
@@ -104,6 +104,21 @@ def account(user_id):
             logging.info("This functionality has not been programmed yet (/account/<user_id>)")
     elif request.method == 'PUT':
         pass  # Analyze request data for what changed and save it to the db
+    elif request.method == 'POST':
+        if data is not None:
+            category = data.get('category')
+            value = data.get('value')
+            if user_id == requester_user_id:
+                logging.info("This functionality has not been programmed yet (/account/<user_id>)")
+            elif user_type == "admin":
+                if category == 'account_type':
+                    db.set_account_type(user_id, value)
+                else:
+                    logging.info("This functionality has not been programmed yet (/account/<user_id>)")
+            else:
+                logging.info("This functionality has not been programmed yet (/account/<user_id>)")
+        else:
+            raise get_error_response(400, "The POST request does not contain any data")
     else:
         raise get_error_response(400, "Only GET and PUT requests are valid for this address")
 
