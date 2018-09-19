@@ -183,6 +183,7 @@ def dict2string(dictionary):
 
 
 def log_request(request):
+    logging.debug("==========================================================")
     logging.debug("Got a " + request.method + " for " + request.url)
     logging.debug("Headers: " + dict2string(request.headers))
     if request is not None:
