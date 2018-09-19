@@ -118,7 +118,7 @@ def account(user_id):
         else:
             logging.info("This functionality has not been programmed yet (/account/<user_id>)")
     elif request.method == 'PUT':
-        pass  # Analyze request data for what changed and save it to the db
+        logging.info("This functionality has not been programmed yet (/account/<user_id>)")
     elif request.method == 'POST':
         if data is not None:
             category = data.get('category')
@@ -129,7 +129,7 @@ def account(user_id):
                 if category == 'account_type':
                     logging.info(
                         "An admin (user_id: " + requester_user_id + ") is changing the account_type for a user"
-                                                                    "(user_id: " + user_id + ") to " + value)
+                                                                    "(user_id: " + str(user_id) + ") to " + value)
                     if db.set_account_type(user_id, value):
                         logging.info("The account was updated successfully")
                         response = jsonify({"message": "The account was updated successfully"})
