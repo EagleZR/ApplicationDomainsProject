@@ -94,7 +94,9 @@ def account(user_id):
 
     if request.method == 'GET':
         if user_id == 'all':
-            if db.get_account_type(requester_user_id) == 'admin':
+            user_type = db.get_account_type(requester_user_id)
+            logging.debug("User type: " + user_type)
+            if user_type == 'admin':
                 db.get_all_user_accounts()
             else:
                 raise get_error_response(403, "This user is not authorized to view this information.")
