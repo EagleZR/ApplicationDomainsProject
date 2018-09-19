@@ -187,6 +187,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
+        logging.debug(
+            '''UPDATE %s SET %s = '%s' where %s is '%s' ''' % (table, field, data, identifier_type, identifier))
+
         cursor.execute('''UPDATE %s SET %s = '%s' where %s is '%s' ''' % (
             table, field, data, identifier_type, identifier))
 
