@@ -32,17 +32,25 @@ def login():
     log_request(request)
 
     if request.method == 'PUT':
+        logging.debug("Working PUT request in /signin")
         json_data = request.get_json()
+        logging.debug("Extracted JSON data in /signin")
         if json_data is not None:
+            logging.debug("JSON data is not null in /signin")
             email = json_data.get('username')
             password = json_data.get('password')
             user_id, auth_token = db.get_login_data(email, password)
             if (user_id is None) or (auth_token is None):
                 raise get_error_response(403, "The email/password is invalid.")
+            else:
+                logging.debug("user_id and auth_token are not null in /signin")
             account_type = db.get_account_type(user_id)
+            logging.debug("account_type extracted in /signin")
             if account_type == "deactivated" or account_type == "new":
                 raise get_error_response(403, "The user account is not active. Please contact an administrator.")
+            logging.debug("Account type is valid in /signin")
             response = jsonify({"message": {"user_id": user_id, "auth_token": auth_token}})
+            logging.debug("Returning JSON object in /signin")
             response.status_code = 200
             return response
         else:
