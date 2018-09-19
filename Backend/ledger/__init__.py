@@ -52,6 +52,7 @@ def login():
             response = jsonify({"message": {"user_id": user_id, "auth_token": auth_token}})
             logging.debug("Returning JSON object in /signin")
             response.status_code = 200
+            logging.debug(response)
             return response
         else:
             raise get_error_response(400, "Please include both the username and the password")
