@@ -170,7 +170,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         return results_dict_list
 
     def set_account_type(self, user_id, account_type):
-        self.update_data("USERS", "ACCOUNT_TYPE", user_id, "USER_ID", account_type)
+        self.update_data("USERS", "ACCOUNT_TYPE", "USER_ID", user_id, account_type)
 
         return self.get_account_type(user_id) == account_type
 
