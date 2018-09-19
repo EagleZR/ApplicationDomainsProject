@@ -42,7 +42,7 @@ def login():
             account_type = db.get_account_type(user_id)
             if account_type == "deactivated" or account_type == "pending":
                 raise get_error_response(403, "The user account is not active. Please contact an administrator.")
-            response = jsonify({"user_id": user_id, "auth_token": auth_token})
+            response = jsonify({"message": {"user_id": user_id, "auth_token": auth_token}})
             response.status_code = 200
             return response
         else:
