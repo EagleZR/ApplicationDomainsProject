@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
-    return 'Hello World'
+    return 'Server is up'
 
 
 @app.route('/info', methods=['GET', 'POST', 'PUT'])
