@@ -1,4 +1,4 @@
-from ledger import databasecontroller, date_string_format
+from ledger import databasecontroller
 from flask import (Flask, request, jsonify)
 from ledger.HTTPError import HTTPError
 from datetime import (datetime)
@@ -6,7 +6,6 @@ import configparser
 import os.path
 import logging
 
-from ledger.databasecontroller.AbstractDatabaseController import date_string_format
 from ledger.databasecontroller.SQLITEDatabaseController import DuplicateEmailException, InvalidUserType
 
 config = configparser.ConfigParser()
@@ -46,14 +45,14 @@ def login():
                 raise get_error_response(403, "The email/password is invalid.")
             else:
                 logging.debug("user_id and auth_token are not null in /signin")
-            password_expire_date = datetime.strptime(password_expire_date_string, date_string_format)
+            password_expire_date = datetime.strptime(password_expire_date_string, db.date_string_format)
             passwd_time_remaining = datetime.today() - password_expire_date
             account_type = db.get_account_type(user_id)
             logging.debug("account_type extracted in /signin")
             if account_type == "deactivated" or account_type == "new":
                 raise get_error_response(403, "The user account is not active. Please contact an administrator.")
             logging.debug("Account type is valid in /signin")
-            db.update_last_login(user_id, datetime.today().strftime(date_string_format))
+            db.update_last_login(user_id, datetime.today().strftime(db.date_string_format))
             response = jsonify({"message": {"user_id": user_id, "auth_token": auth_token, "last_login": last_login,
                                             "passwd_time_remaining": passwd_time_remaining.days}})
             logging.debug("Returning JSON object in /signin")
