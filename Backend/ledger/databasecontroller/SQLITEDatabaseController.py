@@ -32,12 +32,15 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 EMAIL TEXT not null, PASSWORD_HASH TEXT not null, AUTH_TOKEN TEXT not null, ACCOUNT_TYPE Text not null,
                 LAST_LOGIN TEXT, PASSWORD_EXPIRE_DATE TEXT NOT NULL);''')
             db.commit()
-            self.add_user("admin", "password2018", "admin", ledger.get_30_days_from_now())
+            if self.add_user("admin", "password2018", "admin", ledger.get_30_days_from_now()):
+                logging.debug("Admin successfully created.")
+            else:
+                logging.error("Admin could not be created.")
             user_id, auth_token = self.get_login_data("admin", "password2018")
             if not self.set_account_type(user_id, "admin"):
                 logging.error("The database was not able to set the default admin's account type")
             else:
-                logging.info("The default admin was successfully initialized")
+                logging.debug("The default admin was successfully initialized")
 
         cursor.close()
         db.close()
@@ -57,6 +60,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             insert_text = '''Insert into Users (NAME, EMAIL, PASSWORD_HASH, AUTH_TOKEN, ACCOUNT_TYPE, PASSWORD_EXPIRE_DATE) values
                 ('{name}', '{email}', '{password_hash}', '{auth_token}', '{account_type}', '{expire_date}');'''.format(
                 **parameter_dictionary)
+            logging.debug(insert_text)
             cursor.execute(insert_text)
             db.commit()
             cursor.close()
