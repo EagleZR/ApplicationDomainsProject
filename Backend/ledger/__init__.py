@@ -1,6 +1,7 @@
 from ledger import databasecontroller
 from flask import (Flask, request, jsonify)
 from ledger.HTTPError import HTTPError
+from datetime import (datetime, timedelta)
 import configparser
 import os.path
 import logging
@@ -10,6 +11,8 @@ from ledger.databasecontroller.SQLITEDatabaseController import DuplicateEmailExc
 config = configparser.ConfigParser()
 config.read(os.path.dirname(os.path.realpath(__file__)) + '/config.ini')
 db = databasecontroller.get_database(config['database']['database_type'])
+date_string_format = "%d-%b-%Y"
+password_duration = 30
 app = Flask(__name__)
 
 
@@ -39,7 +42,9 @@ def login():
             logging.debug("JSON data is not null in /signin")
             email = json_data.get('username')
             password = json_data.get('password')
-            user_id, auth_token = db.get_login_data(email, password)
+            user_id, auth_token, last_login, password_expire_date_string = db.get_login_data(email, password)
+            password_expire_date = datetime.strptime(password_expire_date_string, date_string_format)
+            passwd_time_remaining = datetime.today() - password_expire_date
             if (user_id is None) or (auth_token is None):
                 raise get_error_response(403, "The email/password is invalid.")
             else:
@@ -49,7 +54,9 @@ def login():
             if account_type == "deactivated" or account_type == "new":
                 raise get_error_response(403, "The user account is not active. Please contact an administrator.")
             logging.debug("Account type is valid in /signin")
-            response = jsonify({"message": {"user_id": user_id, "auth_token": auth_token}})
+            db.update_last_login(user_id, datetime.today().strftime(date_string_format))
+            response = jsonify({"message": {"user_id": user_id, "auth_token": auth_token, "last_login": last_login,
+                                            "passwd_time_remaining": passwd_time_remaining.days}})
             logging.debug("Returning JSON object in /signin")
             response.status_code = 200
             logging.debug(response)
@@ -70,7 +77,7 @@ def register():
             email = json_data.get('username')
             password = json_data.get('password')
             name = json_data.get('name')
-            if db.add_user(email, password, name):
+            if db.add_user(email, password, name, get_30_days_from_now()):
                 user_id = db.get_user_id(email, password)
                 auth_token = db.get_user_auth_token(email, password)
                 if (user_id is None) or (auth_token is None):
@@ -124,7 +131,21 @@ def account(user_id):
             category = data.get('category')
             value = data.get('value')
             if user_id == requester_user_id:
-                logging.info("This functionality has not been programmed yet (/account/<user_id>)")
+                if category == 'password':
+                    logging.info("User " + user_id + " is updating their password.")
+                    if db.update_password(user_id, value):
+                        db.set_password_expire(user_id, get_30_days_from_now())
+                        logging.info("The account was updated successfully")
+                        response = jsonify({"message": "The account was updated successfully"})
+                        response.status_code = 200
+                        return response
+                    else:
+                        logging.error("The account was not updated")
+                        response = jsonify({"message": "The account was not updated"})
+                        response.status_code = 500
+                        return response
+                else:
+                    logging.info("This functionality has not been programmed yet (/account/<user_id>)")
             elif user_type == "admin":
                 if category == 'account_type':
                     logging.info(
@@ -146,7 +167,8 @@ def account(user_id):
                         "An admin (user_id: " + str(requester_user_id) + ") is changing the password for a user "
                                                                          "(user_id: " + str(user_id) + ") to " + str(
                             value))
-                    if db.set_account_type(user_id, value):
+                    if db.update_password(user_id, value):
+                        db.set_password_expire(user_id, get_30_days_from_now())
                         logging.info("The account was updated successfully")
                         response = jsonify({"message": "The account was updated successfully"})
                         response.status_code = 200
@@ -233,6 +255,10 @@ def get_header_verification_data(request):
         raise get_error_response(400, "The authorization must be sent in the header")
 
     return auth_token
+
+
+def get_30_days_from_now():
+    return (datetime.today() + timedelta(days=password_duration)).strftime(date_string_format)
 
 
 if __name__ == "__main__":

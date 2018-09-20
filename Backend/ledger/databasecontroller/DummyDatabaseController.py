@@ -6,7 +6,7 @@ class DummyDatabaseController(AbstractDatabaseController):
     def __init__(self):
         AbstractDatabaseController.__init__(self)
 
-    def add_user(self, email, password, name):
+    def add_user(self, email, password, name, password_expire_date):
         if email == "invalid" and password == "invalid":
             return False
         return True
@@ -35,14 +35,14 @@ class DummyDatabaseController(AbstractDatabaseController):
 
     def get_login_data(self, email, password):
         if email is "admin":
-            return 100, 1000
+            return 100, 1000, "12-Dec-2012", 12
         if email is "manager":
-            return 50, 500
+            return 50, 500, "12-Dec-2012", 0
         if email is "user":
-            return 25, 250
+            return 25, 250, "12-Dec-2012", 25
         if email is "invalid":
             return None
-        return 1, 10
+        return 1, 10, "12-Dec-2012", 18
 
     def get_account_type(self, user_id):
         return "user"
@@ -62,3 +62,9 @@ class DummyDatabaseController(AbstractDatabaseController):
 
     def update_password(self, user_id, new_password):
         return True
+
+    def update_last_login(self, user_id, last_login):
+        return True
+
+    def set_password_expire(self, user_id, password_expire_date):
+        pass

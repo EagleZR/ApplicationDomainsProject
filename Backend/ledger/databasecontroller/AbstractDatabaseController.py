@@ -8,7 +8,7 @@ class AbstractDatabaseController(abc.ABC):
         self.default_account_type = "new"
 
     @abc.abstractmethod
-    def add_user(self, email, password, name):
+    def add_user(self, email, password, name, password_expire_date):
         pass
 
     @abc.abstractmethod
@@ -41,4 +41,12 @@ class AbstractDatabaseController(abc.ABC):
 
     @abc.abstractmethod
     def update_password(self, user_id, new_password):
+        pass
+
+    @abc.abstractmethod
+    def update_last_login(self, user_id, last_login):
+        pass
+
+    @abc.abstractmethod
+    def set_password_expire(self, user_id, password_expire_date):
         pass

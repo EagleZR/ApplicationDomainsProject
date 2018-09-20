@@ -28,8 +28,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             logging.warning("Creating user table.")
             cursor.execute(
                 '''Create Table If Not Exists Users(USER_ID integer primary key autoincrement, NAME TEXT not null, 
-                EMAIL TEXT not null, PASSWORD_HASH TEXT not null, AUTH_TOKEN TEXT not null, ACCOUNT_TYPE Text not null 
-                );''')
+                EMAIL TEXT not null, PASSWORD_HASH TEXT not null, AUTH_TOKEN TEXT not null, ACCOUNT_TYPE Text not null,
+                LAST_LOGIN TEXT, PASSWORD_EXPIRE_DATE TEXT NOT NULL);''')
             db.commit()
             self.add_user("admin", "password2018", "admin")
             user_id, auth_token = self.get_login_data("admin", "password2018")
@@ -42,7 +42,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db.close()
         # TODO Add tables as they're designed
 
-    def add_user(self, email, password, name):
+    def add_user(self, email, password, name, password_expire_date):
         logging.info("Adding user with email: " + email + ", password: " + password + ", name: " + name)
         try:
             if self.user_exists(email):
@@ -51,9 +51,10 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             db = sqlite3.connect(self.database_file_name)
             cursor = db.cursor()
             parameter_dictionary = {"name": name, "email": email, "password_hash": hash_password(password),
-                                    "auth_token": generate_auth_token(), "account_type": self.default_account_type}
-            insert_text = '''Insert into Users (NAME, EMAIL, PASSWORD_HASH, AUTH_TOKEN, ACCOUNT_TYPE) values
-                ('{name}', '{email}', '{password_hash}', '{auth_token}', '{account_type}');'''.format(
+                                    "auth_token": generate_auth_token(), "account_type": self.default_account_type,
+                                    "expire_date": password_expire_date}
+            insert_text = '''Insert into Users (NAME, EMAIL, PASSWORD_HASH, AUTH_TOKEN, ACCOUNT_TYPE, PASSWORD_EXPIRE_DATE) values
+                ('{name}', '{email}', '{password_hash}', '{auth_token}', '{account_type}', '{expire_date}');'''.format(
                 **parameter_dictionary)
             cursor.execute(insert_text)
             db.commit()
@@ -130,7 +131,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         cursor = db.cursor()
 
         cursor.execute(
-            '''Select USER_ID, AUTH_TOKEN from USERS where EMAIL = '%s' and PASSWORD_HASH = '%s' ''' % (
+            '''Select USER_ID, AUTH_TOKEN, LAST_LOGIN, PASSWORD_EXPIRE_DATE from USERS where EMAIL = '%s' and 
+            PASSWORD_HASH = '%s' ''' % (
                 email, hash_password(password)))
         results = list()
         results.extend(cursor.fetchall())
@@ -172,13 +174,19 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
     def set_account_type(self, user_id, account_type):
         self.update_data("USERS", "ACCOUNT_TYPE", "USER_ID", user_id, account_type)
-
         return self.get_account_type(user_id) == account_type
 
     def update_password(self, user_id, new_password):
         self.update_data("USERS", "PASSWORD_HASH", "USER_ID", user_id, hash_password(new_password))
+        return True  # TODO Verify update has occurred
 
-        return True
+    def update_last_login(self, user_id, last_login):
+        self.update_data("USERS", "LAST_LOGIN", "USER_ID", user_id, last_login)
+        return True  # TODO Verify update has occurred
+
+    def set_password_expire(self, user_id, password_expire_date):
+        self.update_data("USERS", "PASSWORD_EXPIRE_DATE", "USER_ID", user_id, password_expire_date)
+        return True  # TODO Verify update has occurred
 
     def update_data(self, table, field, identifier_type, identifier, data):
         """Updates data in a given table and given column (field) where the data in the identifier_type column matches
