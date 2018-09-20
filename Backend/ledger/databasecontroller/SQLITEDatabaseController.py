@@ -139,7 +139,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         if len(results) > 1:
             logging.error("Multiple results from get_user_id select statement.")
         if len(results) is 0:
-            return None, None
+            logging.info("Invalid signin attempt")
+            return None, None, None, None
         return results[0]
 
     def get_account_type(self, user_id):
