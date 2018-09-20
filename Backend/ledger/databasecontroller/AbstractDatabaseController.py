@@ -1,7 +1,8 @@
 import abc
 from datetime import datetime, timedelta
 
-from ledger import password_duration, date_string_format
+date_string_format = "%d-%b-%Y"
+password_duration = 30
 
 
 class AbstractDatabaseController(abc.ABC):

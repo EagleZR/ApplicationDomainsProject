@@ -1,4 +1,4 @@
-from ledger import databasecontroller
+from ledger import databasecontroller, date_string_format
 from flask import (Flask, request, jsonify)
 from ledger.HTTPError import HTTPError
 from datetime import (datetime)
@@ -6,13 +6,12 @@ import configparser
 import os.path
 import logging
 
+from ledger.databasecontroller.AbstractDatabaseController import date_string_format
 from ledger.databasecontroller.SQLITEDatabaseController import DuplicateEmailException, InvalidUserType
 
 config = configparser.ConfigParser()
 config.read(os.path.dirname(os.path.realpath(__file__)) + '/config.ini')
 db = databasecontroller.get_database(config['database']['database_type'])
-date_string_format = "%d-%b-%Y"
-password_duration = 30
 app = Flask(__name__)
 
 
