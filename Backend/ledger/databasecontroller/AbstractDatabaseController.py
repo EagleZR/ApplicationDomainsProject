@@ -8,6 +8,7 @@ class AbstractDatabaseController(abc.ABC):
         # New users have to change their password
         self.default_account_type = "new"
         self.date_string_format = "%d-%b-%Y"
+        self.date_time_string_format = self.date_string_format + " %H:%M:%S"
         self.password_duration = 30
 
     @abc.abstractmethod

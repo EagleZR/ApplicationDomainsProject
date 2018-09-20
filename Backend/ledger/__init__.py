@@ -52,7 +52,7 @@ def login():
             if account_type == "deactivated" or account_type == "new":
                 raise get_error_response(403, "The user account is not active. Please contact an administrator.")
             logging.debug("Account type is valid in /signin")
-            db.update_last_login(user_id, datetime.today().strftime(db.date_string_format))
+            db.update_last_login(user_id, datetime.today().strftime(db.date_time_string_format))
             response = jsonify({"message": {"user_id": user_id, "auth_token": auth_token, "last_login": last_login,
                                             "passwd_time_remaining": passwd_time_remaining.days}})
             logging.debug("Returning JSON object in /signin")
