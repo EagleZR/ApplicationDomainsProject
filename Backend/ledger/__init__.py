@@ -43,12 +43,12 @@ def login():
             email = json_data.get('username')
             password = json_data.get('password')
             user_id, auth_token, last_login, password_expire_date_string = db.get_login_data(email, password)
-            password_expire_date = datetime.strptime(password_expire_date_string, date_string_format)
-            passwd_time_remaining = datetime.today() - password_expire_date
-            if (user_id is None) or (auth_token is None):
+            if (user_id is None) or (auth_token is None) or (password_expire_date_string is None):
                 raise get_error_response(403, "The email/password is invalid.")
             else:
                 logging.debug("user_id and auth_token are not null in /signin")
+            password_expire_date = datetime.strptime(password_expire_date_string, date_string_format)
+            passwd_time_remaining = datetime.today() - password_expire_date
             account_type = db.get_account_type(user_id)
             logging.debug("account_type extracted in /signin")
             if account_type == "deactivated" or account_type == "new":
