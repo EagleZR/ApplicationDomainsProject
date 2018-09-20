@@ -1,4 +1,7 @@
 import abc
+from datetime import datetime, timedelta
+
+from ledger import password_duration, date_string_format
 
 
 class AbstractDatabaseController(abc.ABC):
@@ -50,3 +53,7 @@ class AbstractDatabaseController(abc.ABC):
     @abc.abstractmethod
     def set_password_expire(self, user_id, password_expire_date):
         pass
+
+    @staticmethod
+    def get_30_days_from_now():
+        return (datetime.today() + timedelta(days=password_duration)).strftime(date_string_format)

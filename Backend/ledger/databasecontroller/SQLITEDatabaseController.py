@@ -1,4 +1,3 @@
-import ledger
 from ledger.HTTPError import HTTPError
 from ledger.databasecontroller.AbstractDatabaseController import AbstractDatabaseController
 import logging
@@ -32,7 +31,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 EMAIL TEXT not null, PASSWORD_HASH TEXT not null, AUTH_TOKEN TEXT not null, ACCOUNT_TYPE Text not null,
                 LAST_LOGIN TEXT, PASSWORD_EXPIRE_DATE TEXT NOT NULL);''')
             db.commit()
-            if self.add_user("admin", "password2018", "admin", ledger.get_30_days_from_now()):
+            if self.add_user("admin", "password2018", "admin", self.get_30_days_from_now()):
                 logging.debug("Admin successfully created.")
             else:
                 logging.error("Admin could not be created.")

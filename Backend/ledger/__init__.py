@@ -1,7 +1,7 @@
 from ledger import databasecontroller
 from flask import (Flask, request, jsonify)
 from ledger.HTTPError import HTTPError
-from datetime import (datetime, timedelta)
+from datetime import (datetime)
 import configparser
 import os.path
 import logging
@@ -77,7 +77,7 @@ def register():
             email = json_data.get('username')
             password = json_data.get('password')
             name = json_data.get('name')
-            if db.add_user(email, password, name, get_30_days_from_now()):
+            if db.add_user(email, password, name, db.get_30_days_from_now()):
                 user_id = db.get_user_id(email, password)
                 auth_token = db.get_user_auth_token(email, password)
                 if (user_id is None) or (auth_token is None):
@@ -134,7 +134,7 @@ def account(user_id):
                 if category == 'password':
                     logging.info("User " + user_id + " is updating their password.")
                     if db.update_password(user_id, value):
-                        db.set_password_expire(user_id, get_30_days_from_now())
+                        db.set_password_expire(user_id, db.get_30_days_from_now())
                         logging.info("The account was updated successfully")
                         response = jsonify({"message": "The account was updated successfully"})
                         response.status_code = 200
@@ -168,7 +168,7 @@ def account(user_id):
                                                                          "(user_id: " + str(user_id) + ") to " + str(
                             value))
                     if db.update_password(user_id, value):
-                        db.set_password_expire(user_id, get_30_days_from_now())
+                        db.set_password_expire(user_id, db.get_30_days_from_now())
                         logging.info("The account was updated successfully")
                         response = jsonify({"message": "The account was updated successfully"})
                         response.status_code = 200
@@ -255,10 +255,6 @@ def get_header_verification_data(request):
         raise get_error_response(400, "The authorization must be sent in the header")
 
     return auth_token
-
-
-def get_30_days_from_now():
-    return (datetime.today() + timedelta(days=password_duration)).strftime(date_string_format)
 
 
 if __name__ == "__main__":
