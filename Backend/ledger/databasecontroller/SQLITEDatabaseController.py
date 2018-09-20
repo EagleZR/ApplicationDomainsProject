@@ -136,6 +136,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 email, hash_password(password)))
         results = list()
         results.extend(cursor.fetchall())
+        logging.debug(results)
         if len(results) > 1:
             logging.error("Multiple results from get_user_id select statement.")
         if len(results) is 0:
