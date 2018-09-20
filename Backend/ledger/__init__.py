@@ -47,6 +47,8 @@ def login():
                 logging.debug("user_id and auth_token are not null in /signin")
             password_expire_date = datetime.strptime(password_expire_date_string, db.date_string_format)
             passwd_time_remaining = password_expire_date - datetime.today()
+            if passwd_time_remaining.days < 0:
+                return get_error_response(403, "Your password has expired, please contact an administrator")
             account_type = db.get_account_type(user_id)
             logging.debug("account_type extracted in /signin")
             if account_type == "deactivated" or account_type == "new":
