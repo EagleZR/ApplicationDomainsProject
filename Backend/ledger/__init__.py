@@ -89,7 +89,7 @@ def register():
         raise get_error_response(400, "Only PUT requests are valid for this address")
 
 
-@app.route('/account/<user_id>', methods=['GET', 'POST', 'PUT'])
+@app.route('/user/<user_id>', methods=['GET', 'POST', 'PUT'])
 def account(user_id):
     log_request(request)
 
