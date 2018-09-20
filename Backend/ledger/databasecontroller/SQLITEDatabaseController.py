@@ -35,7 +35,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 logging.debug("Admin successfully created.")
             else:
                 logging.error("Admin could not be created.")
-            user_id, auth_token = self.get_login_data("admin", "password2018")
+            user_id = self.get_user_id("admin", "password2018")
             if not self.set_account_type(user_id, "admin"):
                 logging.error("The database was not able to set the default admin's account type")
             else:
