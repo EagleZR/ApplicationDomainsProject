@@ -46,7 +46,7 @@ def login():
             else:
                 logging.debug("user_id and auth_token are not null in /signin")
             password_expire_date = datetime.strptime(password_expire_date_string, db.date_string_format)
-            passwd_time_remaining = datetime.today() - password_expire_date
+            passwd_time_remaining = password_expire_date - datetime.today()
             account_type = db.get_account_type(user_id)
             logging.debug("account_type extracted in /signin")
             if account_type == "deactivated" or account_type == "new":
