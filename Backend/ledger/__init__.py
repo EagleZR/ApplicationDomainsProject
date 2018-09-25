@@ -1,5 +1,6 @@
 from ledger import databasecontroller
 from flask import (Flask, request, jsonify)
+from flask_cors import CORS
 from ledger.HTTPError import HTTPError
 from datetime import (datetime)
 import configparser
@@ -12,6 +13,7 @@ config = configparser.ConfigParser()
 config.read(os.path.dirname(os.path.realpath(__file__)) + '/config.ini')
 db = databasecontroller.get_database(config['database']['database_type'])
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route('/')
