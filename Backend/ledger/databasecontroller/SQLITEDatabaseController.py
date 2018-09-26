@@ -146,10 +146,10 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         if len(results) is 0:
             logging.info("Invalid signin attempt")
             return None, None, None, None
-        return results[0]
+        return results[0][:3], self.get_date(results[0][3])
 
     def get_account_type(self, user_id):
-        db = sqlite3.connect(self.database_file_name)
+        return self.get_data("Users", "ACCOUNT_TYPE", "USER_ID", user_id)
         cursor = db.cursor()
 
         cursor.execute(
@@ -187,7 +187,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         return True  # TODO Verify update has occurred
 
     def update_last_login(self, user_id, last_login):
-        self.update_data("USERS", "LAST_LOGIN", "USER_ID", user_id, last_login)
+        self.update_data("USERS", "LAST_LOGIN", "USER_ID", user_id, self.get_date_string(last_login))
         return True  # TODO Verify update has occurred
 
     def set_password_expire(self, user_id, password_expire_date):

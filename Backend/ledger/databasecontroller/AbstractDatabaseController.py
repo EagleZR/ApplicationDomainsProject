@@ -57,3 +57,9 @@ class AbstractDatabaseController(abc.ABC):
 
     def get_30_days_from_now(self):
         return (datetime.today() + timedelta(days=self.password_duration)).strftime(self.date_string_format)
+
+    def get_date(self, date_string):
+        return datetime.strptime(date_string, self.date_time_string_format)
+
+    def get_date_string(self, date):
+        return datetime.strftime(date, self.date_time_string_format)

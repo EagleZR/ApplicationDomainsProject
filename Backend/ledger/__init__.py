@@ -1,8 +1,8 @@
 from ledger import databasecontroller
 from flask import (Flask, request, jsonify)
+from datetime import datetime
 from flask_cors import CORS
 from ledger.HTTPError import HTTPError
-from datetime import (datetime)
 import configparser
 import os.path
 import logging
@@ -45,9 +45,7 @@ def login():
             user_id, auth_token, last_login, password_expire_date_string = db.get_login_data(email, password)
             if (user_id is None) or (auth_token is None) or (password_expire_date_string is None):
                 raise get_error_response(403, "The email/password is invalid.")
-            else:
-                logging.debug("user_id and auth_token are not null in /signin")
-            password_expire_date = datetime.strptime(password_expire_date_string, db.date_string_format)
+            password_expire_date = db.get_date_string(password_expire_date_string)
             passwd_time_remaining = password_expire_date - datetime.today()
             if passwd_time_remaining.days < 0:
                 return get_error_response(403, "Your password has expired, please contact an administrator")
@@ -56,7 +54,7 @@ def login():
             if account_type == "deactivated" or account_type == "new":
                 raise get_error_response(403, "The user account is not active. Please contact an administrator.")
             logging.debug("Account type is valid in /signin")
-            db.update_last_login(user_id, datetime.today().strftime(db.date_time_string_format))
+            db.update_last_login(user_id, datetime.today())
             response = jsonify({"message": {"user_id": user_id, "auth_token": auth_token, "last_login": last_login,
                                             "passwd_time_remaining": passwd_time_remaining.days}})
             logging.debug("Returning JSON object in /signin")
