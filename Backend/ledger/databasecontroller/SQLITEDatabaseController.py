@@ -197,6 +197,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             user_id, self.get_date_string(datetime.today()))
         logging.debug(command)
         cursor.execute(command)
+        db.commit()
+        cursor.close()
+        db.close()
 
     def get_forgotten_passwords(self):
         return self.get_data("FORGOTPASSWORD", "*")
