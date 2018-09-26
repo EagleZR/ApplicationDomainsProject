@@ -123,7 +123,8 @@ def account(user_id):
                 raise get_error_response(403, "This user is not authorized to view this information.")
         else:
             logging.info("This functionality has not been programmed yet (/account/<user_id>)")
-    elif request.method == 'PUT':
+            raise get_error_response(400, "This functionality has not been programmed yet (/account/<user_id>)")
+    if request.method == 'PUT':
         if data is not None:
             category = data.get('category')
             value = data.get('value')
@@ -143,6 +144,7 @@ def account(user_id):
                         return response
                 else:
                     logging.info("This functionality has not been programmed yet (/account/<user_id>)")
+                    raise get_error_response(400, "This functionality has not been programmed yet (/account/<user_id>)")
             elif user_type == "admin":
                 if category == 'account_type':
                     logging.info(
@@ -177,8 +179,11 @@ def account(user_id):
                         return response
                 else:
                     logging.info("This functionality has not been programmed yet (/account/<user_id>)")
+                    raise get_error_response(400,
+                                              "This functionality has not been programmed yet (/account/<user_id>)")
             else:
                 logging.info("This functionality has not been programmed yet (/account/<user_id>)")
+                raise get_error_response(400, "This functionality has not been programmed yet (/account/<user_id>)")
         else:
             logging.info("The PUT request does not contain any data")
             raise get_error_response(400, "The PUT request does not contain any data")
