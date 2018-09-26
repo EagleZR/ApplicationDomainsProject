@@ -88,31 +88,21 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         if username is not None:
             cursor.execute(
                 '''Select USER_ID from USERS where USERNAME = '%s' ''' % username)
-            results = list()
-            results.extend(cursor.fetchall())
-            if len(results) > 1:
-                logging.error("Multiple results from get_user_id select statement. Results:")
-                for result in results:
-                    logging.error(result)
-            if len(results) is 0:
-                return None
-            return results[0][0]
 
         if auth_token is not None:
             command = '''Select USER_ID from USERS where AUTH_TOKEN = '%s' ''' % auth_token
             print(command)
             cursor.execute(command)
-            results = list()
-            results.extend(cursor.fetchall())
-            if len(results) > 1:
-                logging.error("Multiple results from get_user_id select statement. Results:")
-                for result in results:
-                    logging.error(result)
-            if len(results) is 0:
-                return None
-            return results[0][0]
-
-        raise HTTPError(500, "A get_user_id request was sent to the database without username, password, or auth_token")
+    
+        results = list()
+        results.extend(cursor.fetchall())
+        if len(results) > 1:
+            logging.error("Multiple results from get_user_id select statement. Results:" + str(results))
+            for result in results:
+                logging.error(result)
+        if len(results) is 0:
+            return None
+        return results[0][0]
 
     def get_user_auth_token(self, username, password):
         db = sqlite3.connect(self.database_file_name)
@@ -124,7 +114,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         results = list()
         results.extend(cursor.fetchall())
         if len(results) > 1:
-            logging.error("Multiple results from get_user_id select statement.")
+            logging.error("Multiple results from get_user_auth_token select statement: " + str(results))
         if len(results) is 0:
             return None
         return results[0]
@@ -154,7 +144,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         results.extend(cursor.fetchall())
         logging.debug(results)
         if len(results) > 1:
-            logging.error("Multiple results from get_user_id select statement.")
+            logging.error("Multiple results from get_login_data select statement: " + str(results))
         if len(results) is 0:
             logging.info("Invalid signin attempt")
             return None, None, None, None
