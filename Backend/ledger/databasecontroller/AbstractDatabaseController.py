@@ -67,7 +67,13 @@ class AbstractDatabaseController(abc.ABC):
         return (datetime.today() + timedelta(days=self.password_duration)).strftime(self.date_string_format)
 
     def get_date(self, date_string):
-        return datetime.strptime(date_string, self.date_time_string_format)
+        return datetime.strptime(date_string, self.date_string_format)
 
     def get_date_string(self, date):
+        return datetime.strftime(date, self.date_string_format)
+
+    def get_date_time(self, date_time_string):
+        return datetime.strptime(date_time_string, self.date_time_string_format)
+
+    def get_date_time_string(self, date):
         return datetime.strftime(date, self.date_time_string_format)
