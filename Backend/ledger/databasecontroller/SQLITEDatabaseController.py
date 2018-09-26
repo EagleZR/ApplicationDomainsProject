@@ -36,7 +36,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 logging.debug("Admin successfully created.")
             else:
                 logging.error("Admin could not be created.")
-            user_id = self.get_user_id("admin", "password2018")
+            user_id = self.get_user_id("admin")
             if not self.set_account_type(user_id, "admin"):
                 logging.error("The database was not able to set the default admin's account type")
             else:
@@ -148,7 +148,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         if len(results) is 0:
             logging.info("Invalid signin attempt")
             return None, None, None, None
-        return results[0][:3] + (self.get_date(results[0][3]), )
+        return results[0][:3] + (self.get_date(results[0][3]),)
 
     def get_account_type(self, user_id):
         results = self.get_data("Users", "ACCOUNT_TYPE", "USER_ID", user_id)
