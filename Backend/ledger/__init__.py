@@ -122,8 +122,8 @@ def account(user_id):
             else:
                 raise get_error_response(403, "This user is not authorized to view this information.")
         else:
-            logging.info("This functionality has not been programmed yet (/account/<user_id>)")
-            raise get_error_response(400, "This functionality has not been programmed yet (/account/<user_id>)")
+            logging.info("This functionality has not been programmed yet (/account/<user_id>) 1")
+            raise get_error_response(400, "This functionality has not been programmed yet (/account/<user_id>) 1")
     if request.method == 'PUT':
         if data is not None:
             category = data.get('category')
@@ -143,8 +143,8 @@ def account(user_id):
                         response.status_code = 500
                         return response
                 else:
-                    logging.info("This functionality has not been programmed yet (/account/<user_id>)")
-                    raise get_error_response(400, "This functionality has not been programmed yet (/account/<user_id>)")
+                    logging.info("This functionality has not been programmed yet (/account/<user_id>) 2")
+                    raise get_error_response(400, "This functionality has not been programmed yet (/account/<user_id>) 2")
             elif user_type == "admin":
                 if category == 'account_type':
                     logging.info(
@@ -178,12 +178,12 @@ def account(user_id):
                         response.status_code = 500
                         return response
                 else:
-                    logging.info("This functionality has not been programmed yet (/account/<user_id>)")
+                    logging.info("This functionality has not been programmed yet (/account/<user_id>) 3")
                     raise get_error_response(400,
-                                              "This functionality has not been programmed yet (/account/<user_id>)")
+                                              "This functionality has not been programmed yet (/account/<user_id>) 3")
             else:
-                logging.info("This functionality has not been programmed yet (/account/<user_id>)")
-                raise get_error_response(400, "This functionality has not been programmed yet (/account/<user_id>)")
+                logging.info("This functionality has not been programmed yet (/account/<user_id>) 4")
+                raise get_error_response(400, "This functionality has not been programmed yet (/account/<user_id>) 4")
         else:
             logging.info("The PUT request does not contain any data")
             raise get_error_response(400, "The PUT request does not contain any data")
