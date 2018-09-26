@@ -193,7 +193,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
     def forgot_password(self, user_id):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
-        command = '''Insert into FORGOTPASSWORD (USER_ID, SUBMISSIONDATE) values (%s, %s)''' % (
+        command = '''Insert into FORGOTPASSWORD (USER_ID, SUBMISSIONDATE) values ('%s', '%s')''' % (
             user_id, self.get_date_string(datetime.today()))
         logging.debug(command)
         cursor.execute(command)
