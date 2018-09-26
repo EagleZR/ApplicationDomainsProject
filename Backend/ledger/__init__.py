@@ -109,6 +109,8 @@ def account(user_id):
     requester_user_id = db.get_user_id(auth_token=requester_auth_token)
     user_type = db.get_account_type(requester_user_id)
 
+    logging.debug("Requester is a " + user_type)
+
     data = request.get_json()
 
     if not verify_user(requester_auth_token, requester_user_id):
@@ -144,8 +146,9 @@ def account(user_id):
                         return response
                 else:
                     logging.info("This functionality has not been programmed yet (/account/<user_id>) 2")
-                    raise get_error_response(400, "This functionality has not been programmed yet (/account/<user_id>) 2")
-            elif user_type == "admin":
+                    raise get_error_response(400,
+                                             "This functionality has not been programmed yet (/account/<user_id>) 2")
+            elif user_type == 'admin':
                 if category == 'account_type':
                     logging.info(
                         "An admin (user_id: " + str(requester_user_id) + ") is changing the account_type for a user "
@@ -180,7 +183,7 @@ def account(user_id):
                 else:
                     logging.info("This functionality has not been programmed yet (/account/<user_id>) 3")
                     raise get_error_response(400,
-                                              "This functionality has not been programmed yet (/account/<user_id>) 3")
+                                             "This functionality has not been programmed yet (/account/<user_id>) 3")
             else:
                 logging.info("This functionality has not been programmed yet (/account/<user_id>) 4")
                 raise get_error_response(400, "This functionality has not been programmed yet (/account/<user_id>) 4")
