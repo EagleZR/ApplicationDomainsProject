@@ -29,7 +29,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             logging.warning("Creating user table.")
             user_cursor.execute(
                 '''Create Table If Not Exists Users(USER_ID integer primary key autoincrement, NAME TEXT not null, 
-                EMAIL TEXT not null, PASSWORD_HASH TEXT not null, AUTH_TOKEN TEXT not null, ACCOUNT_TYPE Text not null,
+                USERNAME TEXT not null, PASSWORD_HASH TEXT not null, AUTH_TOKEN TEXT not null, ACCOUNT_TYPE Text not null,
                 LAST_LOGIN TEXT, PASSWORD_EXPIRE_DATE TEXT NOT NULL);''')
             db.commit()
             if self.add_user("admin", "password2018", "admin", self.get_30_days_from_now()):
@@ -58,36 +58,36 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db.close()
         # TODO Add tables as they're designed
 
-    def add_user(self, email, password, name, password_expire_date):
-        logging.info("Adding user with email: " + email + ", password: " + password + ", name: " + name)
+    def add_user(self, username, password, name, password_expire_date):
+        logging.info("Adding user with username: " + username + ", password: " + password + ", name: " + name)
         try:
-            if self.user_exists(email):
-                raise DuplicateEmailException("A user with the email " + email + " already exists.")
+            if self.user_exists(username):
+                raise DuplicateUsernameException("A user with the username " + username + " already exists.")
 
             db = sqlite3.connect(self.database_file_name)
             cursor = db.cursor()
-            parameter_dictionary = {"name": name, "email": email, "password_hash": hash_password(password),
+            parameter_dictionary = {"name": name, "username": username, "password_hash": hash_password(password),
                                     "auth_token": generate_auth_token(), "account_type": self.default_account_type,
                                     "expire_date": password_expire_date}
-            insert_text = '''Insert into Users (NAME, EMAIL, PASSWORD_HASH, AUTH_TOKEN, ACCOUNT_TYPE, PASSWORD_EXPIRE_DATE) values
-                ('{name}', '{email}', '{password_hash}', '{auth_token}', '{account_type}', '{expire_date}');'''.format(
+            insert_text = '''Insert into Users (NAME, USERNAME, PASSWORD_HASH, AUTH_TOKEN, ACCOUNT_TYPE, PASSWORD_EXPIRE_DATE) values
+                ('{name}', '{username}', '{password_hash}', '{auth_token}', '{account_type}', '{expire_date}');'''.format(
                 **parameter_dictionary)
             logging.debug(insert_text)
             cursor.execute(insert_text)
             db.commit()
             cursor.close()
 
-            return self.user_exists(email)
+            return self.user_exists(username)
         except sqlite3.OperationalError:
             return False
 
-    def get_user_id(self, email=None, auth_token=None):
+    def get_user_id(self, username=None, auth_token=None):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
-        if email is not None:
+        if username is not None:
             cursor.execute(
-                '''Select USER_ID from USERS where EMAIL = '%s' ''' % email)
+                '''Select USER_ID from USERS where USERNAME = '%s' ''' % username)
             results = list()
             results.extend(cursor.fetchall())
             if len(results) > 1:
@@ -112,15 +112,15 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 return None
             return results[0][0]
 
-        raise HTTPError(500, "A get_user_id request was sent to the database without email, password, or auth_token")
+        raise HTTPError(500, "A get_user_id request was sent to the database without username, password, or auth_token")
 
-    def get_user_auth_token(self, email, password):
+    def get_user_auth_token(self, username, password):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
         cursor.execute(
-            '''Select AUTH_TOKEN from USERS where EMAIL = '%s' and PASSWORD_HASH = '%s' ''' % (
-                email, hash_password(password)))
+            '''Select AUTH_TOKEN from USERS where USERNAME = '%s' and PASSWORD_HASH = '%s' ''' % (
+                username, hash_password(password)))
         results = list()
         results.extend(cursor.fetchall())
         if len(results) > 1:
@@ -129,12 +129,12 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             return None
         return results[0]
 
-    def user_exists(self, email):
+    def user_exists(self, username):
         db = sqlite3.connect(self.database_file_name)
         check_cursor = db.cursor()
 
-        parameter_dictionary = {"email": email}
-        check_cursor.execute('''Select * from Users where EMAIL = '{email}';'''.format(**parameter_dictionary))
+        parameter_dictionary = {"username": username}
+        check_cursor.execute('''Select * from Users where USERNAME = '{username}';'''.format(**parameter_dictionary))
         response = check_cursor.fetchall()
 
         check_cursor.close()
@@ -142,14 +142,14 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         return len(response) > 0
 
-    def get_login_data(self, email, password):
+    def get_login_data(self, username, password):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
         cursor.execute(
-            '''Select USER_ID, AUTH_TOKEN, LAST_LOGIN, PASSWORD_EXPIRE_DATE from USERS where EMAIL = '%s' and 
+            '''Select USER_ID, AUTH_TOKEN, LAST_LOGIN, PASSWORD_EXPIRE_DATE from USERS where USERNAME = '%s' and 
             PASSWORD_HASH = '%s' ''' % (
-                email, hash_password(password)))
+                username, hash_password(password)))
         results = list()
         results.extend(cursor.fetchall())
         logging.debug(results)
@@ -167,7 +167,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
-        cursor.execute('''Select USER_ID, NAME, EMAIL, ACCOUNT_TYPE from USERS ''')
+        cursor.execute('''Select USER_ID, NAME, USERNAME, ACCOUNT_TYPE from USERS ''')
 
         results = list()
         results.extend(cursor.fetchall())
@@ -176,7 +176,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         results_dict_list = list()
         for result in results:
             results_dict_list.append(
-                {"user_id": result[0], "name": result[1], "email": result[2], "account_type": result[3]})
+                {"user_id": result[0], "name": result[1], "username": result[2], "account_type": result[3]})
         return results_dict_list
 
     def set_account_type(self, user_id, account_type):
@@ -256,7 +256,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         cursor = db.cursor()
 
         cursor.execute(
-            '''SELECT EMAIL FROM USERS WHERE AUTH_TOKEN is '%s' and USER_ID is '%s' ''' % (auth_token, user_id))
+            '''SELECT USERNAME FROM USERS WHERE AUTH_TOKEN is '%s' and USER_ID is '%s' ''' % (auth_token, user_id))
 
         results = cursor.fetchall()
         logging.debug("There are " + str(len(results)) + " who match this verification information")
@@ -268,7 +268,7 @@ class InvalidUserType(HTTPError):
         super(HTTPError, self).__init__(self, message)
 
 
-class DuplicateEmailException(HTTPError):
+class DuplicateUsernameException(HTTPError):
     def __init__(self, message):
         super(HTTPError, self).__init__(self, message)
 

@@ -7,7 +7,7 @@ import configparser
 import os.path
 import logging
 
-from ledger.databasecontroller.SQLITEDatabaseController import DuplicateEmailException, InvalidUserType
+from ledger.databasecontroller.SQLITEDatabaseController import DuplicateUsernameException, InvalidUserType
 
 config = configparser.ConfigParser()
 config.read(os.path.dirname(os.path.realpath(__file__)) + '/config.ini')
@@ -40,11 +40,11 @@ def login():
         logging.debug("Extracted JSON data in /signin")
         if json_data is not None:
             logging.debug("JSON data is not null in /signin")
-            email = json_data.get('username')
+            username = json_data.get('username')
             password = json_data.get('password')
-            user_id, auth_token, last_login, password_expire_date_string = db.get_login_data(email, password)
+            user_id, auth_token, last_login, password_expire_date_string = db.get_login_data(username, password)
             if (user_id is None) or (auth_token is None) or (password_expire_date_string is None):
-                raise get_error_response(403, "The email/password is invalid.")
+                raise get_error_response(403, "The username/password is invalid.")
             password_expire_date = db.get_date_string(password_expire_date_string)
             passwd_time_remaining = password_expire_date - datetime.today()
             if passwd_time_remaining.days < 0:
@@ -74,12 +74,12 @@ def register():
     if request.method == 'PUT':
         json_data = request.get_json()
         if json_data is not None:
-            email = json_data.get('username')
+            username = json_data.get('username')
             password = json_data.get('password')
             name = json_data.get('name')
-            if db.add_user(email, password, name, db.get_30_days_from_now()):
-                user_id = db.get_user_id(email, password)
-                auth_token = db.get_user_auth_token(email, password)
+            if db.add_user(username, password, name, db.get_30_days_from_now()):
+                user_id = db.get_user_id(username, password)
+                auth_token = db.get_user_auth_token(username, password)
                 if (user_id is None) or (auth_token is None):
                     raise get_error_response(403, "The account was not registered successfully")
                 # response = jsonify({"user_id": user_id, "auth_token": auth_token})
@@ -91,7 +91,7 @@ def register():
             else:
                 raise get_error_response(403, "The account was not registered successfully")
         else:
-            raise get_error_response(400, "Please include the email, password, ")
+            raise get_error_response(400, "Please include the username, password, ")
     else:
         raise get_error_response(400, "Only PUT requests are valid for this address")
 

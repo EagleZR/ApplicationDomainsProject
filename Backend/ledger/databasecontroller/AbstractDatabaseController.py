@@ -12,7 +12,7 @@ class AbstractDatabaseController(abc.ABC):
         self.password_duration = 30
 
     @abc.abstractmethod
-    def add_user(self, email, password, name, password_expire_date):
+    def add_user(self, username, password, name, password_expire_date):
         pass
 
     @abc.abstractmethod
@@ -20,11 +20,11 @@ class AbstractDatabaseController(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_user_auth_token(self, email, password):
+    def get_user_auth_token(self, username, password):
         pass
 
     @abc.abstractmethod
-    def get_login_data(self, email, password):
+    def get_login_data(self, username, password):
         pass
 
     @abc.abstractmethod
