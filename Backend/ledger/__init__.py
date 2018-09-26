@@ -146,7 +146,6 @@ def account(user_id):
                 else:
                     logging.info("This functionality has not been programmed yet (/account/<user_id>)")
             elif user_type == "admin":
-                user_id = data.get('user_id')
                 if category == 'account_type':
                     logging.info(
                         "An admin (user_id: " + str(requester_user_id) + ") is changing the account_type for a user "
