@@ -158,7 +158,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         if len(results) is 0:
             logging.info("Invalid signin attempt")
             return None, None, None, None
-        return results[0][:3], self.get_date(results[0][3])
+        return results[0][:3] + (self.get_date(results[0][3]))
 
     def get_account_type(self, user_id):
         return self.get_data("Users", "ACCOUNT_TYPE", "USER_ID", user_id)
