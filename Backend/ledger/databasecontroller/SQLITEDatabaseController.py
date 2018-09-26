@@ -45,7 +45,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         forgot_password_cursor = db.cursor()
         try:
-            user_cursor.execute('''SELECT * FROM FORGOTPASSWORD''')
+            forgot_password_cursor.execute('''SELECT * FROM FORGOTPASSWORD''')
             logging.warning("Forgot Password table already exists.")
         except sqlite3.OperationalError:
             logging.warning("Creating forgot password table")
