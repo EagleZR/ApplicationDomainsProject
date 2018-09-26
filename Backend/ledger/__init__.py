@@ -42,10 +42,9 @@ def login():
             logging.debug("JSON data is not null in /signin")
             username = json_data.get('username')
             password = json_data.get('password')
-            user_id, auth_token, last_login, password_expire_date_string = db.get_login_data(username, password)
-            if (user_id is None) or (auth_token is None) or (password_expire_date_string is None):
+            user_id, auth_token, last_login, password_expire_date = db.get_login_data(username, password)
+            if (user_id is None) or (auth_token is None) or (password_expire_date is None):
                 raise get_error_response(403, "The username/password is invalid.")
-            password_expire_date = db.get_date_string(password_expire_date_string)
             passwd_time_remaining = password_expire_date - datetime.today()
             if passwd_time_remaining.days < 0:
                 return get_error_response(403, "Your password has expired, please contact an administrator")
