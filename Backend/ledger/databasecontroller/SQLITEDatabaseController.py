@@ -1,5 +1,6 @@
 from ledger.HTTPError import HTTPError
 from ledger.databasecontroller.AbstractDatabaseController import AbstractDatabaseController
+from datetime import datetime
 import logging
 import os.path
 import sqlite3
@@ -20,13 +21,13 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         # Make sure each table exists and possess the correct columns. If possible, add the tables.
         logging.info("Verifying database structure.")
         db = sqlite3.connect(self.database_file_name)
-        cursor = db.cursor()
+        user_cursor = db.cursor()
         try:
-            cursor.execute('''SELECT * FROM Users''')
+            user_cursor.execute('''SELECT * FROM Users''')
             logging.warning("User table already exists.")
         except sqlite3.OperationalError:
             logging.warning("Creating user table.")
-            cursor.execute(
+            user_cursor.execute(
                 '''Create Table If Not Exists Users(USER_ID integer primary key autoincrement, NAME TEXT not null, 
                 EMAIL TEXT not null, PASSWORD_HASH TEXT not null, AUTH_TOKEN TEXT not null, ACCOUNT_TYPE Text not null,
                 LAST_LOGIN TEXT, PASSWORD_EXPIRE_DATE TEXT NOT NULL);''')
@@ -40,8 +41,20 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 logging.error("The database was not able to set the default admin's account type")
             else:
                 logging.debug("The default admin was successfully initialized")
+        user_cursor.close()
 
-        cursor.close()
+        forgot_password_cursor = db.cursor()
+        try:
+            user_cursor.execute('''SELECT * FROM FORGOTPASSWORD''')
+            logging.warning("Forgot Password table already exists.")
+        except sqlite3.OperationalError:
+            logging.warning("Creating forgot password table")
+            forgot_password_cursor.execute(
+                '''Create Table if Not Exists FORGOTPASSWORD(USER_ID integer not null, SUBMISSIONDATE TEXT not null, 
+                FOREIGN KEY (USER_ID) REFERENCES USERS(USER_ID));''')
+            db.commit()
+        forgot_password_cursor.close()
+
         db.close()
         # TODO Add tables as they're designed
 
@@ -68,14 +81,13 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         except sqlite3.OperationalError:
             return False
 
-    def get_user_id(self, email=None, password=None, auth_token=None):
+    def get_user_id(self, email=None, auth_token=None):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
-        if email is not None and password is not None:
+        if email is not None:
             cursor.execute(
-                '''Select USER_ID from USERS where EMAIL = '%s' and PASSWORD_HASH = '%s' ''' % (
-                    email, hash_password(password)))
+                '''Select USER_ID from USERS where EMAIL = '%s' ''' % email)
             results = list()
             results.extend(cursor.fetchall())
             if len(results) > 1:
@@ -150,17 +162,6 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
     def get_account_type(self, user_id):
         return self.get_data("Users", "ACCOUNT_TYPE", "USER_ID", user_id)
-        cursor = db.cursor()
-
-        cursor.execute(
-            '''Select ACCOUNT_TYPE from USERS where USER_ID = '%s' ''' % user_id)
-        results = list()
-        results.extend(cursor.fetchall())
-        if len(results) > 1:
-            logging.error("Multiple results from get_user_id select statement.")
-        if len(results) is 0:
-            return None, None
-        return results[0][0]
 
     def get_all_user_accounts(self):
         db = sqlite3.connect(self.database_file_name)
@@ -194,6 +195,15 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         self.update_data("USERS", "PASSWORD_EXPIRE_DATE", "USER_ID", user_id, password_expire_date)
         return True  # TODO Verify update has occurred
 
+    def forgot_password(self, user_id):
+        db = sqlite3.connect(self.database_file_name)
+        cursor = db.cursor()
+        cursor.execute('''Insert into FORGOTPASSWORD (USER_ID, SUBMISSIONDATE) values (%s, %s)''' % (
+            user_id, self.get_date_string(datetime.today())))
+
+    def get_forgotten_passwords(self):
+        return self.get_data("FORGOTPASSWORD", "USER_ID")
+
     def update_data(self, table, field, identifier_type, identifier, data):
         """Updates data in a given table and given column (field) where the data in the identifier_type column matches
         the given identifier
@@ -215,6 +225,22 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         db.commit()
         cursor.close()
+
+    def get_data(self, table, field, identifier_type=None, identifier=None):
+        db = sqlite3.connect(self.database_file_name)
+        cursor = db.cursor()
+
+        if identifier_type is None:
+            cursor.execute('''Select %s from %s where %s = '%s' ''' % (field, table, identifier_type, identifier))
+        else:
+            cursor.execute('''Select %s from %s ''' % (field, table))
+        results = list()
+        results.extend(cursor.fetchall())
+        if len(results) > 1:
+            logging.error("Multiple results from get_user_id select statement.")
+        if len(results) is 0:
+            return None
+        return results
 
     # def get_data(self, table, field_list, identifier_type_list, identifier_list):
     #     field_string = ""

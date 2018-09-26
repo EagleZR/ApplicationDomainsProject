@@ -3,6 +3,12 @@ from ledger.databasecontroller.AbstractDatabaseController import AbstractDatabas
 
 class DummyDatabaseController(AbstractDatabaseController):
 
+    def forgot_password(self, user_id):
+        pass
+
+    def get_forgotten_passwords(self):
+        pass
+
     def __init__(self):
         AbstractDatabaseController.__init__(self)
 
@@ -22,7 +28,7 @@ class DummyDatabaseController(AbstractDatabaseController):
             return None
         return 100
 
-    def get_user_id(self, email=None, password=None, auth_token=None):
+    def get_user_id(self, email=None, auth_token=None):
         if email is "admin":
             return 100
         if email is "manager":

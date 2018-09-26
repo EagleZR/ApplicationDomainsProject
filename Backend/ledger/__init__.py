@@ -188,6 +188,40 @@ def account(user_id):
     raise get_error_response(400, "Only GET and PUT requests are valid for this address")
 
 
+@app.route('/forgotpassword', methods=['GET', 'POST', 'PUT'])
+def forgot_password():
+    log_request(request)
+
+    data = request.get_json()
+
+    if request.method == 'PUT':
+        username = data['username']
+        if username is not None:
+            user_id = db.get_user_id(username)
+            if user_id is not None:
+                db.forgot_password(user_id)
+                response = jsonify({"message": "An admin will need to reset your password."})
+                response.status_code = 200
+                return response
+            else:
+                return get_error_response(400, "The username is not registered to an account")
+        else:
+            return get_error_response(400, "The username must be included in the PUT request")
+    if request.method == 'GET':
+        requester_auth_token = get_header_verification_data(request)
+        requester_user_id = db.get_user_id(auth_token=requester_auth_token)
+        user_type = db.get_account_type(requester_user_id)
+        if user_type == 'admin':
+            usernames = db.get_forgotten_passwords()
+            response = jsonify({"message": usernames})
+            response.status_code = 200
+            return response
+        else:
+            return get_error_response(403, "Only an admin can access this feature")
+    else:
+        return get_error_response(400, "Only GET requests are valid for this address")
+
+
 def get_error_response(status_code, message):
     return HTTPError(message, status_code)
 

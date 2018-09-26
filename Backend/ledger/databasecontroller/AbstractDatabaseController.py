@@ -16,7 +16,7 @@ class AbstractDatabaseController(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_user_id(self, email=None, password=None, auth_token=None):
+    def get_user_id(self, password=None, auth_token=None):
         pass
 
     @abc.abstractmethod
@@ -53,6 +53,14 @@ class AbstractDatabaseController(abc.ABC):
 
     @abc.abstractmethod
     def set_password_expire(self, user_id, password_expire_date):
+        pass
+
+    @abc.abstractmethod
+    def forgot_password(self, user_id):
+        pass
+
+    @abc.abstractmethod
+    def get_forgotten_passwords(self):
         pass
 
     def get_30_days_from_now(self):
