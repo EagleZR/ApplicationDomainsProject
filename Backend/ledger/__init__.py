@@ -125,7 +125,7 @@ def account(user_id):
             logging.info("This functionality has not been programmed yet (/account/<user_id>)")
     elif request.method == 'PUT':
         logging.info("This functionality has not been programmed yet (/account/<user_id>)")
-    elif request.method == 'POST':
+    elif request.method == 'PUT':
         if data is not None:
             category = data.get('category')
             value = data.get('value')
@@ -182,8 +182,8 @@ def account(user_id):
             else:
                 logging.info("This functionality has not been programmed yet (/account/<user_id>)")
         else:
-            logging.info("The POST request does not contain any data")
-            raise get_error_response(400, "The POST request does not contain any data")
+            logging.info("The PUT request does not contain any data")
+            raise get_error_response(400, "The PUT request does not contain any data")
     raise get_error_response(400, "Only GET and PUT requests are valid for this address")
 
 
