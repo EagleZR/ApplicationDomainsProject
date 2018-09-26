@@ -151,7 +151,12 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         return results[0][:3] + (self.get_date(results[0][3]), )
 
     def get_account_type(self, user_id):
-        return self.get_data("Users", "ACCOUNT_TYPE", "USER_ID", user_id)
+        results = self.get_data("Users", "ACCOUNT_TYPE", "USER_ID", user_id)
+        if len(results) > 1:
+            logging.debug("Multiple results from get_account_type select statement: " + str(results))
+        if len(results) == 0:
+            logging.debug("No results from get_account_type were returned")
+        return results[0]
 
     def get_all_user_accounts(self):
         db = sqlite3.connect(self.database_file_name)
