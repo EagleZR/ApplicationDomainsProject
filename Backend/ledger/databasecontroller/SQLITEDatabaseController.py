@@ -225,7 +225,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
-        if identifier_type is None:
+        if identifier_type is not None:
             cursor.execute('''Select %s from %s where %s is '%s' ''' % (field, table, identifier_type, identifier))
         else:
             cursor.execute('''Select %s from %s ''' % (field, table))
