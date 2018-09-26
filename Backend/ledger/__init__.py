@@ -124,8 +124,6 @@ def account(user_id):
         else:
             logging.info("This functionality has not been programmed yet (/account/<user_id>)")
     elif request.method == 'PUT':
-        logging.info("This functionality has not been programmed yet (/account/<user_id>)")
-    elif request.method == 'PUT':
         if data is not None:
             category = data.get('category')
             value = data.get('value')
