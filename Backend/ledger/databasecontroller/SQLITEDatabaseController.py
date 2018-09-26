@@ -156,7 +156,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             logging.debug("Multiple results from get_account_type select statement: " + str(results))
         if len(results) == 0:
             logging.debug("No results from get_account_type were returned")
-        return results[0]
+        return results[0][0]
 
     def get_all_user_accounts(self):
         db = sqlite3.connect(self.database_file_name)
