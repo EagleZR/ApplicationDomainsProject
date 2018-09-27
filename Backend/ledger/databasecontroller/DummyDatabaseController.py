@@ -3,6 +3,9 @@ from ledger.databasecontroller.AbstractDatabaseController import AbstractDatabas
 
 class DummyDatabaseController(AbstractDatabaseController):
 
+    def get_username(self, user_id):
+        return "username"
+
     def forgot_password(self, user_id):
         pass
 

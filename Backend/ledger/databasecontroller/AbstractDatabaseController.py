@@ -63,6 +63,10 @@ class AbstractDatabaseController(abc.ABC):
     def get_forgotten_passwords(self):
         pass
 
+    @abc.abstractmethod
+    def get_username(self, user_id):
+        pass
+
     def get_30_days_from_now(self):
         return (datetime.today() + timedelta(days=self.password_duration)).strftime(self.date_string_format)
 

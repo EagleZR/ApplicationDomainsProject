@@ -204,6 +204,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
     def get_forgotten_passwords(self):
         return self.get_data("FORGOTPASSWORD", "*")
 
+    def get_username(self, user_id):
+        return self.get_data("USERS", "USERNAME", "USER_ID", user_id)
+
     def update_data(self, table, field, identifier_type, identifier, data):
         """Updates data in a given table and given column (field) where the data in the identifier_type column matches
         the given identifier

@@ -217,8 +217,12 @@ def forgot_password():
         requester_user_id = db.get_user_id(auth_token=requester_auth_token)
         user_type = db.get_account_type(requester_user_id)
         if user_type == 'admin':
-            usernames = db.get_forgotten_passwords()
-            response = jsonify({"message": usernames})
+            data = db.get_forgotten_passwords()
+            response_list = list()
+            for user_data in data:
+                response_list.append({"user_id": user_data[0], "username": db.get_username(user_data[0]),
+                                      "date_forgotten": user_data[1]})
+            response = jsonify({"message": response_list})
             response.status_code = 200
             return response
         else:
