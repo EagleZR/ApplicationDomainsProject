@@ -77,18 +77,16 @@ def register():
             password = json_data.get('password')
             name = json_data.get('name')
             if db.add_user(username, password, name, db.get_30_days_from_now()):
-                user_id = db.get_user_id(username, password)
+                user_id = db.get_user_id(username)
                 auth_token = db.get_user_auth_token(username, password)
                 if (user_id is None) or (auth_token is None):
-                    raise get_error_response(403, "The account was not registered successfully")
-                # response = jsonify({"user_id": user_id, "auth_token": auth_token})
-                # The account will need to be activated by an admin before the user can log in
+                    raise get_error_response(400, "The account was not registered successfully")
                 response = jsonify({
                     "message": "An admin will need to activate the account before logging in is permitted"})
                 response.status_code = 200
                 return response
             else:
-                raise get_error_response(403, "The account was not registered successfully")
+                raise get_error_response(400, "The account was not registered successfully")
         else:
             raise get_error_response(400, "Please include the username, password, ")
     else:
