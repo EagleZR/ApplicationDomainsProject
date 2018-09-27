@@ -205,7 +205,14 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         return self.get_data("FORGOTPASSWORD", "*")
 
     def get_username(self, user_id):
-        return self.get_data("USERS", "USERNAME", "USER_ID", user_id)
+        usernames = self.get_data("USERS", "USERNAME", "USER_ID", user_id)
+        if len(usernames) > 1:
+            logging.error("Multiple usernames were returned for the user_id: " + user_id)
+            logging.error("Usernames: " + str(usernames))
+        if len(usernames) == 0:
+            logging.debug("No usernames are associated with the user_id: " + user_id)
+            return None
+        return usernames[0][0]
 
     def update_data(self, table, field, identifier_type, identifier, data):
         """Updates data in a given table and given column (field) where the data in the identifier_type column matches
