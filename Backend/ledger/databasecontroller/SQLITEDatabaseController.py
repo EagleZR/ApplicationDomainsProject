@@ -62,7 +62,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         logging.info("Adding user with username: " + username + ", password: " + password + ", name: " + name)
         try:
             if self.user_exists(username):
-                raise DuplicateUsernameException("A user with the username " + username + " already exists.")
+                raise DuplicateUsernameException(username)
 
             db = sqlite3.connect(self.database_file_name)
             cursor = db.cursor()
@@ -175,6 +175,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         return results_dict_list
 
     def set_account_type(self, user_id, account_type):
+        if account_type not in self.account_types:
+            raise InvalidUserType(account_type, self.account_types)
         self.update_data("USERS", "ACCOUNT_TYPE", "USER_ID", user_id, account_type)
         return self.get_account_type(user_id) == account_type
 
@@ -280,13 +282,15 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
 
 class InvalidUserType(HTTPError):
-    def __init__(self, message):
-        super(HTTPError, self).__init__(self, message)
+    def __init__(self, user_type, account_types):
+        HTTPError.__init__(self,
+                           "Invalid user type: " + user_type + ". Not in list of acceptable account types: " + str(
+                               account_types))
 
 
 class DuplicateUsernameException(HTTPError):
-    def __init__(self, message):
-        super(HTTPError, self).__init__(self, message)
+    def __init__(self, username):
+        HTTPError.__init__(self, "A user with the username " + username + " already exists.")
 
 
 def generate_auth_token():
