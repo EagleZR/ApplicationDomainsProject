@@ -288,7 +288,11 @@ def verify_user(auth_token, user_id):
 
 
 def get_header_verification_data(request):
-    auth_token = request.headers.get('Authorization')[7:]
+    auth_block = request.headers.get('Authorization')
+    if auth_block is not None:
+        auth_token = auth_block[7:]
+    else:
+        auth_token = None
 
     logging.debug("Extracted Authorization: " + auth_token)
 
