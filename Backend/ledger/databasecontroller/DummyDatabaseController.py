@@ -3,6 +3,18 @@ from ledger.databasecontroller.AbstractDatabaseController import AbstractDatabas
 
 class DummyDatabaseController(AbstractDatabaseController):
 
+    def get_user_has_account_access(self, user_id, account_id):
+        pass
+
+    def set_user_account_access(self, user_id, account_id, can_access):
+        pass
+
+    def get_accounts(self):
+        pass
+
+    def get_viewable_accounts(self, user_id):
+        pass
+
     def get_last_login(self, user_id):
         pass
 

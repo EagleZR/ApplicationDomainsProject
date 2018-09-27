@@ -94,7 +94,7 @@ def register():
 
 
 @app.route('/user/<user_id>', methods=['GET', 'POST', 'PUT'])
-def account(user_id):
+def user(user_id):
     log_request(request)
 
     if request.method == 'GET' and user_id == 'info':
@@ -227,6 +227,37 @@ def forgot_password():
             return get_error_response(403, "Only an admin can access this feature")
     else:
         return get_error_response(400, "Only GET requests are valid for this address")
+
+
+@app.route('/account/<account_id>', methods=['GET', 'POST', 'PUT'])
+def account(account_id):
+    log_request(request)
+
+    requester_auth_token = get_header_verification_data(request)
+    requester_user_id = db.get_user_id(auth_token=requester_auth_token)
+    user_type = db.get_account_type(requester_user_id)
+
+    if requester_auth_token is None or requester_user_id is None:
+        if request.method == 'GET':
+            if account_id == "all":
+                accounts = db.get_viewable_accounts(requester_user_id)
+                response = jsonify({"message": {"accounts": accounts}})
+                response.status_code = 200
+                return response
+            if db.get_user_has_account_access(requester_user_id, account_id):
+                logging.info("This functionality has not been programmed yet (/account/<account_id>) 1")
+                raise get_error_response(400,
+                                         "This functionality has not been programmed yet (/account/<account_id>) 1")
+            else:
+                raise get_error_response(403, "You are not authorized to view this account.")
+        elif request.method == 'PUT':
+            logging.info("This functionality has not been programmed yet (/account/<account_id>) 2")
+            raise get_error_response(400, "This functionality has not been programmed yet (/account/<account_id>) 2")
+        else:  # Post
+            logging.info("This functionality has not been programmed yet (/account/<account_id>) 3")
+            raise get_error_response(400, "This functionality has not been programmed yet (/account/<account_id>) 3")
+    else:
+        raise get_error_response(403, "You must be logged in to view this information.")
 
 
 def get_error_response(status_code, message):

@@ -21,10 +21,12 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         # Make sure each table exists and possess the correct columns. If possible, add the tables.
         logging.info("Verifying database structure.")
         db = sqlite3.connect(self.database_file_name)
+
+        # User Table
         user_cursor = db.cursor()
         try:
             user_cursor.execute('''SELECT * FROM Users''')
-            logging.warning("User table already exists.")
+            logging.debug("User table already exists.")
         except sqlite3.OperationalError:
             logging.warning("Creating user table.")
             user_cursor.execute(
@@ -43,10 +45,11 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 logging.debug("The default admin was successfully initialized")
         user_cursor.close()
 
+        # Forgot Password Table
         forgot_password_cursor = db.cursor()
         try:
             forgot_password_cursor.execute('''SELECT * FROM FORGOTPASSWORD''')
-            logging.warning("Forgot Password table already exists.")
+            logging.debug("Forgot Password table already exists.")
         except sqlite3.OperationalError:
             logging.warning("Creating forgot password table")
             forgot_password_cursor.execute(
@@ -55,8 +58,35 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             db.commit()
         forgot_password_cursor.close()
 
-        db.close()
+        # Table of Accounts
+        accounts_cursor = db.cursor()
+        try:
+            accounts_cursor.execute('''SELECT * FROM ACCOUNTS''')
+            logging.debug("Table of Accounts already exists.")
+        except sqlite3.OperationalError:
+            logging.warning("Creating Table of Accounts")
+            accounts_cursor.execute(
+                '''Create Table if Not Exists ACCOUNTS(ACCOUNT_ID integer not null, ACCOUNT_TITLE TEXT not null, 
+                NORMAL_SIDE TEXT not null, DESCRIPTION TEXT, IS_ACTIVE TEXT not null);''')
+            db.commit()
+        accounts_cursor.close()
+
+        # User-Account Access Table
+        user_account_cursor = db.cursor()
+        try:
+            user_account_cursor.execute('''SELECT * FROM USER_ACCOUNT_ACCESS''')
+            logging.debug("User-Account Access table already exists")
+        except sqlite3.OperationalError:
+            logging.warning("Creating User-Account Access table")
+            user_account_cursor.execute(
+                '''Create Table if Not Exists USER_ACCOUNT_ACCESS(ACCOUNT_ID integer not null, USER_ID integer not 
+                null, FOREIGN KEY (ACCOUNT_ID) REFERENCES ACCOUNTS(ACCOUNT_ID), FOREIGN KEY (USER_ID) REFERENCES 
+                USERS(USER_ID));''')
+            db.commit()
+        user_account_cursor.close()
+
         # TODO Add tables as they're designed
+        db.close()
 
     def add_user(self, username, password, name, password_expire_date):
         logging.info("Adding user with username: " + username + ", password: " + password + ", name: " + name)
@@ -244,7 +274,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         cursor.close()
         db.close()
 
-    def get_data(self, table, field, identifier_type=None, identifier=None):
+    def get_data(self, table, field="*", identifier_type=None, identifier=None):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
@@ -291,6 +321,91 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         results = cursor.fetchall()
         logging.debug("There are " + str(len(results)) + " who match this verification information")
         return len(results) == 1
+
+    def get_user_has_account_access(self, user_id, account_id):
+        account_type = self.get_account_type(user_id)
+        if account_type == 'admin':
+            return True
+        if account_type == 'manager':  # Keeping these separate because these authorizations might change
+            return True
+
+        db = sqlite3.connect(self.database_file_name)
+        cursor = db.cursor()
+
+        command = '''Select * from USER_ACCOUNT_ACCESS where USER_ID is '%s' and ACCOUNT_ID is '%s' ''' % (
+            user_id, account_id)
+        logging.debug(command)
+        cursor.execute(command)
+
+        results = list()
+        results.extend(cursor.fetchall())
+        logging.debug(str(results))
+
+        if results is None or len(results) is 0:
+            return False
+        else:
+            return True
+
+    def set_user_account_access(self, user_id, account_id, can_access):
+        if can_access:
+            if self.get_user_has_account_access(user_id, account_id):
+                return True  # Do nothing, already has access
+            else:
+                db = sqlite3.connect(self.database_file_name)
+                cursor = db.cursor()
+
+                command = '''Insert into USER_ACCOUNT_ACCESS (USER_ID, ACCOUNT_ID) values ('%s', '%s')''' % (
+                    user_id, account_id)
+                logging.debug(command)
+                cursor.execute(command)
+                db.commit()
+                cursor.close()
+                db.close()
+                return self.get_user_has_account_access(user_id, account_id)
+        else:
+            if not self.get_user_has_account_access(user_id, account_id):
+                return True  # Do nothing, already doesn't have access
+            else:
+                db = sqlite3.connect(self.database_file_name)
+                cursor = db.cursor()
+
+                command = '''DELETE FROM USER_ACCOUNT_ACCESS where USER_ID is '%s' and ACCOUNT_ID is '%s' ''' % \
+                          (user_id, account_id)
+                logging.debug(command)
+
+                cursor.execute(command)
+                db.commit()
+                cursor.close()
+                db.close()
+                return not self.get_user_has_account_access(user_id, account_id)
+
+    def get_accounts(self):
+        return self.get_data("ACCOUNTS")
+
+    def get_viewable_accounts(self, user_id):
+        account_type = self.get_account_type(user_id)
+        if account_type == 'admin':
+            return self.get_accounts()
+        if account_type == 'manager':  # Keeping these separate because these authorizations might change
+            return self.get_accounts()
+
+        db = sqlite3.connect(self.database_file_name)
+        cursor = db.cursor()
+
+        command = '''Select * From ACCOUNTS where ACCOUNT.ACCOUNT_ID in (SELECT ACCOUNT_ID FROM USER_ACCOUNT_ACCESS 
+        where USER_ID is %s)''' % user_id
+        logging.debug(command)
+
+        cursor.execute(command)
+        results = list()
+        results.extend(cursor.fetchall())
+        logging.debug(str(results))
+
+        db.commit()
+        cursor.close()
+        db.close()
+
+        return results
 
 
 class InvalidUserType(HTTPError):

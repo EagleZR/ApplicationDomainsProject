@@ -71,6 +71,22 @@ class AbstractDatabaseController(abc.ABC):
     def get_last_login(self, user_id):
         pass
 
+    @abc.abstractmethod
+    def get_user_has_account_access(self, user_id, account_id):
+        pass
+
+    @abc.abstractmethod
+    def set_user_account_access(self, user_id, account_id, can_access):
+        pass
+
+    @abc.abstractmethod
+    def get_accounts(self):
+        pass
+
+    @abc.abstractmethod
+    def get_viewable_accounts(self, user_id):
+        pass
+
     def get_30_days_from_now(self):
         return (datetime.today() + timedelta(days=self.password_duration)).strftime(self.date_string_format)
 
