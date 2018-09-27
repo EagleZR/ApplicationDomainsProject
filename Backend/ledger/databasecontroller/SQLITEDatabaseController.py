@@ -182,6 +182,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
     def update_password(self, user_id, new_password):
         self.update_data("USERS", "PASSWORD_HASH", "USER_ID", user_id, hash_password(new_password))
+        self.remove_data("FORGOTPASSWORD", "USER_ID", user_id)
         return True  # TODO Verify update has occurred
 
     def update_last_login(self, user_id, last_login):
@@ -216,6 +217,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             return None
         return usernames[0][0]
 
+    def get_last_login(self, user_id):
+        return self.get_data("USERS", "LAST_LOGIN", "USER_ID", user_id)
+
     def update_data(self, table, field, identifier_type, identifier, data):
         """Updates data in a given table and given column (field) where the data in the identifier_type column matches
         the given identifier
@@ -237,6 +241,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         db.commit()
         cursor.close()
+        db.close()
 
     def get_data(self, table, field, identifier_type=None, identifier=None):
         db = sqlite3.connect(self.database_file_name)
@@ -260,11 +265,17 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             return None
         return results
 
-    # def get_data(self, table, field_list, identifier_type_list, identifier_list):
-    #     field_string = ""
-    #     for i in range(0, len(field_list)):
-    #         field_string += field_list[i] + ", "
-    #     field_string = field_string.
+    def remove_data(self, table, identifier_type, identifier):
+        db = sqlite3.connect(self.database_file_name)
+        cursor = db.cursor()
+
+        command = '''DELETE FROM %s where %s is '%s' ''' % (table, identifier_type, identifier)
+        logging.debug(command)
+        cursor.execute(command)
+
+        db.commit()
+        cursor.close()
+        db.close()
 
     def verify_user(self, auth_token, user_id):
         logging.debug("Verifying user " + str(user_id) if user_id is not None else "None" + " with auth_token " +

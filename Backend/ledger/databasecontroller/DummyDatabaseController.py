@@ -3,6 +3,9 @@ from ledger.databasecontroller.AbstractDatabaseController import AbstractDatabas
 
 class DummyDatabaseController(AbstractDatabaseController):
 
+    def get_last_login(self, user_id):
+        pass
+
     def get_username(self, user_id):
         return "username"
 
