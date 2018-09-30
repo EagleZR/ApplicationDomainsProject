@@ -95,6 +95,10 @@ class AbstractDatabaseController(abc.ABC):
     def get_account(self, account_id):
         pass
 
+    @abc.abstractmethod
+    def get_table(self, table_name):
+        pass
+
     def get_30_days_from_now(self):
         return (datetime.today() + timedelta(days=self.password_duration)).strftime(self.date_string_format)
 

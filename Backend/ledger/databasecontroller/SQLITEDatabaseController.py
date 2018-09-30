@@ -430,6 +430,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
     def get_account(self, account_id):
         return self.get_data("ACCOUNTS", "*", "ACCOUNT_ID", account_id)
 
+    def get_table(self, table_name):
+        return self.get_data(table_name)
+
 
 class InvalidUserType(HTTPError):
     def __init__(self, user_type, account_types):

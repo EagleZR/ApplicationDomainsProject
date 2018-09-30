@@ -227,6 +227,19 @@ def forgot_password():
         else:
             return get_error_response(403, "Only an admin can access this feature")
     else:
+        return get_error_response(400, "Only GET and PUT requests are valid for this address")
+
+
+@app.route('/table/<table_name>', methods=['GET', 'POST', 'PUT'])
+def get_table(table_name):
+    if request.method == "GET":
+        data = db.get_table(table_name)
+        if data is None or len(table_name) == 0:
+            raise get_error_response(404, "No table with the name " + table_name + " exists")
+        response = jsonify(data)
+        response.status_code = 200
+        return response
+    else:
         return get_error_response(400, "Only GET requests are valid for this address")
 
 
