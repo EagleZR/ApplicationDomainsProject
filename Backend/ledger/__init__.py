@@ -279,7 +279,11 @@ def account(account_id):
         if data is None:
             raise get_error_response(400, "The request must contain the account_title, normal_side, and description")
 
-        # TODO Verify that account_id is a number
+        try:
+            int(account_id)
+        except ValueError:
+            raise get_error_response(400, "The account_id (/account/<account_id> must be an integer number")
+        
         account_title = data['account_title']
         if account_title is None:
             raise get_error_response(400, "The account_title must be included with a POST request.")
