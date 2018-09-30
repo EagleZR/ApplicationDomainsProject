@@ -111,6 +111,26 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         except sqlite3.OperationalError:
             return False
 
+    def add_account(self, account_id, account_title, normal_side, description):
+        logging.info(
+            "Adding account with account_id: " + account_id + ", account_title: " + account_title + ", normal_side: "
+            + normal_side + ", description: \"" + description + "\"")
+        check_exists = self.get_account(account_id)
+        if len(check_exists) > 0:
+            raise DuplicateIDException("account_id", account_id)
+
+        db = sqlite3.connect(self.database_file_name)
+        cursor = db.cursor()
+        insert_text = '''Insert into ACCOUNTS (ACCOUNT_ID, ACCOUNT_TITLE, NORMAL_SIDE, DESCRIPTION, IS_ACTIVE) values
+                        ('%s', '%s', '%s', '%s', '%s');''' % (account_id, account_title, normal_side, description,
+                                                              "TRUE")
+        logging.debug(insert_text)
+        cursor.execute(insert_text)
+        db.commit()
+        cursor.close()
+
+        return len(self.get_account(account_id)) == 1
+
     def get_user_id(self, username=None, auth_token=None):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
@@ -383,10 +403,10 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         return self.get_data("ACCOUNTS")
 
     def get_viewable_accounts(self, user_id):
-        account_type = self.get_account_type(user_id)
-        if account_type == 'admin':
+        user_type = self.get_account_type(user_id)
+        if user_type == 'admin':
             return self.get_accounts()
-        if account_type == 'manager':  # Keeping these separate because these authorizations might change
+        if user_type == 'manager':  # Keeping these separate because these authorizations might change
             return self.get_accounts()
 
         db = sqlite3.connect(self.database_file_name)
@@ -406,6 +426,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db.close()
 
         return results
+
+    def get_account(self, account_id):
+        return self.get_data("ACCOUNTS", "*", "ACCOUNT_ID", account_id)
 
 
 class InvalidUserType(HTTPError):

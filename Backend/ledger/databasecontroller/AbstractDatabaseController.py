@@ -72,6 +72,10 @@ class AbstractDatabaseController(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def add_account(self, account_id, account_title, normal_side, description):
+        pass
+
+    @abc.abstractmethod
     def get_user_has_account_access(self, user_id, account_id):
         pass
 
@@ -85,6 +89,10 @@ class AbstractDatabaseController(abc.ABC):
 
     @abc.abstractmethod
     def get_viewable_accounts(self, user_id):
+        pass
+
+    @abc.abstractmethod
+    def get_account(self, account_id):
         pass
 
     def get_30_days_from_now(self):

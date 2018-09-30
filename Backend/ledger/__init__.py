@@ -1,4 +1,5 @@
 from ledger import databasecontroller
+from ledger.EventLog import EventLog
 from flask import (Flask, request, jsonify)
 from datetime import datetime
 from flask_cors import CORS
@@ -7,13 +8,14 @@ import configparser
 import os.path
 import logging
 
-from ledger.databasecontroller.SQLITEDatabaseController import DuplicateUsernameException, InvalidUserType
+from ledger.databasecontroller.SQLITEDatabaseController import DuplicateIDException, InvalidUserType
 
 config = configparser.ConfigParser()
 config.read(os.path.dirname(os.path.realpath(__file__)) + '/config.ini')
 db = databasecontroller.get_database(config['database']['database_type'])
 app = Flask(__name__)
 CORS(app)
+event_log = EventLog()
 
 
 @app.route('/')
@@ -109,8 +111,6 @@ def user(user_id):
 
     logging.debug("Requester is a " + user_type)
 
-    data = request.get_json()
-
     if not verify_user(requester_auth_token, requester_user_id):
         raise get_error_response(403, "The requester is not a verified user")
 
@@ -125,6 +125,7 @@ def user(user_id):
             logging.info("This functionality has not been programmed yet (/account/<user_id>) 1")
             raise get_error_response(400, "This functionality has not been programmed yet (/account/<user_id>) 1")
     if request.method == 'PUT':
+        data = request.get_json()
         if data is not None:
             category = data.get('category')
             value = data.get('value')
@@ -237,27 +238,82 @@ def account(account_id):
     requester_user_id = db.get_user_id(auth_token=requester_auth_token)
     user_type = db.get_account_type(requester_user_id)
 
-    if requester_auth_token is None or requester_user_id is None:
-        if request.method == 'GET':
-            if account_id == "all":
-                accounts = db.get_viewable_accounts(requester_user_id)
-                response = jsonify({"message": {"accounts": accounts}})
-                response.status_code = 200
-                return response
-            if db.get_user_has_account_access(requester_user_id, account_id):
-                logging.info("This functionality has not been programmed yet (/account/<account_id>) 1")
-                raise get_error_response(400,
-                                         "This functionality has not been programmed yet (/account/<account_id>) 1")
-            else:
-                raise get_error_response(403, "You are not authorized to view this account.")
-        elif request.method == 'PUT':
-            logging.info("This functionality has not been programmed yet (/account/<account_id>) 2")
-            raise get_error_response(400, "This functionality has not been programmed yet (/account/<account_id>) 2")
-        else:  # Post
-            logging.info("This functionality has not been programmed yet (/account/<account_id>) 3")
-            raise get_error_response(400, "This functionality has not been programmed yet (/account/<account_id>) 3")
-    else:
+    if requester_auth_token is None and requester_user_id is None:
         raise get_error_response(403, "You must be logged in to view this information.")
+
+    if request.method == 'GET':
+        if account_id == "all":
+            accounts = db.get_viewable_accounts(requester_user_id)
+            response = jsonify({"message": {"accounts": accounts}})
+            response.status_code = 200
+            return response
+        if db.get_user_has_account_access(requester_user_id, account_id):
+            data = db.get_account(account_id)
+            response = jsonify({"message": data})
+            response.status_code = 200
+            return response
+        else:
+            raise get_error_response(403, "You are not authorized to view this account.")
+    elif request.method == 'PUT':
+        logging.info("This functionality has not been programmed yet (/account/<account_id>) 2")
+        raise get_error_response(400, "This functionality has not been programmed yet (/account/<account_id>) 2")
+    elif request.method == 'POST':
+        if not user_type == "admin" or not user_type == "manager":
+            event_log.write("User " + requester_user_id + " attempted to create an account without authorization")
+            raise get_error_response(403, "Only an admin or a manager can create an account")
+
+        data = request.get_json()
+        if data is None:
+            raise get_error_response(400, "The request must contain the account_title, normal_side, and description")
+
+        # TODO Verify that account_id is a number
+        account_title = data['account_title']
+        if account_title is None:
+            raise get_error_response(400, "The account_title must be included with a POST request.")
+        normal_side = data['normal_side']
+        if normal_side is None:
+            raise get_error_response(400, "The normal_side must be included with a POST request.")
+        description = data['description']
+        if description is None:
+            raise get_error_response(400, "The description must be included with a POST request.")
+
+        event_log.write("User " + requester_user_id + " is attempting to create account " + account_id +
+                        " with a title of \"" + account_title + "\"")
+
+        if db.add_account(account_id, account_title, normal_side, description):
+            event_log.write("User " + requester_user_id + " successfully created account " + account_id +
+                            " with a title of \"" + account_title + "\"")
+            response = jsonify({"message": "The account was successfully created"})
+            response.status_code = 200
+            return response
+        else:
+            event_log.write("User " + requester_user_id + " was not successful in creating account " + account_id +
+                            " with a title of \"" + account_title + "\"")
+            raise get_error_response(400, "The account was not successfully created")
+    else:
+        raise get_error_response(404, "Not sure how you got here... that's not supposed to happen...")
+
+
+@app.route('/eventlog', methods=['GET', 'POST', 'PUT'])
+def get_event_log():
+    log_request(request)
+    if request.method == "GET":
+
+        requester_auth_token = get_header_verification_data(request)
+        requester_user_id = db.get_user_id(auth_token=requester_auth_token)
+        user_type = db.get_account_type(requester_user_id)
+
+        if requester_auth_token is None or requester_user_id is None:
+            raise get_error_response(403, "You must be logged in to view this information.")
+
+        if user_type is not "admin":  # TODO Verify this needs to be checked
+            raise get_error_response(403, "You must be an admin to view this information.")
+
+        response = jsonify(event_log.read_all())
+        response.status_code = 200
+        return response
+    else:
+        return get_error_response(400, "Only GET requests are valid for this address")
 
 
 def get_error_response(status_code, message):
@@ -273,20 +329,6 @@ def handle_http_error(error):
     except AttributeError:
         response.status_code = 400
     return response
-
-
-# Flask uses exceptions for redirecting and other operations, so can't catch all like this
-# @app.errorhandler(Exception)
-# def handle_any_error(error):
-#     logging.info(error)
-#     try:
-#         logging.info(error.message)
-#         response = jsonify({"message": error.message})
-#     except AttributeError:
-#         response = jsonify({"message": "none"})
-#     response.status_code = 500
-#     # TODO Print exception and stack trace
-#     return response
 
 
 def dict2string(dictionary):

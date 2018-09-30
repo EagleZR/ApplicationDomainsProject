@@ -3,6 +3,9 @@ from ledger.databasecontroller.AbstractDatabaseController import AbstractDatabas
 
 class DummyDatabaseController(AbstractDatabaseController):
 
+    def get_account(self, account_id):
+        pass
+
     def get_user_has_account_access(self, user_id, account_id):
         pass
 
