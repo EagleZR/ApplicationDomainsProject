@@ -5,7 +5,7 @@ except ImportError:
 import os
 
 from ledger.databasecontroller.SQLITEDatabaseController import SQLITEDatabaseController
-from ledger.databasecontroller.SQLITEDatabaseController import DuplicateUsernameException
+from ledger.databasecontroller.SQLITEDatabaseController import DuplicateIDException
 
 
 class SQLITEDatabaseControllerTest(unittest.TestCase):
@@ -44,7 +44,7 @@ class SQLITEDatabaseControllerTest(unittest.TestCase):
         password = "fdkijhsdsf"
         name = "Antonio"
         self.assertTrue(db.add_user(email, password, name))
-        with self.assertRaises(DuplicateUsernameException) as context:
+        with self.assertRaises(DuplicateIDException) as context:
             self.assertFalse(db.add_user(email, password, name))
 
     def test_multiple_users(self):

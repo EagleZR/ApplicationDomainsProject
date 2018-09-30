@@ -92,7 +92,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         logging.info("Adding user with username: " + username + ", password: " + password + ", name: " + name)
         try:
             if self.user_exists(username):
-                raise DuplicateUsernameException(username)
+                raise DuplicateIDException("username", username)
 
             db = sqlite3.connect(self.database_file_name)
             cursor = db.cursor()
@@ -415,9 +415,9 @@ class InvalidUserType(HTTPError):
                                account_types))
 
 
-class DuplicateUsernameException(HTTPError):
-    def __init__(self, username):
-        HTTPError.__init__(self, "A user with the username " + username + " already exists.")
+class DuplicateIDException(HTTPError):
+    def __init__(self, id_type, identifier):
+        HTTPError.__init__(self, "A user with the " + id_type + " " + identifier + " already exists.")
 
 
 def generate_auth_token():
