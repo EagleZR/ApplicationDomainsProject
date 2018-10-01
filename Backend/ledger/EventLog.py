@@ -24,6 +24,7 @@ class EventLog:
 
     def write(self, text):
         if self.is_open:
+            logging.info("Writing to EventLog: \t" + text)
             self.log.append(datetime.today().strftime(date_string_format) + "-- " + text)
             self.save()
 
