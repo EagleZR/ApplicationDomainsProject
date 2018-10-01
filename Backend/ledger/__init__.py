@@ -325,9 +325,9 @@ def get_event_log():
 
         if user_type is not "admin":  # TODO Verify this needs to be checked
             event_log.write(
-                "User " + requester_user_id + " attempted to view the event log, but is only a " + user_type)
+                "User " + str(requester_user_id) + " attempted to view the event log, but is only a " + user_type)
             logging.warning(
-                "User " + requester_user_id + " attempted to view the event log, but is only a " + user_type)
+                "User " + str(requester_user_id) + " attempted to view the event log, but is only a " + user_type)
             raise get_error_response(403, "You must be an admin to view this information.")
 
         response = jsonify(event_log.read_all())
