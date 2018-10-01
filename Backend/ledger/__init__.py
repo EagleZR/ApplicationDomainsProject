@@ -271,7 +271,7 @@ def account(account_id):
         logging.info("This functionality has not been programmed yet (/account/<account_id>) 2")
         raise get_error_response(400, "This functionality has not been programmed yet (/account/<account_id>) 2")
     elif request.method == 'POST':
-        if not user_type == "admin" or not user_type == "manager":
+        if not user_type == "admin" and not user_type == "manager":
             event_log.write(
                 "User " + requester_user_id + " attempted to create an account without authorization. User "
                                               "is only a " + user_type)
