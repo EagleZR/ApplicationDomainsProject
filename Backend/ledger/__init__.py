@@ -251,7 +251,7 @@ def account(account_id):
     requester_user_id = str(db.get_user_id(auth_token=requester_auth_token))
     user_type = db.get_user_type(requester_user_id)
 
-    if requester_auth_token is None and requester_user_id is None:
+    if requester_auth_token is None or requester_user_id is None:
         raise get_error_response(403, "You must be logged in to view this information.")
 
     if request.method == 'GET':
