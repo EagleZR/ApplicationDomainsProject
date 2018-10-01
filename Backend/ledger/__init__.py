@@ -323,7 +323,7 @@ def get_event_log():
         if requester_auth_token is None or requester_user_id is None:
             raise get_error_response(403, "You must be logged in to view this information.")
 
-        if user_type is not "admin":  # TODO Verify this needs to be checked
+        if not user_type == "admin":  # TODO Verify this needs to be checked
             event_log.write(
                 "User " + str(requester_user_id) + " attempted to view the event log, but is only a " + user_type)
             logging.warning(
