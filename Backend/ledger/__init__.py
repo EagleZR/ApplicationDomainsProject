@@ -248,7 +248,7 @@ def account(account_id):
     log_request(request)
 
     requester_auth_token = get_header_verification_data(request)
-    requester_user_id = db.get_user_id(auth_token=requester_auth_token)
+    requester_user_id = str(db.get_user_id(auth_token=requester_auth_token))
     user_type = db.get_account_type(requester_user_id)
 
     if requester_auth_token is None and requester_user_id is None:
