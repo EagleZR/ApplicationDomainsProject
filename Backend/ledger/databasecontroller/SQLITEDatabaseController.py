@@ -116,7 +116,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             "Adding account with account_id: " + account_id + ", account_title: " + account_title + ", normal_side: "
             + normal_side + ", description: \"" + description + "\"")
         check_exists = self.get_account(account_id)
-        if len(check_exists) > 0:
+        if check_exists is None or len(check_exists) > 0:
             raise DuplicateIDException("account_id", account_id)
 
         db = sqlite3.connect(self.database_file_name)
