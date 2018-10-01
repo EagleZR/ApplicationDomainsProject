@@ -283,7 +283,7 @@ def account(account_id):
             int(account_id)
         except ValueError:
             raise get_error_response(400, "The account_id (/account/<account_id> must be an integer number")
-        
+
         account_title = data['account_title']
         if account_title is None:
             raise get_error_response(400, "The account_title must be included with a POST request.")
@@ -324,6 +324,10 @@ def get_event_log():
             raise get_error_response(403, "You must be logged in to view this information.")
 
         if user_type is not "admin":  # TODO Verify this needs to be checked
+            event_log.write(
+                "User " + requester_user_id + " attempted to view the event log, but is only a " + user_type)
+            logging.warning(
+                "User " + requester_user_id + " attempted to view the event log, but is only a " + user_type)
             raise get_error_response(403, "You must be an admin to view this information.")
 
         response = jsonify(event_log.read_all())
