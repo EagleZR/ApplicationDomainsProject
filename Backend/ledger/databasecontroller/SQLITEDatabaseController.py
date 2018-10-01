@@ -39,7 +39,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             else:
                 logging.error("Admin could not be created.")
             user_id = self.get_user_id("admin")
-            if not self.set_account_type(user_id, "admin"):
+            if not self.set_user_type(user_id, "admin"):
                 logging.error("The database was not able to set the default admin's account type")
             else:
                 logging.debug("The default admin was successfully initialized")
@@ -200,7 +200,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             return None, None, None, None
         return results[0][:3] + (self.get_date(results[0][3]),)
 
-    def get_account_type(self, user_id):
+    def get_user_type(self, user_id):
         results = self.get_data("Users", "ACCOUNT_TYPE", "USER_ID", user_id)
         if results is None:
             logging.debug("No results from get_account_type were returned")
@@ -225,11 +225,11 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 {"user_id": result[0], "name": result[1], "username": result[2], "account_type": result[3]})
         return results_dict_list
 
-    def set_account_type(self, user_id, account_type):
+    def set_user_type(self, user_id, account_type):
         if account_type not in self.account_types:
             raise InvalidUserType(account_type, self.account_types)
         self.update_data("USERS", "ACCOUNT_TYPE", "USER_ID", user_id, account_type)
-        return self.get_account_type(user_id) == account_type
+        return self.get_user_type(user_id) == account_type
 
     def update_password(self, user_id, new_password):
         self.update_data("USERS", "PASSWORD_HASH", "USER_ID", user_id, hash_password(new_password))
@@ -343,7 +343,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         return len(results) == 1
 
     def get_user_has_account_access(self, user_id, account_id):
-        account_type = self.get_account_type(user_id)
+        account_type = self.get_user_type(user_id)
         if account_type == 'admin':
             return True
         if account_type == 'manager':  # Keeping these separate because these authorizations might change
@@ -403,7 +403,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         return self.get_data("ACCOUNTS")
 
     def get_viewable_accounts(self, user_id):
-        user_type = self.get_account_type(user_id)
+        user_type = self.get_user_type(user_id)
         if user_type == 'admin':
             return self.get_accounts()
         if user_type == 'manager':  # Keeping these separate because these authorizations might change

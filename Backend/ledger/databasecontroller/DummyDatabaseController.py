@@ -74,7 +74,7 @@ class DummyDatabaseController(AbstractDatabaseController):
             return None
         return 1, 10, "12-Dec-2012", 18
 
-    def get_account_type(self, user_id):
+    def get_user_type(self, user_id):
         return "user"
 
     def get_all_user_accounts(self):
@@ -84,7 +84,7 @@ class DummyDatabaseController(AbstractDatabaseController):
                 {"user_id": 4, "name": "deactivated", "email": "deactivated@email.com", "account_type": "deactivated"},
                 {"user_id": 5, "name": "new", "email": "new@email.com", "account_type": "new"}]
 
-    def set_account_type(self, user_id, account_type):
+    def set_user_type(self, user_id, account_type):
         return True
 
     def verify_user(self, auth_token, user_id):

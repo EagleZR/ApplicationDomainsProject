@@ -50,7 +50,7 @@ def login():
             passwd_time_remaining = password_expire_date - datetime.today()
             if passwd_time_remaining.days < 0:
                 return get_error_response(403, "Your password has expired, please contact an administrator")
-            account_type = db.get_account_type(user_id)
+            account_type = db.get_user_type(user_id)
             logging.debug("account_type extracted in /signin")
             if account_type == "deactivated" or account_type == "new":
                 raise get_error_response(403, "The user account is not active. Please contact an administrator.")
@@ -107,7 +107,7 @@ def user(user_id):
 
     requester_auth_token = get_header_verification_data(request)
     requester_user_id = db.get_user_id(auth_token=requester_auth_token)
-    user_type = db.get_account_type(requester_user_id)
+    user_type = db.get_user_type(requester_user_id)
 
     logging.debug("Requester is a " + user_type)
 
@@ -153,7 +153,7 @@ def user(user_id):
                         "An admin (user_id: " + str(requester_user_id) + ") is changing the account_type for a user "
                                                                          "(user_id: " + str(user_id) + ") to " + str(
                             value))
-                    if db.set_account_type(user_id, value):
+                    if db.set_user_type(user_id, value):
                         logging.info("The account was updated successfully")
                         response = jsonify({"message": "The account was updated successfully"})
                         response.status_code = 200
@@ -214,7 +214,7 @@ def forgot_password():
     if request.method == 'GET':
         requester_auth_token = get_header_verification_data(request)
         requester_user_id = db.get_user_id(auth_token=requester_auth_token)
-        user_type = db.get_account_type(requester_user_id)
+        user_type = db.get_user_type(requester_user_id)
         if user_type == 'admin':
             data = db.get_forgotten_passwords()
             response_list = list()
@@ -249,7 +249,7 @@ def account(account_id):
 
     requester_auth_token = get_header_verification_data(request)
     requester_user_id = str(db.get_user_id(auth_token=requester_auth_token))
-    user_type = db.get_account_type(requester_user_id)
+    user_type = db.get_user_type(requester_user_id)
 
     if requester_auth_token is None and requester_user_id is None:
         raise get_error_response(403, "You must be logged in to view this information.")
@@ -322,7 +322,7 @@ def get_event_log():
 
         requester_auth_token = get_header_verification_data(request)
         requester_user_id = db.get_user_id(auth_token=requester_auth_token)
-        user_type = db.get_account_type(requester_user_id)
+        user_type = db.get_user_type(requester_user_id)
 
         if requester_auth_token is None or requester_user_id is None:
             raise get_error_response(403, "You must be logged in to view this information.")
