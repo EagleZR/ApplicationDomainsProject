@@ -1,5 +1,0 @@
-{
-  "backend_root_address": "/ledger/backend",
-  "login_address": "<backend_root_address>/login",
-  "user_account_address": "<backend_root_address>/accounts/<user_id>"
-}
