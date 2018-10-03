@@ -56,8 +56,8 @@ def login():
                 raise get_error_response(403, "The user account is not active. Please contact an administrator.")
             logging.debug("Account type is valid in /signin")
             db.update_last_login(user_id, datetime.today())
-            response = jsonify({"message": {"user_id": user_id, "auth_token": auth_token, "last_login": last_login,
-                                            "passwd_time_remaining": passwd_time_remaining.days}})
+            response = jsonify({"user_id": user_id, "auth_token": auth_token, "last_login": last_login,
+                                            "passwd_time_remaining": passwd_time_remaining.days})
             logging.debug("Returning JSON object in /signin")
             response.status_code = 200
             logging.debug(response)
@@ -101,7 +101,7 @@ def user(user_id):
 
     if request.method == 'GET' and user_id == 'info':
         # Short circuit the authentication
-        response = jsonify({"message": {"account_types": db.account_types}})
+        response = jsonify({"account_types": db.account_types})
         response.status_code = 200
         return response
 
@@ -118,7 +118,7 @@ def user(user_id):
         if user_id == 'all':
             logging.debug("User type: " + user_type)
             if user_type == 'admin':
-                return jsonify({"message": db.get_all_user_accounts()})
+                return jsonify({"accounts": db.get_all_user_accounts()})
             else:
                 raise get_error_response(403, "This user is not authorized to view this information.")
         else:
@@ -221,7 +221,7 @@ def forgot_password():
             for user_data in data:
                 response_list.append({"user_id": user_data[0], "username": db.get_username(user_data[0]),
                                       "date_forgotten": user_data[1], "last_login": db.get_last_login(user_data[0])})
-            response = jsonify({"message": response_list})
+            response = jsonify({"forgotten_passwords": response_list})
             response.status_code = 200
             return response
         else:
@@ -257,12 +257,12 @@ def account(account_id):
     if request.method == 'GET':
         if account_id == "all":
             accounts = db.get_viewable_accounts(requester_user_id)
-            response = jsonify({"message": {"accounts": accounts}})
+            response = jsonify({"accounts": accounts})
             response.status_code = 200
             return response
         if db.get_user_has_account_access(requester_user_id, account_id):
             data = db.get_account(account_id)
-            response = jsonify({"message": data})
+            response = jsonify({"accounts": data})
             response.status_code = 200
             return response
         else:
