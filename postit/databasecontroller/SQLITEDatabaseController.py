@@ -105,7 +105,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                                     "auth_token": generate_auth_token(), "account_type": self.default_account_type,
                                     "expire_date": password_expire_date}
             insert_text = '''Insert into Users (FIRST_NAME, LAST_NAME, USERNAME, EMAIL, PASSWORD_HASH, AUTH_TOKEN, 
-            ACCOUNT_TYPE, PASSWORD_EXPIRE_DATE) values('{first_name}', '{last_name}', '{username}', '{EMAIL}', 
+            ACCOUNT_TYPE, PASSWORD_EXPIRE_DATE) values('{first_name}', '{last_name}', '{username}', '{email}', 
             '{password_hash}', '{auth_token}', '{account_type}', '{expire_date}');'''.format(
                 **parameter_dictionary)
             logging.debug(insert_text)
@@ -194,8 +194,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         cursor.execute(
             '''Select USER_ID, AUTH_TOKEN, LAST_LOGIN, PASSWORD_EXPIRE_DATE from USERS where USERNAME = '%s' and 
-            PASSWORD_HASH = '%s' ''' % (
-                username, hash_password(password)))
+            PASSWORD_HASH = '%s' ''' % (username, hash_password(password)))
         results = list()
         results.extend(cursor.fetchall())
         logging.debug(results)
