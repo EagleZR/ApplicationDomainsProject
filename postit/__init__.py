@@ -39,6 +39,7 @@ def login():
     if request.method == 'PUT':
         logging.debug("Working PUT request in /signin")
         json_data = request.get_json()
+        assert_json_data_contains(['username', 'password'], json_data, "/signin", "PUT")
         logging.debug("Extracted JSON data in /signin")
         if json_data is not None:
             logging.debug("JSON data is not null in /signin")
@@ -145,6 +146,7 @@ def user(user_id):
             raise get_error_response(400, "This functionality has not been programmed yet (/user/<user_id>) 1")
     if request.method == 'PUT':
         data = request.get_json()
+        assert_json_data_contains(['category', 'value'], data, "user/<user_id>", "PUT")
         if data is not None:
             category = data.get('category')
             value = data.get('value')
@@ -215,9 +217,10 @@ def user(user_id):
 def forgot_password():
     log_request(request)
 
-    data = request.get_json()
-
     if request.method == 'PUT':
+        data = request.get_json()
+        assert_json_data_contains(['username'], data, "/forgotpassword", "PUT")
+
         username = data['username']
         if username is not None:
             user_id = db.get_user_id(username)
