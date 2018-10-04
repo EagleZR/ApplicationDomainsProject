@@ -36,7 +36,7 @@ class DummyDatabaseController(AbstractDatabaseController):
     def __init__(self):
         AbstractDatabaseController.__init__(self)
 
-    def add_user(self, email, password, name, password_expire_date):
+    def add_user(self, username, password, email, first_name, last_name, password_expire_date):
         if email == "invalid" and password == "invalid":
             return False
         return True

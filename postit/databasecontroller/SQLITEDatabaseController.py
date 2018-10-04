@@ -30,11 +30,13 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         except sqlite3.OperationalError:
             logging.warning("Creating user table.")
             user_cursor.execute(
-                '''Create Table If Not Exists Users(USER_ID integer primary key autoincrement, NAME TEXT not null, 
-                USERNAME TEXT not null, PASSWORD_HASH TEXT not null, AUTH_TOKEN TEXT not null, ACCOUNT_TYPE Text not null,
-                LAST_LOGIN TEXT, PASSWORD_EXPIRE_DATE TEXT NOT NULL);''')
+                '''Create Table If Not Exists Users(USER_ID integer primary key autoincrement, FIRST_NAME TEXT not null, 
+                LAST_NAME TEXT not null, USERNAME TEXT not null, EMAIL TEXT not null, PASSWORD_HASH TEXT not null, 
+                AUTH_TOKEN TEXT not null, ACCOUNT_TYPE Text not null, LAST_LOGIN TEXT, 
+                PASSWORD_EXPIRE_DATE TEXT NOT NULL);''')
             db.commit()
-            if self.add_user("admin", "password2018", "admin", self.get_30_days_from_now()):
+            if self.add_user("admin", "password2018", "admin@markzeagler.com", "Mark", "Zeagler",
+                             self.get_30_days_from_now()):
                 logging.debug("Admin successfully created.")
             else:
                 logging.error("Admin could not be created.")
@@ -88,19 +90,23 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         # TODO Add tables as they're designed
         db.close()
 
-    def add_user(self, username, password, name, password_expire_date):
-        logging.info("Adding user with username: " + username + ", password: " + password + ", name: " + name)
+    def add_user(self, username, password, email, first_name, last_name, password_expire_date):
+        logging.info(
+            "Adding user with username: " + username + ", password: " + password + ", name: " + first_name + " " +
+            last_name + ", email: " + email)
         try:
             if self.user_exists(username):
                 raise DuplicateIDException("username", username)
 
             db = sqlite3.connect(self.database_file_name)
             cursor = db.cursor()
-            parameter_dictionary = {"name": name, "username": username, "password_hash": hash_password(password),
+            parameter_dictionary = {"first_name": first_name, "last_name": last_name, "username": username,
+                                    "email": email, "password_hash": hash_password(password),
                                     "auth_token": generate_auth_token(), "account_type": self.default_account_type,
                                     "expire_date": password_expire_date}
-            insert_text = '''Insert into Users (NAME, USERNAME, PASSWORD_HASH, AUTH_TOKEN, ACCOUNT_TYPE, PASSWORD_EXPIRE_DATE) values
-                ('{name}', '{username}', '{password_hash}', '{auth_token}', '{account_type}', '{expire_date}');'''.format(
+            insert_text = '''Insert into Users (FIRST_NAME, LAST_NAME, USERNAME, EMAIL, PASSWORD_HASH, AUTH_TOKEN, 
+            ACCOUNT_TYPE, PASSWORD_EXPIRE_DATE) values('{first_name}', '{last_name}', '{username}', '{EMAIL}', 
+            '{password_hash}', '{auth_token}', '{account_type}', '{expire_date}');'''.format(
                 **parameter_dictionary)
             logging.debug(insert_text)
             cursor.execute(insert_text)

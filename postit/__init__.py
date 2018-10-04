@@ -57,7 +57,7 @@ def login():
             logging.debug("Account type is valid in /signin")
             db.update_last_login(user_id, datetime.today())
             response = jsonify({"user_id": user_id, "auth_token": auth_token, "last_login": last_login,
-                                            "passwd_time_remaining": passwd_time_remaining.days})
+                                "passwd_time_remaining": passwd_time_remaining.days})
             logging.debug("Returning JSON object in /signin")
             response.status_code = 200
             logging.debug(response)
@@ -89,11 +89,15 @@ def register():
 
     if request.method == 'PUT':
         json_data = request.get_json()
+        assert_json_data_contains(['username', 'password', 'first_name', 'last_name', 'email'], json_data, "/register",
+                                  "PUT")
         if json_data is not None:
             username = json_data.get('username')
             password = json_data.get('password')
-            name = json_data.get('name')
-            if db.add_user(username, password, name, db.get_30_days_from_now()):
+            first_name = json_data.get('first_name')
+            last_name = json_data.get('last_name')
+            email = json_data.get('email')
+            if db.add_user(username, password, email, first_name, last_name, db.get_30_days_from_now()):
                 user_id = db.get_user_id(username)
                 auth_token = db.get_user_auth_token(username, password)
                 if (user_id is None) or (auth_token is None):
@@ -413,6 +417,24 @@ def get_header_verification_data(request):
         raise get_error_response(400, "The authorization must be sent in the header")
 
     return auth_token
+
+
+def assert_json_data_contains(keys_list, json_data, url, request_method):
+    missing_keys = list()
+
+    for key in keys_list:
+        data = json_data.get(key)
+        if data is None or data == "":
+            missing_keys.append(key)
+
+    if len(missing_keys) == 0:
+        return
+
+    message = "A " + request_method + " to " + url + " must include the keys: "
+    for key in missing_keys:
+        message += key + ", "
+
+    raise HTTPError(400, message)
 
 
 if __name__ == "__main__":
