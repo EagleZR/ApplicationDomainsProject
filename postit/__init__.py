@@ -133,12 +133,12 @@ def user(user_id):
         if user_id == 'all':
             logging.debug("User type: " + user_type)
             if user_type == 'admin':
-                return jsonify({"accounts": db.get_all_user_accounts()})
+                return jsonify({"users": db.get_all_user_accounts()})
             else:
                 raise get_error_response(403, "This user is not authorized to view this information.")
         else:
-            logging.info("This functionality has not been programmed yet (/account/<user_id>) 1")
-            raise get_error_response(400, "This functionality has not been programmed yet (/account/<user_id>) 1")
+            logging.info("This functionality has not been programmed yet (/user/<user_id>) 1")
+            raise get_error_response(400, "This functionality has not been programmed yet (/user/<user_id>) 1")
     if request.method == 'PUT':
         data = request.get_json()
         if data is not None:
@@ -149,33 +149,33 @@ def user(user_id):
                     logging.info("User " + user_id + " is updating their password.")
                     if db.update_password(user_id, value):
                         db.set_password_expire(user_id, db.get_30_days_from_now())
-                        logging.info("The account was updated successfully")
-                        response = jsonify({"message": "The account was updated successfully"})
+                        logging.info("The user was updated successfully")
+                        response = jsonify({"message": "The user was updated successfully"})
                         response.status_code = 200
                         return response
                     else:
-                        logging.error("The account was not updated")
-                        response = jsonify({"message": "The account was not updated"})
+                        logging.error("The user was not updated")
+                        response = jsonify({"message": "The user was not updated"})
                         response.status_code = 500
                         return response
                 else:
-                    logging.info("This functionality has not been programmed yet (/account/<user_id>) 2")
+                    logging.info("This functionality has not been programmed yet (/user/<user_id>) 2")
                     raise get_error_response(400,
                                              "This functionality has not been programmed yet (/account/<user_id>) 2")
             elif user_type == 'admin':
-                if category == 'account_type':
+                if category == 'user_type':
                     logging.info(
-                        "An admin (user_id: " + str(requester_user_id) + ") is changing the account_type for a user "
+                        "An admin (user_id: " + str(requester_user_id) + ") is changing the user_type for a user "
                                                                          "(user_id: " + str(user_id) + ") to " + str(
                             value))
                     if db.set_user_type(user_id, value):
                         logging.info("The account was updated successfully")
-                        response = jsonify({"message": "The account was updated successfully"})
+                        response = jsonify({"message": "The user was updated successfully"})
                         response.status_code = 200
                         return response
                     else:
-                        logging.error("The account was not updated")
-                        response = jsonify({"message": "The account was not updated"})
+                        logging.error("The user was not updated")
+                        response = jsonify({"message": "The user was not updated"})
                         response.status_code = 500
                         return response
                 elif category == 'password':

@@ -222,7 +222,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         results_dict_list = list()
         for result in results:
             results_dict_list.append(
-                {"user_id": result[0], "name": result[1], "username": result[2], "account_type": result[3]})
+                {"user_id": result[0], "name": result[1], "username": result[2], "user_type": result[3]})
         return results_dict_list
 
     def set_user_type(self, user_id, account_type):
