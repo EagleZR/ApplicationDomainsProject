@@ -68,6 +68,21 @@ def login():
         raise get_error_response(400, "Only PUT requests are valid for this address")
 
 
+@app.route('/verify_logged_in', methods=['GET'])
+def verify_logged_in():
+    log_request(request)
+    requester_auth_token = get_header_verification_data(request)
+    requester_user_id = str(db.get_user_id(auth_token=requester_auth_token))
+    if requester_user_id is not None and not requester_user_id == "":
+        response = jsonify({"message": "You are logged in"})
+        response.status_code = 200
+        return response
+    else:
+        response = jsonify({"message": "You are not logged in"})
+        response.status_code = 403
+        return response
+
+
 @app.route('/register', methods=['GET', 'POST', 'PUT'])
 def register():
     log_request(request)
