@@ -80,7 +80,7 @@ def verify_logged_in():
         return response
     else:
         response = jsonify({"message": "You are not logged in"})
-        response.status_code = 403
+        response.status_code = 401
         return response
 
 
