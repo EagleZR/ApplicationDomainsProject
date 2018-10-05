@@ -118,6 +118,7 @@ def register():
 
 @app.route('/user/<user_id>', methods=['GET', 'POST', 'PUT'])
 def user(user_id):
+    logging.debug("In /user method")
     log_request(request)
 
     logging.debug("User ID: " + user_id)
