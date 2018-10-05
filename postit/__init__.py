@@ -411,7 +411,7 @@ def verify_user(auth_token, user_id):
 
 def get_header_verification_data(request):
     auth_block = request.headers.get('Authorization')
-    logging.debug(auth_block)
+    logging.debug("Auth Block: " + auth_block)
     if auth_block is not None:
         auth_token = auth_block[7:]
     else:
