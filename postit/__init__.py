@@ -120,6 +120,8 @@ def register():
 def user(user_id):
     log_request(request)
 
+    logging.debug("User ID: " + user_id)
+
     if request.method == 'GET' and user_id == 'info':
         # Short circuit the authentication
         response = jsonify({"account_types": db.account_types})
