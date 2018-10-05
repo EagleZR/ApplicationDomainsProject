@@ -1,8 +1,12 @@
 import configparser
 import os.path
+import logging
 import re
 
 from postit import databasecontroller
+
+logging.basicConfig(filename="/var/www/markzeagler.com/postit.log", datefmt="%d-%b-%Y %H:%M:%S", level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(message)s')
 
 config = configparser.ConfigParser()
 config.read(os.path.dirname(os.path.realpath(__file__)) + '/postit/config.ini')
