@@ -415,7 +415,10 @@ def get_header_verification_data(request):
     auth_block = request.headers.get('Authorization')
     logging.debug("Auth Block: " + auth_block)
     if auth_block is not None:
-        auth_token = auth_block[7:]
+        if "Bearer" in auth_block:
+            auth_token = auth_block[7:]
+        else:
+            auth_token = auth_block
     else:
         auth_token = None
 
