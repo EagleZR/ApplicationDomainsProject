@@ -74,8 +74,9 @@ def verify_logged_in():
     log_request(request)
     requester_auth_token = get_header_verification_data(request)
     requester_user_id = str(db.get_user_id(auth_token=requester_auth_token))
+    logging.debug("User's id is: " + requester_user_id)
     if requester_user_id is not None and not requester_user_id == "":
-        response = jsonify({"message": "You are logged in"})
+        response = jsonify({"message": "You are logged in with user id: " + requester_user_id})
         response.status_code = 200
         return response
     else:
