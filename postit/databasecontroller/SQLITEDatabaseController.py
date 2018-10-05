@@ -69,7 +69,10 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             logging.warning("Creating Table of Accounts")
             accounts_cursor.execute(
                 '''Create Table if Not Exists ACCOUNTS(ACCOUNT_ID integer not null, ACCOUNT_TITLE TEXT not null, 
-                NORMAL_SIDE TEXT not null, DESCRIPTION TEXT, IS_ACTIVE TEXT not null);''')
+                NORMAL_SIDE TEXT not null, DESCRIPTION TEXT, IS_ACTIVE TEXT not null, BALANCE NUMBER not null, 
+                DATE_CREATED TEXT not null, CREATED_BY INTEGER not null, LAST_EDITED_DATE TEXT not null, 
+                LAST_EDITED_BY INTEGER, FOREIGN KEY (CREATED_BY) REFERENCES USERS(USER_ID), FOREIGN KEY (LAST_EDITED_BY) 
+                REFERENCES USERS(USER_ID));''')
             db.commit()
         accounts_cursor.close()
 
@@ -117,7 +120,13 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         except sqlite3.OperationalError:
             return False
 
-    def add_account(self, account_id, account_title, normal_side, description):
+    '''Create Table if Not Exists ACCOUNTS(ACCOUNT_ID integer not null, ACCOUNT_TITLE TEXT not null, 
+                    NORMAL_SIDE TEXT not null, DESCRIPTION TEXT, IS_ACTIVE TEXT not null, BALANCE NUMBER not null, 
+                    DATE_CREATED TEXT not null, CREATED_BY INTEGER not null, LAST_EDITED_DATE TEXT not null, 
+                    LAST_EDITED_BY INTEGER, FOREIGN KEY (CREATED_BY) REFERENCES USERS(USER_ID), FOREIGN KEY (LAST_EDITED_BY) 
+                    REFERENCES USERS(USER_ID));'''
+
+    def add_account(self, account_id, account_title, normal_side, description, created_by):
         logging.info(
             "Adding account with account_id: " + account_id + ", account_title: " + account_title + ", normal_side: "
             + normal_side + ", description: \"" + description + "\"")
@@ -127,9 +136,11 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
-        insert_text = '''Insert into ACCOUNTS (ACCOUNT_ID, ACCOUNT_TITLE, NORMAL_SIDE, DESCRIPTION, IS_ACTIVE) values
-                        ('%s', '%s', '%s', '%s', '%s');''' % (account_id, account_title, normal_side, description,
-                                                              "TRUE")
+        insert_text = '''Insert into ACCOUNTS (ACCOUNT_ID, ACCOUNT_TITLE, NORMAL_SIDE, DESCRIPTION, IS_ACTIVE, BALANCE, 
+        DATE_CREATED, CREATED_BY, LAST_EDITED_DATE) values ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');''' \
+                      % (account_id, account_title, normal_side, description, "TRUE", 0,
+                         datetime.today().strftime(self.date_string_format), created_by,
+                         datetime.today().strftime(self.date_string_format))
         logging.debug(insert_text)
         cursor.execute(insert_text)
         db.commit()
@@ -408,7 +419,30 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 return not self.get_user_has_account_access(user_id, account_id)
 
     def get_accounts(self):
-        return self.get_data("ACCOUNTS")
+        db = sqlite3.connect(self.database_file_name)
+        cursor = db.cursor()
+
+        cursor.execute(
+            '''Select ACCOUNT_ID, ACCOUNT_TITLE, NORMAL_SIDE, BALANCE, DATE_CREATED, CREATED_BY, LAST_EDITED_DATE, 
+            LAST_EDITED_BY, DESCRIPTION, IS_ACTIVE from ACCOUNTS''')
+
+        results = list()
+        results.extend(cursor.fetchall())
+
+        db.commit()
+        cursor.close()
+        db.close()
+
+        if len(results) is 0:
+            return None
+
+        results_dict_list = list()
+        for result in results:
+            results_dict_list.append(
+                {"account_id": result[0], "account_title": result[1], "normal_side": result[2], "balance": result[3],
+                 "date_created": result[4], "created_by": result[5], "last_edited_date": result[6],
+                 "last_edited_by": result[7], "description": result[8], "is_active": result[9]})
+        return results_dict_list
 
     def get_viewable_accounts(self, user_id):
         user_type = self.get_user_type(user_id)
@@ -420,8 +454,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
-        command = '''Select * From ACCOUNTS where ACCOUNT.ACCOUNT_ID in (SELECT ACCOUNT_ID FROM USER_ACCOUNT_ACCESS 
-        where USER_ID is %s)''' % user_id
+        command = '''Select ACCOUNT_ID, ACCOUNT_TITLE, NORMAL_SIDE, BALANCE, DATE_CREATED, CREATED_BY, LAST_EDITED_DATE, 
+            LAST_EDITED_BY, DESCRIPTION, IS_ACTIVE From ACCOUNTS where ACCOUNT.ACCOUNT_ID in 
+            (SELECT ACCOUNT_ID FROM USER_ACCOUNT_ACCESS where USER_ID is %s)''' % user_id
         logging.debug(command)
 
         cursor.execute(command)
@@ -433,7 +468,13 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         cursor.close()
         db.close()
 
-        return results
+        results_dict_list = list()
+        for result in results:
+            results_dict_list.append(
+                {"account_id": result[0], "account_title": result[1], "normal_side": result[2], "balance": result[3],
+                 "date_created": result[4], "created_by": result[5], "last_edited_date": result[6],
+                 "last_edited_by": result[7], "description": result[8], "is_active": result[9]})
+        return results_dict_list
 
     def get_account(self, account_id):
         return self.get_data("ACCOUNTS", "*", "ACCOUNT_ID", account_id)

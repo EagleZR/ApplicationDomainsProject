@@ -327,7 +327,7 @@ def account(account_id):
         event_log.write("User " + requester_user_id + " is attempting to create account " + account_id +
                         " with a title of \"" + account_title + "\"")
 
-        if db.add_account(account_id, account_title, normal_side, description):
+        if db.add_account(account_id, account_title, normal_side, description, requester_user_id):
             event_log.write("User " + requester_user_id + " successfully created account " + account_id +
                             " with a title of \"" + account_title + "\"")
             response = jsonify({"message": "The account was successfully created"})
