@@ -16,7 +16,7 @@ class AbstractDatabaseController(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_user_id(self, password=None, auth_token=None):
+    def get_user_id(self, username=None, auth_token=None):
         pass
 
     @abc.abstractmethod
