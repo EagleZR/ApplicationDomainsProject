@@ -217,7 +217,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
-        cursor.execute('''Select USER_ID, USERNAME, FIRST_NAME, LAST_NAME, EMAIL, ACCOUNT_TYPE from USERS ''')
+        cursor.execute(
+            '''Select USER_ID, USERNAME, FIRST_NAME, LAST_NAME, EMAIL, ACCOUNT_TYPE, LAST_LOGIN, 
+            PASSWORD_EXPIRE_DATE from USERS ''')
 
         results = list()
         results.extend(cursor.fetchall())
@@ -227,7 +229,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         for result in results:
             results_dict_list.append(
                 {"user_id": result[0], "username": result[1], "first_name": result[2], "last_name": result[3],
-                 "email": result[4],  "user_type": result[5]})
+                 "email": result[4], "user_type": result[5], "last_login": result[6],
+                 "password_time_remaining": result[7]})
         return results_dict_list
 
     def set_user_type(self, user_id, account_type):
