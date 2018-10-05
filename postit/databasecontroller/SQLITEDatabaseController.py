@@ -218,7 +218,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
-        cursor.execute('''Select USER_ID, FIRST_NAME, LAST_NAME, EMAIL, USERNAME, ACCOUNT_TYPE from USERS ''')
+        cursor.execute('''Select USER_ID, USERNAME, FIRST_NAME, LAST_NAME, EMAIL, ACCOUNT_TYPE from USERS ''')
 
         results = list()
         results.extend(cursor.fetchall())
