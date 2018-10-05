@@ -418,7 +418,7 @@ def get_header_verification_data(request):
     logging.debug("Extracted Authorization: " + auth_token if auth_token is not None else "None")
 
     if auth_token is None:
-        raise get_error_response(400, "The authorization must be sent in the header")
+        raise get_error_response(401, "The authorization must be sent in the header")
 
     return auth_token
 
