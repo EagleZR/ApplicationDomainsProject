@@ -145,6 +145,7 @@ def user(user_id):
         else:
             logging.info("This functionality has not been programmed yet (/user/<user_id>) 1")
             raise get_error_response(400, "This functionality has not been programmed yet (/user/<user_id>) 1")
+
     if request.method == 'PUT':
         data = request.get_json()
         assert_json_data_contains(['category', 'value'], data, "user/<user_id>", "PUT")
@@ -410,6 +411,7 @@ def verify_user(auth_token, user_id):
 
 def get_header_verification_data(request):
     auth_block = request.headers.get('Authorization')
+    logging.debug(auth_block)
     if auth_block is not None:
         auth_token = auth_block[7:]
     else:
