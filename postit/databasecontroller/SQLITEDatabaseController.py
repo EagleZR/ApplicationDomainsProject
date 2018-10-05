@@ -230,7 +230,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             results_dict_list.append(
                 {"user_id": result[0], "username": result[1], "first_name": result[2], "last_name": result[3],
                  "email": result[4], "user_type": result[5], "last_login": result[6],
-                 "password_time_remaining": result[7]})
+                 "password_expiration_date": result[7]})
         return results_dict_list
 
     def set_user_type(self, user_id, account_type):
