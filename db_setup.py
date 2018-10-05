@@ -9,7 +9,7 @@ config.read(os.path.dirname(os.path.realpath(__file__)) + '/postit/config.ini')
 db = databasecontroller.get_database(config['database']['database_type'])
 
 # Generate some seed data for the database
-email_regex = re.compile("\s(\S*)@")
+email_regex = re.compile("(\S*)@")
 with open(os.path.dirname(os.path.realpath(__file__)) + '/user_setup_data.txt', 'r') as f:
     for line in f.readlines():
         username, password, email, first_name, last_name = line.split(', ')

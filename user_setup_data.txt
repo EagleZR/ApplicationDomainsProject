@@ -1,6 +1,6 @@
 aisha, password2018, admin@markzeagler.com, Aisha, Siddiqui
 alex, password2018, admin@markzeagler.com, Alexander, Dushane
-ali, password2018, admin@markzeagler.com, Muhammad  Ali
+ali, password2018, admin@markzeagler.com, Muhammad,  Ali
 shamita, password2018, admin@markzeagler.com, Shamita, Hattangady
 manager1, managerPassword, manager@markzeagler.com, Mr, Manager
 user1, userPassword, user@markzeagler.com, Silly, User
