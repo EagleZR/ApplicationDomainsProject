@@ -119,7 +119,8 @@ def register():
 @app.route('/user/<user_id>', methods=['GET', 'POST', 'PUT'])
 def user(user_id):
     log_request(request)
-
+    if user_id is None or user_id == "null":
+        raise get_error_response(400, "The URL must refer to a valid User ID, or be 'info' or 'all'")
     logging.debug("User ID: " + user_id)
 
     if request.method == 'GET' and user_id == 'info':
