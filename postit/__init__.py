@@ -287,7 +287,7 @@ def account(account_id):
             return response
         if db.get_user_has_account_access(requester_user_id, account_id):
             data = db.get_account(account_id)
-            response = jsonify({"accounts": data})
+            response = jsonify({"account": data})
             response.status_code = 200
             return response
         else:

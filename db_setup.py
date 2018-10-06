@@ -20,7 +20,11 @@ config = configparser.ConfigParser()
 config.read(os.path.dirname(os.path.realpath(__file__)) + '/postit/config.ini')
 db = databasecontroller.get_database(config['database']['database_type'])
 
+##########################################
 # Generate some seed data for the database
+##########################################
+
+# User seed data
 email_regex = re.compile("(\S*)@")
 with open(os.path.dirname(os.path.realpath(__file__)) + '/user_setup_data.txt', 'r') as f:
     for line in f.readlines():
@@ -33,3 +37,9 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/user_setup_data.txt', 
         db.set_user_type(user_id, user_type)
         db.update_last_login(user_id, random_date((datetime.today() - timedelta(days=30)), datetime.today(),
                                                   random.random()))
+
+# Account seed data
+with open(os.path.dirname(os.path.realpath(__file__)) + '/account_data_setup.txt', 'r') as f:
+    for line in f.readlines():
+        account_id, account_title, normal_side, description, created_by = line.split(', ')
+        db.add_account(account_id.strip(), account_title.strip(), normal_side.strip(), description.strip(), created_by)
