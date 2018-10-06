@@ -26,11 +26,9 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/user_setup_data.txt', 
     for line in f.readlines():
         username, password, email, first_name, last_name = line.split(', ')
         user_type = email_regex.search(email).group(1)
-        db.add_user(username, password, email, first_name, last_name, random_date((datetime.today() +
-                                                                                   timedelta(days=30)),
-                                                                                  datetime.today(),
-                                                                                  random.random()).strftime(
-            db.date_string_format))
+        db.add_user(username.trim(), password.trim(), email.trim(), first_name.trim(), last_name.trim(),
+                    random_date((datetime.today() + timedelta(days=30)), datetime.today(), random.random()).strftime(
+                        db.date_string_format))
         user_id = db.get_user_id(username)
         db.set_user_type(user_id, user_type)
         db.update_last_login(user_id, random_date((datetime.today() - timedelta(days=30)), datetime.today(),
