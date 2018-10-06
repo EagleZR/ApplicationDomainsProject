@@ -72,7 +72,11 @@ def login():
 @app.route('/verify_logged_in', methods=['GET'])
 def verify_logged_in():
     log_request(request)
-    requester_auth_token = get_header_verification_data(request)
+    requester_auth_token = None
+    try:
+        requester_auth_token = get_header_verification_data(request)
+    except HTTPError:
+        pass
     requester_user_id = str(db.get_user_id(auth_token=requester_auth_token))
     response = jsonify({"logged_in": requester_user_id is not None and not requester_user_id == "None"})
     response.status_code = 200
