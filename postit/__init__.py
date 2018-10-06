@@ -146,7 +146,7 @@ def user(user_id):
                 raise get_error_response(403, "This user is not authorized to view this information.")
         else:
             if requester_user_id == user_id or user_type == "admin":
-                response = db.get_user(user_id)
+                response = jsonify(db.get_user(user_id))
                 response.status_code = 200
                 return response
             else:
