@@ -72,11 +72,7 @@ def login():
 @app.route('/verify_logged_in', methods=['GET'])
 def verify_logged_in():
     log_request(request)
-    requester_auth_token = None
-    try:
-        requester_auth_token = get_header_verification_data(request)
-    except HTTPError:
-        pass
+    requester_auth_token = get_header_verification_data(request, False)
     requester_user_id = str(db.get_user_id(auth_token=requester_auth_token))
     response = jsonify({"logged_in": requester_user_id is not None and not requester_user_id == "None"})
     response.status_code = 200
@@ -414,7 +410,7 @@ def verify_user(auth_token, user_id):
     return db.verify_user(auth_token, user_id)
 
 
-def get_header_verification_data(request):
+def get_header_verification_data(request, throw_exception=True):
     auth_block = request.headers.get('Authorization')
     if auth_block is not None:
         logging.debug("Auth Block: " + auth_block)
@@ -427,7 +423,7 @@ def get_header_verification_data(request):
 
     logging.debug("Extracted Authorization: " + auth_token if auth_token is not None else "None")
 
-    if auth_token is None:
+    if auth_token is None and throw_exception:
         raise get_error_response(401, "The authorization must be sent in the header")
 
     return auth_token
