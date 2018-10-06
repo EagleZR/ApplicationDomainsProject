@@ -26,7 +26,7 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/user_setup_data.txt', 
     for line in f.readlines():
         username, password, email, first_name, last_name = line.split(', ')
         user_type = email_regex.search(email).group(1)
-        db.add_user(username.trim(), password.trim(), email.trim(), first_name.trim(), last_name.trim(),
+        db.add_user(username.strip(), password.strip(), email.strip(), first_name.strip(), last_name.strip(),
                     random_date((datetime.today() + timedelta(days=30)), datetime.today(), random.random()).strftime(
                         db.date_string_format))
         user_id = db.get_user_id(username)
