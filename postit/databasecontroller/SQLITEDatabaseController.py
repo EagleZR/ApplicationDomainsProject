@@ -482,6 +482,25 @@ class SQLITEDatabaseController(AbstractDatabaseController):
     def get_table(self, table_name):
         return self.get_data(table_name)
 
+    def get_user(self, user_id):
+        db = sqlite3.connect(self.database_file_name)
+        cursor = db.cursor()
+
+        cursor.execute(
+            '''Select USER_ID, USERNAME, FIRST_NAME, LAST_NAME, EMAIL, ACCOUNT_TYPE, LAST_LOGIN, 
+            PASSWORD_EXPIRE_DATE from USERS where USER_ID is %s''' % user_id)
+
+        results = list()
+        results.extend(cursor.fetchall())
+        if len(results) is 0:
+            return None
+
+        result = {"user_id": results[0][0], "username": results[0][1], "first_name": results[0][2], "last_name": results[0][3],
+         "email": results[0][4], "user_type": results[0][5], "last_login": results[0][6],
+         "password_expiration_date": results[0][7]}
+
+        return result
+
 
 class InvalidUserType(HTTPError):
     def __init__(self, user_type, account_types):
