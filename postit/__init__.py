@@ -47,14 +47,14 @@ def login():
             password = json_data.get('password')
             user_id, auth_token, last_login, password_expire_date = db.get_login_data(username, password)
             if (user_id is None) or (auth_token is None) or (password_expire_date is None):
-                raise get_error_response(403, "The username/password is invalid.")
+                raise get_error_response(401, "The username/password is invalid.")
             passwd_time_remaining = password_expire_date - datetime.today()
             if passwd_time_remaining.days < 0:
-                return get_error_response(403, "Your password has expired, please contact an administrator")
+                return get_error_response(401, "Your password has expired, please contact an administrator")
             account_type = db.get_user_type(user_id)
             logging.debug("account_type extracted in /signin")
             if account_type == "deactivated" or account_type == "new":
-                raise get_error_response(403, "The user account is not active. Please contact an administrator.")
+                raise get_error_response(401, "The user account is not active. Please contact an administrator.")
             logging.debug("Account type is valid in /signin")
             db.update_last_login(user_id, datetime.today())
             response = jsonify({"user_id": user_id, "auth_token": auth_token, "last_login": last_login,
