@@ -3,6 +3,15 @@ from postit.databasecontroller.AbstractDatabaseController import AbstractDatabas
 
 class DummyDatabaseController(AbstractDatabaseController):
 
+    def add_account(self, account_id, account_title, normal_side, description, created_by):
+        pass
+
+    def get_user(self, user_id):
+        pass
+
+    def set_user_data(self, user_id, category, value):
+        pass
+
     def get_table(self, table_name):
         pass
 
