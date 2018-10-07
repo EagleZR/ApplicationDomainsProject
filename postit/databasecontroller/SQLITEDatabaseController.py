@@ -501,6 +501,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         return result
 
+    def update_user_data(self, user_id, category, value):
+        self.update_data("USERS", category, "USER_ID", user_id, value)
+
 
 class InvalidUserType(HTTPError):
     def __init__(self, user_type, account_types):

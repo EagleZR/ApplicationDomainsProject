@@ -103,6 +103,10 @@ class AbstractDatabaseController(abc.ABC):
     def get_user(self, user_id):
         pass
 
+    @abc.abstractmethod
+    def set_user_data(self, user_id, category, value):
+        pass
+
     def get_30_days_from_now(self):
         return (datetime.today() + timedelta(days=self.password_duration)).strftime(self.date_string_format)
 
