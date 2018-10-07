@@ -119,7 +119,7 @@ def user(user_id):
 
     if request.method == 'GET' and user_id == 'info':
         # Short circuit the authentication
-        response = jsonify({"account_types": db.account_types})
+        response = jsonify({"user_types": db.account_types})
         response.status_code = 200
         return response
 
