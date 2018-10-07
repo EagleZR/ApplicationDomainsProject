@@ -254,7 +254,8 @@ def forgot_password():
             response_list = list()
             for user_data in data:
                 response_list.append({"user_id": user_data[0], "username": db.get_username(user_data[0]),
-                                      "date_forgotten": user_data[1], "last_login": db.get_last_login(user_data[0])})
+                                      "date_forgotten": user_data[1],
+                                      "last_login": db.get_last_login(user_data[0])[0][0]})
             response = jsonify({"forgotten_passwords": response_list})
             response.status_code = 200
             return response
