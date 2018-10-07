@@ -204,10 +204,14 @@ def user(user_id):
                         response.status_code = 500
                         return response
                 elif category in ['username', 'first_name', 'last_name', 'email']:
-                    db.set_user_data(user_id, category, value)
-                    response = jsonify({"message": "The data was successfully set"})
-                    response.status_code = 200
-                    return response
+                    if db.set_user_data(user_id, category, value):
+                        response = jsonify({"message": "The data was successfully set"})
+                        response.status_code = 200
+                        return response
+                    else:
+                        response = jsonify({"message": "The data could not be set"})
+                        response.status_code = 405
+                        return response
                 else:
                     logging.info("This functionality has not been programmed yet (/account/<user_id>) 3")
                     raise get_error_response(400,

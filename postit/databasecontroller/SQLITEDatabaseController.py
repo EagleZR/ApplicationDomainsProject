@@ -120,12 +120,6 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         except sqlite3.OperationalError:
             return False
 
-    '''Create Table if Not Exists ACCOUNTS(ACCOUNT_ID integer not null, ACCOUNT_TITLE TEXT not null, 
-                    NORMAL_SIDE TEXT not null, DESCRIPTION TEXT, IS_ACTIVE TEXT not null, BALANCE NUMBER not null, 
-                    DATE_CREATED TEXT not null, CREATED_BY INTEGER not null, LAST_EDITED_DATE TEXT not null, 
-                    LAST_EDITED_BY INTEGER, FOREIGN KEY (CREATED_BY) REFERENCES USERS(USER_ID), FOREIGN KEY (LAST_EDITED_BY) 
-                    REFERENCES USERS(USER_ID));'''
-
     def add_account(self, account_id, account_title, normal_side, description, created_by):
         logging.info(
             "Adding account with account_id: " + account_id + ", account_title: " + account_title + ", normal_side: "
@@ -253,7 +247,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
     def update_password(self, user_id, new_password):
         self.update_data("USERS", "PASSWORD_HASH", "USER_ID", user_id, hash_password(new_password))
         self.remove_data("FORGOTPASSWORD", "USER_ID", user_id)
-        return True  # TODO Verify update has occurred
+        return hash_password(new_password) == self.get_data("USERS", "PASSWORD_HASH", "USER_ID", user_id)
 
     def update_last_login(self, user_id, last_login):
         self.update_data("USERS", "LAST_LOGIN", "USER_ID", user_id, self.get_date_string(last_login))
@@ -503,6 +497,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
     def set_user_data(self, user_id, category, value):
         self.update_data("USERS", category, "USER_ID", user_id, value)
+        return value == self.get_data("USERS", category, "USER_ID", user_id)
 
 
 class InvalidUserType(HTTPError):
