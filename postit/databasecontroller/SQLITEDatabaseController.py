@@ -223,8 +223,11 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         cursor = db.cursor()
 
         cursor.execute(
-            '''Select USER_ID, USERNAME, FIRST_NAME, LAST_NAME, EMAIL, ACCOUNT_TYPE, LAST_LOGIN, 
-            PASSWORD_EXPIRE_DATE from USERS ''')
+            '''Select USERS.USER_ID, USERS.USERNAME, USERS.FIRST_NAME, USERS.LAST_NAME, USERS.EMAIL, USERS.ACCOUNT_TYPE, 
+            USERS.LAST_LOGIN, USERS.PASSWORD_EXPIRE_DATE FORGOTPASSWORD.SUBMISSIONDATE from USERS LEFT JOIN 
+            FORGOTPASSWORD USING(USER_ID) UNION ALL SELECT USERS.USER_ID, USERS.USERNAME, USERS.FIRST_NAME, 
+            USERS.LAST_NAME, USERS.EMAIL, USERS.ACCOUNT_TYPE, USERS.LAST_LOGIN, USERS.PASSWORD_EXPIRE_DATE 
+            FORGOTPASSWORD.SUBMISSIONDATE FROM FORGOTPASSWORD LEFT JOIN USERS USING(USER_ID)''')
 
         results = list()
         results.extend(cursor.fetchall())
@@ -235,7 +238,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             results_dict_list.append(
                 {"user_id": result[0], "username": result[1], "first_name": result[2], "last_name": result[3],
                  "email": result[4], "user_type": result[5], "last_login": result[6],
-                 "password_expiration_date": result[7]})
+                 "password_expiration_date": result[7], "forgot_password": (False if result[8] is None else True)})
         return results_dict_list
 
     def set_user_type(self, user_id, account_type):
@@ -511,9 +514,10 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         if len(results) is 0:
             return None
 
-        result = {"user_id": results[0][0], "username": results[0][1], "first_name": results[0][2], "last_name": results[0][3],
-         "email": results[0][4], "user_type": results[0][5], "last_login": results[0][6],
-         "password_expiration_date": results[0][7]}
+        result = {"user_id": results[0][0], "username": results[0][1], "first_name": results[0][2],
+                  "last_name": results[0][3],
+                  "email": results[0][4], "user_type": results[0][5], "last_login": results[0][6],
+                  "password_expiration_date": results[0][7]}
 
         return result
 
