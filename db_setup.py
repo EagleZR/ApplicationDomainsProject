@@ -41,5 +41,7 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/user_setup_data.txt', 
 # Account seed data
 with open(os.path.dirname(os.path.realpath(__file__)) + '/account_data_setup.txt', 'r') as f:
     for line in f.readlines():
-        account_id, account_title, normal_side, description, created_by = line.split(', ')
+        account_id, account_title, normal_side, description = line.split(', ')
+        users = db.get_all_user_accounts()
+        created_by = users[random.randrange(0, len(users))][0]
         db.add_account(account_id.strip(), account_title.strip(), normal_side.strip(), description.strip(), created_by)

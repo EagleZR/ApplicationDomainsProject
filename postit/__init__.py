@@ -323,9 +323,9 @@ def account(account_id):
             raise get_error_response(400, "The account_title must be included with a POST request.")
         normal_side = data['normal_side']
         if normal_side is None:
-            raise get_error_response(400, "The normal_side must be included with a POST request.")
-        if not (normal_side == "left" or normal_side == "right"):
-            raise get_error_response(400, "The normal_side must be either \"left\" or \"right\"")
+            raise get_error_response(400, "The normal_side debit be included with a POST request.")
+        if not (normal_side == "credit" or normal_side == "right"):
+            raise get_error_response(400, "The normal_side must be either \"credit\" or \"debit\"")
         description = data['description']
         if description is None:
             raise get_error_response(400, "The description must be included with a POST request.")
