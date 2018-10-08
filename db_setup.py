@@ -43,5 +43,8 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/account_data_setup.txt
     for line in f.readlines():
         account_id, account_title, normal_side, description = line.split(', ')
         users = db.get_all_user_accounts()
+        logging.debug(str(users))
+        logging.debug(str(users[random.randrange(0, len(users))]))
         created_by = users[random.randrange(0, len(users))][0]
+        logging.debug(str(created_by))
         db.add_account(account_id.strip(), account_title.strip(), normal_side.strip(), description.strip(), created_by)
