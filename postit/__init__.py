@@ -25,8 +25,6 @@ def hello_world():
 
 @app.route('/info', methods=['GET', 'POST', 'PUT'])
 def site_info():
-    log_request(request)
-
     if request.method == 'GET':
         return jsonify({"response": "It worked!"})
     raise get_error_response(400, "Only GET requests are valid for this address")
@@ -71,7 +69,6 @@ def login():
 
 @app.route('/verify_logged_in', methods=['GET'])
 def verify_logged_in():
-    log_request(request)
     requester_auth_token = get_header_verification_data(request, False)
     requester_user_id = str(db.get_user_id(auth_token=requester_auth_token))
     response = jsonify(requester_user_id is not None and not requester_user_id == "None")
