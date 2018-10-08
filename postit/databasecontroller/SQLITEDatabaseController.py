@@ -471,7 +471,29 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         return results_dict_list
 
     def get_account(self, account_id):
-        return self.get_data("ACCOUNTS", "*", "ACCOUNT_ID", account_id)
+        db = sqlite3.connect(self.database_file_name)
+        cursor = db.cursor()
+
+        command = '''Select ACCOUNT_ID, ACCOUNT_TITLE, NORMAL_SIDE, BALANCE, DATE_CREATED, CREATED_BY, LAST_EDITED_DATE, 
+                    LAST_EDITED_BY, DESCRIPTION, IS_ACTIVE From ACCOUNTS where ACCOUNT_ID is %s''' % account_id
+        logging.debug(command)
+
+        cursor.execute(command)
+        results = list()
+        results.extend(cursor.fetchall())
+        logging.debug(str(results))
+
+        db.commit()
+        cursor.close()
+        db.close()
+
+        results_dict_list = list()
+        for result in results:
+            results_dict_list.append(
+                {"account_id": result[0], "account_title": result[1], "normal_side": result[2], "balance": result[3],
+                 "date_created": result[4], "created_by": result[5], "last_edited_date": result[6],
+                 "last_edited_by": result[7], "description": result[8], "is_active": result[9]})
+        return results_dict_list
 
     def get_table(self, table_name):
         return self.get_data(table_name)
