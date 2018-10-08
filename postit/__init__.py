@@ -85,11 +85,11 @@ def register():
         assert_json_data_contains(['username', 'password', 'first_name', 'last_name', 'email'], json_data, "/register",
                                   "PUT")
         if json_data is not None:
-            username = json_data.get('username')
-            password = json_data.get('password')
-            first_name = json_data.get('first_name')
-            last_name = json_data.get('last_name')
-            email = json_data.get('email')
+            username = json_data.get('username').strip()
+            password = json_data.get('password').strip()
+            first_name = json_data.get('first_name').strip()
+            last_name = json_data.get('last_name').strip()
+            email = json_data.get('email').strip()
             if db.add_user(username, password, email, first_name, last_name, db.get_30_days_from_now()):
                 user_id = db.get_user_id(username)
                 auth_token = db.get_user_auth_token(username, password)
