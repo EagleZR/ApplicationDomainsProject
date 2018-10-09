@@ -45,6 +45,6 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/account_data_setup.txt
         users = db.get_all_user_accounts()
         logging.debug(str(users))
         logging.debug(str(users[random.randrange(0, len(users))]))
-        created_by = users[random.randrange(0, len(users))][0]
+        created_by = users[random.randrange(0, len(users))]['user_id']
         logging.debug(str(created_by))
         db.add_account(account_id.strip(), account_title.strip(), normal_side.strip(), description.strip(), created_by)
