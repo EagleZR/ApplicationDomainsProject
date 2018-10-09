@@ -472,7 +472,7 @@ def assert_json_data_contains(keys_list, json_data, url, request_method):
     for key in missing_keys:
         message += key + ", "
 
-    raise HTTPError(400, message)
+    raise get_error_response(400, message)
 
 
 if __name__ == "__main__":
