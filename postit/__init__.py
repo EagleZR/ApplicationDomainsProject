@@ -219,7 +219,27 @@ def user(user_id):
         else:
             logging.info("The PUT request does not contain any data")
             raise get_error_response(400, "The PUT request does not contain any data")
-    raise get_error_response(400, "Only GET and PUT requests are valid for this address")
+
+    if request.method == "POST":
+        if not db.get_user_type(requester_user_id) == "admin":
+            raise (403, "Only admins can add new users")
+        if not user_id == 'new':
+            raise get_error_response(400, "POSTS only allowed on /user/new")
+        json_data = request.get_json()
+        assert_json_data_contains(['username', 'password', 'first_name', 'last_name', 'email', 'user_type'], json_data,
+                                  "/user/new", "POST")
+        if not db.add_user(json_data['username'], json_data['password'], json_data['email'], json_data['first_name'],
+                           json_data['last_name'], json_data['user_type']):
+            raise get_error_response(400, "New user could not be added")
+        new_user_id = db.get_user_id(json_data['username'])
+        if not db.set_user_type(new_user_id, json_data['user_type']):
+            raise get_error_response(400, "The new user's account type could not be set")
+
+        response = jsonify({"message": "The new user has been added", "user_id": new_user_id})
+        response.status_code = 200
+        return response
+
+    raise get_error_response(400, "Only GET, PUT, and POST requests are valid for this address")
 
 
 @app.route('/forgotpassword', methods=['GET', 'POST', 'PUT'])
