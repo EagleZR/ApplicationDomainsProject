@@ -252,7 +252,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         self.remove_data("FORGOTPASSWORD", "USER_ID", user_id)
         logging.debug("New Password: " + hash_password(new_password))
         logging.debug("Set Password: " + self.get_data("USERS", "PASSWORD_HASH", "USER_ID", user_id)[0])
-        return hash_password(new_password) == self.get_data("USERS", "PASSWORD_HASH", "USER_ID", user_id)
+        return hash_password(new_password) == self.get_data("USERS", "PASSWORD_HASH", "USER_ID", user_id)[0]
 
     def update_last_login(self, user_id, last_login):
         self.update_data("USERS", "LAST_LOGIN", "USER_ID", user_id, self.get_date_string(last_login))
@@ -548,4 +548,4 @@ def generate_auth_token():
 def hash_password(password):
     m = hashlib.sha256()
     m.update(password.encode())
-    return str(m.hexdigest())
+    return str(m.hexdigest()[0])
