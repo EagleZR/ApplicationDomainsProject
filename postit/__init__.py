@@ -374,10 +374,16 @@ def account(account_id):
 @app.route('/eventlog/<user_id>', methods=['GET', 'POST', 'PUT'])
 def get_event_log(user_id):
     log_request(request)
+    # Add a debug dump
+    if user_id == "dump":
+        event_log.dump()
+        response = {"message": "Event Log dumped to debug log"}
+        response.status_code = 200
+        return response
     # Authentication
     requester_auth_token, requester_user_id, requester_user_type = authenticate_request(request)
     # Verify that the requester is a manager or regular user
-    assert_user_type_is(['admin', 'manager'], requester_user_type)
+    assert_user_type_is(['admin', 'manager'], requester_user_type)  # TODO Managers?
 
     # Use a GET request to retrieve either a list of events for all users, or a list of events for a single user
     if request.method == "GET":

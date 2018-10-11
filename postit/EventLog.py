@@ -47,16 +47,16 @@ class EventLog:
 
     def read_from_user_as_text(self, user_id):
         return_string = ""
-        for s in self.log:
-            if str(s['user_id']) == str(user_id):
-                return_string += format_log_entry(s)
+        for message in self.log:
+            if str(message['user_id']) == str(user_id):
+                return_string += format_log_entry(message)
         return return_string
 
     def get_from_user(self, user_id):
         return_list = list()
-        for s in self.log:
-            if str(s['user_id'] == user_id):
-                return_list += s
+        for message in self.log:
+            if str(message['user_id'] == user_id):
+                return_list += message
         return return_list
 
     def dump(self):
