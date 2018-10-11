@@ -523,7 +523,7 @@ def dict2string(dictionary):
             return_string += str(list2string(dictionary[key]))
         else:
             logging.debug(dictionary[key])
-            return_string += str(dictionary[key] + ", \n")
+            return_string += str(dictionary[key]) + "\n"
     return_string += str("}")
     logging.debug(return_string)
     return return_string
@@ -540,7 +540,7 @@ def list2string(lizt):
         elif item is list:
             return_string += str(list2string(item))
         else:
-            return_string += str(item)
+            return_string += str(item) + "\n"
     return_string += str("]\n")
     logging.debug(return_string)
     return return_string
