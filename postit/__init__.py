@@ -164,7 +164,7 @@ def user(user_id):
 
         # Verify that the requester is either updating own account or is an admin
         if not (user_id == requester_user_id or requester_user_type == 'admin'):
-            event_log.write(requester_user_id, "INVALID EDIT: A non-admin attempted to edit another user, " + user_id)
+            event_log.write(requester_user_id, "WARNING: A non-admin attempted to edit another user, " + user_id)
             raise get_error_response(403, "Only the given user or an admin can update a user's data")
 
         # Update Password
@@ -201,7 +201,7 @@ def user(user_id):
             try:
                 assert_user_type_is(['admin'], requester_user_type)
             except Exception as e:  # Catch it, log it, and throw it again
-                event_log.write(requester_user_id, "INVALID EDIT: User is not admin and attempted to set the user_type "
+                event_log.write(requester_user_id, "WARNING: User is not admin and attempted to set the user_type "
                                 + "of user " + user_id + " to " + value)
                 raise e
             logging.info(
@@ -222,7 +222,7 @@ def user(user_id):
     if request.method == "POST":
         # Verify POSTer's user type
         if not db.get_user_type(requester_user_id) == "admin":
-            event_log.write(requester_user_id, "INVALID EDIT: Made an invalid attempt to create a new user.")
+            event_log.write(requester_user_id, "WARNING: Made an invalid attempt to create a new user.")
             raise (403, "Only admins can add new users")
         # Verify URL. To avoid conflicting POSTs to a single user ID, the address /user/new must be used
         if not user_id == 'new':
@@ -357,7 +357,7 @@ def account(account_id):
             raise get_error_response(400, "The account_id (/account/<account_id> must be an integer number")
         # Attempt to create the account
         if not db.add_account(account_id, account_title, normal_side, description, requester_user_id):
-            event_log.write(requester_user_id, "INVALID EDIT: Unsuccessfully attempt to create Account " + account_id +
+            event_log.write(requester_user_id, "WARNING: Unsuccessfully attempt to create Account " + account_id +
                             " with title \"" + account_title + "\"")
             raise get_error_response(400, "The account was not successfully created")
         event_log.write(requester_user_id, "Created Account " + account_id + " with title \"" + account_title + "\"")
