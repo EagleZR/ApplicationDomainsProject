@@ -484,7 +484,7 @@ def journal_journal_id(journal_entry_id):
         # TODO Provision a folder for source docs to be uploaded to
 
         # Send success response
-        response = jsonify({"message": "The account was successfully created",
+        response = jsonify({"message": "The journal entry was successfully created",
                             "upload_folder": "http://" + config['host']['base_path'] + "journal/" +
                                              str(new_journal_entry_id) + "/"})
         response.status_code = 200
