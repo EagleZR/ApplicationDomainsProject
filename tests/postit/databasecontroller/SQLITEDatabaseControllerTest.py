@@ -14,118 +14,91 @@ class SQLITEDatabaseControllerTest(unittest.TestCase):
     """
 
     def setUp(self):
-        database_file_path = os.getcwd() + '\\..\\..\\..\\ledger\\databasecontroller\\sqlitedb.db'
+        database_file_path = os.getcwd() + '\\..\\..\\..\\postit\\databasecontroller\\sqlitedb.db'
         if os.path.isfile(database_file_path):
             os.remove(database_file_path)
         SQLITEDatabaseController()
         self.assertTrue(os.path.isfile(database_file_path))
+        self.db = SQLITEDatabaseController()
+        self.username = "user1"
+        self.password = "dfiuohsdfiu"
+        self.first_name = "Roger"
+        self.last_name = "Doe"
+        self.email = "fesfsd@sdfsd.com"
+        self.assertTrue(self.db.add_user(self.username, self.password, self.email, self.first_name, self.last_name,
+                                         self.db.get_30_days_from_now()))
 
     def test_get_user_id(self):
-        db = SQLITEDatabaseController()
-        email = "user1"
-        password = "dfiuohsdfiu"
-        name = "Roger"
-        self.assertTrue(db.add_user(email, password, name))
-        db.get_user_id(email, password)
-        # Only fails if an exception was thrown
+        self.assertNotEqual(None, self.db.get_user_id(self.username))
 
     def test_get_auth_token(self):
-        db = SQLITEDatabaseController()
-        email = "user2"
-        password = "efbkwbkwe"
-        name = "Emily"
-        self.assertTrue(db.add_user(email, password, name))
-        db.get_user_auth_token(email, password)
-        # Only fails if an exception was thrown
+        self.assertNotEqual(None, self.db.get_user_auth_token(self.username, self.password))
 
     def test_duplicate_email_exception(self):
-        db = SQLITEDatabaseController()
-        email = "user3"
-        password = "fdkijhsdsf"
-        name = "Antonio"
-        self.assertTrue(db.add_user(email, password, name))
         with self.assertRaises(DuplicateIDException) as context:
-            self.assertFalse(db.add_user(email, password, name))
+            self.assertFalse(self.db.add_user(self.username, self.password, self.email, self.first_name, self.last_name,
+                                              self.db.get_30_days_from_now()))
 
     def test_multiple_users(self):
-        db = SQLITEDatabaseController()
-        email = "user1"
-        password = "dfiuohsdfiu"
-        name = "Roger"
-        self.assertTrue(db.add_user(email, password, name))
+        username = "user2"
+        password = "fgdsfgfsb"
+        first_name = "Daniel"
+        last_name = "Reed"
+        email = "fesfsdfdsfssd@fdgfgfd.com"
+        self.assertTrue(
+            self.db.add_user(username, password, email, first_name, last_name, self.db.get_30_days_from_now()))
 
-        db = SQLITEDatabaseController()
-        email = "user2"
-        password = "efbkwbkwe"
-        name = "Emily"
-        self.assertTrue(db.add_user(email, password, name))
+        username = "user3"
+        password = "gdfgfdgfd"
+        first_name = "Andy"
+        last_name = "Richard"
+        email = "dfsddfsdfh@kjljklk.com"
+        self.assertTrue(
+            self.db.add_user(username, password, email, first_name, last_name, self.db.get_30_days_from_now()))
 
-        db = SQLITEDatabaseController()
-        email = "user3"
-        password = "fdkijhsdsf"
-        name = "Antonio"
-        self.assertTrue(db.add_user(email, password, name))
-
-        self.assertTrue(db.user_exists("user1"))
-        self.assertTrue(db.user_exists("user2"))
-        self.assertTrue(db.user_exists("user3"))
+        self.assertTrue(self.db.user_exists("user1"))
+        self.assertTrue(self.db.user_exists("user2"))
+        self.assertTrue(self.db.user_exists("user3"))
 
     def test_get_login_data(self):
-        db = SQLITEDatabaseController()
-        email = "user1"
-        password = "dfiuohsdfiu"
-        name = "Roger"
-        self.assertTrue(db.add_user(email, password, name))
-        user_id, auth_token = db.get_login_data(email, password)
+        user_id, auth_token, last_login, password_expire_date = self.db.get_login_data(self.username, self.password)
         self.assertTrue(user_id is not None)
         self.assertTrue(auth_token is not None)
+        self.assertTrue(password_expire_date is not None)
 
     def test_invalid_user_login(self):
-        db = SQLITEDatabaseController()
-        email = "user1"
-        password = "dfiuohsdfiu"
-        name = "Roger"
-        self.assertTrue(db.add_user(email, password, name))
-        user_id, auth_token = db.get_login_data(email + "fgdfgdf", password + "fsfdsfs")
+        user_id, auth_token, var3, var4 = self.db.get_login_data("fgdfgdf", "fsfdsfs")
         self.assertTrue(user_id is None)
         self.assertTrue(auth_token is None)
 
     def test_get_all_users(self):
-        emails = list()
-        names = list()
-        db = SQLITEDatabaseController()
-        email = "user1"
-        password = "dfiuohsdfiu"
-        name = "Roger"
-        self.assertTrue(db.add_user(email, password, name))
-        emails.append(email)
-        names.append(name)
+        usernames = list()
+        usernames.append(self.username)
 
-        db = SQLITEDatabaseController()
-        email = "user2"
+        username = "user2"
         password = "efbkwbkwe"
-        name = "Emily"
-        self.assertTrue(db.add_user(email, password, name))
-        emails.append(email)
-        names.append(name)
+        first_name = "Emily"
+        last_name = "Smith"
+        email = "dsfdsfsd@sdfdsfds.com"
+        self.assertTrue(
+            self.db.add_user(username, password, email, first_name, last_name, self.db.get_30_days_from_now()))
+        usernames.append(username)
 
-        db = SQLITEDatabaseController()
-        email = "user3"
-        password = "fdkijhsdsf"
-        name = "Antonio"
-        self.assertTrue(db.add_user(email, password, name))
-        emails.append(email)
-        names.append(name)
+        username = "user3"
+        password = "dfsglsdfgkjdfglkj"
+        first_name = "Jessica"
+        last_name = "Allen"
+        email = "hjkmfhjm@jgkughdy.com"
+        self.assertTrue(
+            self.db.add_user(username, password, email, first_name, last_name, self.db.get_30_days_from_now()))
+        usernames.append(username)
 
-        users = db.get_all_user_accounts()
-        self.assertEqual(len(emails) + 1,
-                         len(users))  # Admin is automatically created, so there will be 1 more user in the db
-        self.assertEqual(len(names) + 1, len(users))
+        users = self.db.get_all_user_accounts()
+        # Admin is automatically created, so there will be 1 more user in the db
+        self.assertEqual(len(usernames) + 1, len(users))
 
-        for user_email in emails:
-            self.assertTrue(user_list_contains("email", user_email, users))
-        for user_name in names:
-            self.assertTrue(user_list_contains("name", user_name, users))
+        for username in usernames:
+            self.assertTrue(user_list_contains("username", username, users))
 
 
 def user_list_contains(category, value, users):
