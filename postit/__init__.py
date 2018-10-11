@@ -474,7 +474,7 @@ def journal_journal_id(journal_entry_id):
             except ValueError:
                 raise get_error_response(400, "The transaction amount must be a number")
         logging.debug("Credit: " + str(credit_side_sum) + "\tDebit: " + str(debit_side_sum))
-        if not debit_side_sum == 0 or not credit_side_sum == 0:
+        if debit_side_sum == 0 or credit_side_sum == 0:
             raise get_error_response(400, "Each journal entry must contain a debit and a credit")
         if not debit_side_sum + credit_side_sum == 0:
             raise get_error_response(400, "Credits and Debits must be equal")
