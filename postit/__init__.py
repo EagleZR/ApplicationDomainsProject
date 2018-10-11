@@ -518,9 +518,21 @@ def dict2string(dictionary):
         return_string += key + ": "
         if dictionary[key] is dict:
             return_string += dict2string(dictionary[key])
+        elif dictionary[key] is list:
+            return_string += list2string(dictionary[key])
         else:
             return_string += dictionary[key] + ", \n"
     return_string += "}"
+    return return_string
+
+
+def list2string(lizt):
+    if lizt is None:
+        return ""
+    return_string = "[\n"
+    for item in lizt:
+        return_string += dict2string(item)
+    return_string += "]\n"
     return return_string
 
 
