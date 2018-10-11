@@ -171,3 +171,5 @@ fabric.properties
 **/.idea/*
 
 sqlitedb.db
+
+EventLog
