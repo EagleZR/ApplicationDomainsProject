@@ -517,9 +517,9 @@ def dict2string(dictionary):
     return_string += str("{\n")
     for key in list(dictionary.keys()):
         return_string += str(key + ": ")
-        if dictionary[key] is dict:
+        if isinstance(dictionary[key], dict):
             return_string += str(dict2string(dictionary[key]))
-        elif dictionary[key] is list:
+        elif isinstance(dictionary[key], list):
             return_string += str(list2string(dictionary[key]))
         else:
             logging.debug(dictionary[key])
