@@ -265,10 +265,10 @@ def forgot_password():
         # Verify user exists
         user_id = db.get_user_id(username)
         if user_id is None:
-            return get_error_response(400, "The username is not registered to an account")
+            raise get_error_response(400, "The username is not registered to an account")
         # Register the forgotten password with the database
         if not db.forgot_password(user_id):
-            return get_error_response(405, "The reset password request was not successfully registered")
+            raise get_error_response(405, "The reset password request was not successfully registered")
         # Send the success response
         response = jsonify({"message": "An admin will need to reset your password."})
         response.status_code = 200
