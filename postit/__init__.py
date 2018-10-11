@@ -513,7 +513,8 @@ def dict2string(dictionary):
     """This converts a dict into a string for well-formatted printing"""
     if dictionary is None:
         return ""
-    return_string = "{\n"
+    return_string = ""
+    return_string += "{\n"
     for key in list(dictionary.keys()):
         return_string += key + ": "
         if dictionary[key] is dict:
@@ -530,7 +531,8 @@ def dict2string(dictionary):
 def list2string(lizt):
     if lizt is None:
         return ""
-    return_string = "[\n"
+    return_string = ""
+    return_string += "[\n"
     for item in lizt:
         if item is dict:
             return_string += dict2string(item)
