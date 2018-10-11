@@ -107,6 +107,22 @@ class AbstractDatabaseController(abc.ABC):
     def set_user_data(self, user_id, category, value):
         pass
 
+    @abc.abstractmethod
+    def create_journal_entry(self, transactions_list, user_id, date, description):
+        pass
+
+    @abc.abstractmethod
+    def get_journal_entry(self, journal_entry_id):
+        pass
+
+    @abc.abstractmethod
+    def get_user_has_journal_access(self, user_id, journal_entry_id):
+        pass
+
+    @abc.abstractmethod
+    def get_viewable_journal_entries(self, user_id):
+        pass
+
     def get_30_days_from_now(self):
         return (datetime.today() + timedelta(days=self.password_duration)).strftime(self.date_string_format)
 

@@ -3,6 +3,18 @@ from postit.databasecontroller.AbstractDatabaseController import AbstractDatabas
 
 class DummyDatabaseController(AbstractDatabaseController):
 
+    def get_user_has_journal_access(self, user_id, journal_entry_id):
+        pass
+
+    def get_viewable_journal_entries(self, user_id):
+        pass
+
+    def get_journal_entry(self, journal_entry_id):
+        pass
+
+    def create_journal_entry(self, transactions_list, user_id, date, description):
+        pass
+
     def add_account(self, account_id, account_title, normal_side, description, created_by):
         pass
 

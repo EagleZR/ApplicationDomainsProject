@@ -90,6 +90,35 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             db.commit()
         user_account_cursor.close()
 
+        # Journal Entry Table
+        journal_cursor = db.cursor()
+        try:
+            journal_cursor.execute('''SELECT * FROM JOURNAL_ENTRIES''')
+            logging.debug("Journal Entry table already exists")
+        except sqlite3.OperationalError:
+            logging.warning("Creating Journal Entry table")
+            journal_cursor.execute(
+                '''Create Table if Not Exists JOURNAL_ENTRIES(JOURNAL_ENTRY_ID integer primary key autoincrement, USER_ID integer not 
+                null, DATE text not null, DESCRIPTION text, FOREIGN KEY (USER_ID) REFERENCES USERS(USER_ID));''')
+            db.commit()
+        journal_cursor.close()
+
+        # Transactions Table
+        transaction_cursor = db.cursor()
+        try:
+            transaction_cursor.execute('''SELECT * FROM TRANSACTIONS''')
+            logging.debug("Transactions table already exists")
+        except sqlite3.OperationalError:
+            logging.warning("Creating Transactions table")
+            transaction_cursor.execute(
+                '''Create Table if Not Exists TRANSACTIONS(TRANSACTION_ID integer primary key autoincrement, JOURNAL_ENTRY_ID 
+    integer not null, ACCOUNT_ID integer not null, AMOUNT real not null, FOREIGN KEY (JOURNAL_ENTRY_ID) REFERENCES 
+    JOURNAL_ENTRIES(JOURNAL_ENTRY_ID), FOREIGN KEY (ACCOUNT_ID) REFERENCES ACCOUNTS(ACCOUNT_ID));''')
+            db.commit()
+        transaction_cursor.close()
+
+        # User-Journal Access Table
+
         # TODO Add tables as they're designed
         db.close()
 
@@ -533,6 +562,86 @@ class SQLITEDatabaseController(AbstractDatabaseController):
     def set_user_data(self, user_id, category, value):
         self.update_data("USERS", category, "USER_ID", user_id, value)
         return value == self.get_data("USERS", category, "USER_ID", user_id)
+
+    '''Create Table if Not Exists TRANSACTIONS(TRANSACTION_ID integer primary key autoincrement, ACCOUNT_ID integer not 
+                    null, AMOUNT real not null, FOREIGN KEY (ACCOUNT_ID) REFERENCES ACCOUNTS(ACCOUNT_ID));'''
+
+    def create_journal_entry(self, transactions_list, user_id, date, description):
+        db = sqlite3.connect(self.database_file_name)
+        create_journal_cursor = db.cursor()
+        insert_text = '''Insert into JOURNAL_ENTRIES (USER_ID, DATE, DESCRIPTION) values ('%s', '%s', '%s');''' \
+                      % (user_id, date, description)
+        logging.debug(insert_text)
+        create_journal_cursor.execute(insert_text)
+        db.commit()
+
+        # get_journal_id_cursor = db.cursor()
+        # journal_id_response = get_journal_id_cursor.execute('SELECT last_insert_rowid()').fetchall()[0]
+        # logging.debug("Journal ID:" + journal_id_response)
+        # journal_id = journal_id_response[0][0]
+        # get_journal_id_cursor.close()
+        journal_id = create_journal_cursor.lastrowid
+        create_journal_cursor.close()
+        try:
+            float(journal_id)
+        except ValueError:
+            return None
+
+        for transaction in transactions_list:
+            create_transaction_cursor = db.cursor()
+            insert_text = '''Insert into TRANSACTIONS(ACCOUNT_ID, AMOUNT) values ('%s', '%s')''' % \
+                          (transaction['account_id'], transaction['amount'])
+            logging.debug(insert_text)
+            create_transaction_cursor.execute(insert_text)  # TODO Find a way to verify
+            db.commit()
+            create_journal_cursor.close()
+
+        db.close()
+        return journal_id
+
+    def get_journal_entry(self, journal_entry_id):
+        pass
+
+    def get_user_has_journal_access(self, user_id, journal_entry_id):
+        if self.get_user_type(user_id) == "admin":
+            return False
+        if self.get_user_type(user_id) == "manager":
+            return True
+        return False  # TODO Check with the User Journal Access table to verify
+
+    def get_viewable_journal_entries(self, user_id):
+        if self.get_user_type(user_id) == "manager":
+            db = sqlite3.connect(self.database_file_name)
+            journal_cursor = db.cursor()
+
+            journal_cursor.execute('''Select JOURNAL_ENTRY_ID, USER_ID, DATE, DESCRIPTION from JOURNAL_ENTRIES''')
+
+            results = list()
+            results.extend(journal_cursor.fetchall())
+
+            journal_cursor.close()
+
+            if len(results) is 0:
+                return None
+
+            results_dict_list = list()
+            for result in results:
+                transaction_cursor = db.cursor()
+
+                transaction_cursor.execute(
+                    '''Select ACCOUNT_ID, AMOUNT from TRANSACTIONS where JOURNAL_ENTRY_ID is '%s' ''' % result[0])
+
+                transactions = list()
+                transactions.extend(transaction_cursor.fetchall())
+
+                transaction_cursor.close()
+
+                results_dict_list.append(
+                    {"journal_entry_id": result[0], "user_id": result[1], "date": result[2],
+                     "description": result[3], "transactions": transactions})
+
+            db.close()
+            return results_dict_list
 
 
 class InvalidUserType(HTTPError):

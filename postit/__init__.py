@@ -7,6 +7,7 @@ from postit.HTTPError import HTTPError
 import configparser
 import os.path
 import logging
+from werkzeug.utils import secure_filename
 
 from postit.databasecontroller.SQLITEDatabaseController import DuplicateIDException, InvalidUserType
 
@@ -14,6 +15,7 @@ config = configparser.ConfigParser()
 config.read(os.path.dirname(os.path.realpath(__file__)) + '/config.ini')
 db = databasecontroller.get_database(config['database']['database_type'])
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = config['files']['upload_folder']
 CORS(app)
 event_log = EventLog()
 
@@ -401,6 +403,92 @@ def get_event_log(user_id):
     # This is the catch-all statement at the end of the method. If a conditional leaf doesn't return or raise
     # anything, it might overflow to here.
     return get_error_response(400, "Only GET requests are valid for this address")
+
+
+@app.route('/journal/<journal_entry_id>', methods=['GET', 'POST', 'PUT'])
+def journal_journal_id(journal_entry_id):
+    log_request(request)
+    # Authentication
+    requester_auth_token, requester_user_id, requester_user_type = authenticate_request(request)
+    # Verify that the requester is a manager or regular user
+    assert_user_type_is(['manager', 'user'], requester_user_type)
+
+    # Use a GET request to retrieve either a list of all journal entries, or a single journal entry
+    if request.method == 'GET':
+        # All accounts
+        if journal_entry_id == "all":
+            # Retrieve all viewable journal entries
+            journal_entries = db.get_viewable_journal_entries(requester_user_id)
+            # Send success response
+            response = jsonify({"journal_entries": journal_entries})
+            response.status_code = 200
+            return response
+        # Single account
+        else:
+            # Attempt to retrieve the journal entry
+            if not db.get_user_has_journal_access(requester_user_id, journal_entry_id):
+                raise get_error_response(403, "You are not authorized to view this journal entry.")
+            data = db.get_journal_entry(journal_entry_id)
+            # Send success response
+            response = jsonify({"journal_entry": data})
+            response.status_code = 200
+            return response
+
+    # Use a PUT request to update data about an existing journal entry
+    elif request.method == 'PUT':
+        logging.info("This functionality has not been programmed yet (/journal/<journal_entry_id>) 2")
+        raise get_error_response(400, "This functionality has not been programmed yet (/journal/<journal_entry_id>) 2")
+
+    # Use a POST account to create a new journal entry. The journal entry ID is not very important, so POST to
+    # /journal/new to avoid collisions
+    elif request.method == 'POST':
+        # Make sure only managers are using this
+        assert_user_type_is(['manager', 'user'], requester_user_type)
+        # Verify URL. To avoid conflicting POSTs to a single journal ID, the address /journal/new must be used
+        if not journal_entry_id == 'new':
+            raise get_error_response(400, "POSTS only allowed on /journal/new")
+        # Verify request data
+        data = request.get_json()
+        assert_json_data_contains(['transactions_list', 'user_id', 'date', 'description'], data,
+                                  'journal/' + journal_entry_id, 'POST')
+        transactions_list = data['transactions_list']
+        user_id = data['user_id']
+        date = data['date']
+        description = data['description']
+        if transactions_list is not list:
+            raise get_error_response(400, "The transactions must be sent as a list")
+        has_positive = False
+        has_negative = False
+        for transaction in transactions_list:
+            if transaction['account_id'] is None or transaction['account_id'] == "":
+                raise get_error_response(400, "Each transaction must contain an account ID")
+            if transaction['amount'] is None or transaction['amount'] == "":
+                raise get_error_response(400, "Each transaction must contain an amount")
+            try:
+                amount = float(transaction['amount'])
+                if amount > 0:
+                    has_positive = True
+                if amount < 0:
+                    has_negative = True
+            except ValueError:
+                raise get_error_response(400, "The transaction amount must be a number")
+        if not has_negative or not has_positive:
+            raise get_error_response(400, "Each journal entry must contain a debit and a credit")
+        # Attempt to create journal entry in database
+        new_journal_entry_id = db.create_journal_entry(transactions_list, user_id, date, description)
+        event_log.write(requester_user_id, "Created a journal entry with ID: " + new_journal_entry_id)
+        # TODO Provision a folder for source docs to be uploaded to
+
+        # Send success response
+        response = jsonify({"message": "The account was successfully created",
+                            "upload_folder": "http://" + config['host']['base_path'] + "journal/" +
+                                             str(new_journal_entry_id) + "/"})
+        response.status_code = 200
+        return response
+
+    # This is the catch-all statement at the end of the method. If a conditional leaf doesn't return or raise
+    # anything, it might overflow to here.
+    raise get_error_response(404, "Not sure how you got here... that's not supposed to happen...")
 
 
 def get_error_response(status_code, message):
