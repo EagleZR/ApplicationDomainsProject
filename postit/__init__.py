@@ -522,6 +522,7 @@ def dict2string(dictionary):
         elif dictionary[key] is list:
             return_string += str(list2string(dictionary[key]))
         else:
+            logging.debug(dictionary[key])
             return_string += str(dictionary[key] + ", \n")
     return_string += str("}")
     logging.debug(return_string)
