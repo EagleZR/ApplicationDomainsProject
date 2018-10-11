@@ -3,7 +3,7 @@ import os.path
 import pickle
 from datetime import datetime
 
-file_name = os.path.dirname(os.path.abspath(__file__)) + "\\EventLog"
+file_name = os.path.dirname(os.path.abspath(__file__)) + "/EventLog"
 date_string_format = "%d-%b-%Y %H:%M:%S"
 
 
