@@ -4,8 +4,8 @@ except ImportError:
     import unittest
 import os
 
-from ledger.databasecontroller.SQLITEDatabaseController import SQLITEDatabaseController
-from ledger.databasecontroller.SQLITEDatabaseController import DuplicateIDException
+from postit.databasecontroller.SQLITEDatabaseController import SQLITEDatabaseController
+from postit.databasecontroller.SQLITEDatabaseController import DuplicateIDException
 
 
 class SQLITEDatabaseControllerTest(unittest.TestCase):
