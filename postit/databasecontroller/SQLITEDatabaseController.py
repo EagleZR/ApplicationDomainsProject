@@ -274,7 +274,14 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db.close()
 
     def get_forgotten_passwords(self):
-        return self.get_data("FORGOTPASSWORD", "*")
+        # TODO Optimize this so it can all be done with a single request
+        data = self.get_data("FORGOTPASSWORD", "*")
+        response_list = list()
+        for user_data in data:
+            response_list.append({"user_id": user_data[0], "username": self.get_username(user_data[0]),
+                                  "date_forgotten": user_data[1],
+                                  "last_login": self.get_last_login(user_data[0])[0][0]})
+        return response_list
 
     def get_username(self, user_id):
         usernames = self.get_data("USERS", "USERNAME", "USER_ID", user_id)
