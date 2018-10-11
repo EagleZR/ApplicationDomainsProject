@@ -597,7 +597,44 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         return journal_id
 
     def get_journal_entry(self, journal_entry_id):
-        pass
+        db = sqlite3.connect(self.database_file_name)
+        journal_cursor = db.cursor()
+
+        journal_cursor.execute(
+            '''Select JOURNAL_ENTRY_ID, USER_ID, DATE, DESCRIPTION from JOURNAL_ENTRIES WHERE JOURNAL_ENTRY_ID is '%s' 
+            ''' % journal_entry_id)
+
+        results = list()
+        results.extend(journal_cursor.fetchall())
+
+        journal_cursor.close()
+
+        if len(results) is 0:
+            return None
+
+        results_dict_list = list()
+        for result in results:
+            transaction_cursor = db.cursor()
+
+            transaction_cursor.execute(
+                '''Select ACCOUNT_ID, AMOUNT from TRANSACTIONS where JOURNAL_ENTRY_ID is '%s' ''' % result[0])
+
+            transactions = list()
+            transactions.extend(transaction_cursor.fetchall())
+
+            transaction_cursor.close()
+
+            transactions_dicts = list()
+
+            for transaction in transactions:
+                transactions_dicts.append({"account_id": transaction[0], "amount": transactions[1]})
+
+            results_dict_list.append(
+                {"journal_entry_id": result[0], "user_id": result[1], "date": result[2],
+                 "description": result[3], "transactions": transactions})
+
+        db.close()
+        return results_dict_list
 
     def get_user_has_journal_access(self, user_id, journal_entry_id):
         if self.get_user_type(user_id) == "admin":
