@@ -476,7 +476,7 @@ def journal_journal_id(journal_entry_id):
             raise get_error_response(400, "Each journal entry must contain a debit and a credit")
         # Attempt to create journal entry in database
         new_journal_entry_id = db.create_journal_entry(transactions_list, user_id, date, description)
-        event_log.write(requester_user_id, "Created a journal entry with ID: " + new_journal_entry_id)
+        event_log.write(requester_user_id, "Created a journal entry with ID: " + str(new_journal_entry_id))
         # TODO Provision a folder for source docs to be uploaded to
 
         # Send success response
