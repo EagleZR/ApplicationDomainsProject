@@ -55,8 +55,8 @@ class EventLog:
     def get_from_user(self, user_id):
         return_list = list()
         for message in self.log:
-            if str(message['user_id'] == user_id):
-                return_list += message
+            if str(message['user_id']) == str(user_id):
+                return_list.append(message)
         return return_list
 
     def dump(self):
