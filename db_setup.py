@@ -35,9 +35,9 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/user_setup_data.txt', 
                     random_date((datetime.today() + timedelta(days=30)), datetime.today(), random.random()).strftime(
                         db.date_string_format))
         user_id = db.get_user_id(username)
-        event_log.write(1, "Added user " + user_id)
+        event_log.write(1, "Added user " + str(user_id))
         db.set_user_type(user_id, user_type)
-        event_log.write(1, "Set user " + user_id + " to " + user_type)
+        event_log.write(1, "Set user " + str(user_id) + " to " + user_type)
         db.update_last_login(user_id, random_date((datetime.today() - timedelta(days=30)), datetime.today(),
                                                   random.random()))
 
@@ -48,4 +48,4 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/account_data_setup.txt
         users = db.get_all_user_accounts()
         created_by = users[random.randrange(0, len(users))]['user_id']
         db.add_account(account_id.strip(), account_title.strip(), normal_side.strip(), description.strip(), created_by)
-        event_log.write(1, "Created account " + account_id)
+        event_log.write(1, "Created account " + str(account_id))
