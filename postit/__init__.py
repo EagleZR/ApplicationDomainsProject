@@ -457,8 +457,8 @@ def journal_journal_id(journal_entry_id):
         description = data['description']
         if not isinstance(transactions_list, list):
             raise get_error_response(400, "The transactions must be sent as a list")
-        has_positive = False
-        has_negative = False
+        debbit_side_sum = 0
+        credit_side_sum = 0
         for transaction in transactions_list:
             if transaction['account_id'] is None or transaction['account_id'] == "":
                 raise get_error_response(400, "Each transaction must contain an account ID")
@@ -467,13 +467,15 @@ def journal_journal_id(journal_entry_id):
             try:
                 amount = float(transaction['amount'])
                 if amount > 0:
-                    has_positive = True
+                    debbit_side_sum += amount
                 if amount < 0:
-                    has_negative = True
+                    credit_side_sum += amount
             except ValueError:
                 raise get_error_response(400, "The transaction amount must be a number")
-        if not has_negative or not has_positive:
+        if not debbit_side_sum == 0 or not credit_side_sum == 0:
             raise get_error_response(400, "Each journal entry must contain a debit and a credit")
+        if not debbit_side_sum + credit_side_sum == 0:
+            raise get_error_response(400, "Credits and Debits must be equal")
         # Attempt to create journal entry in database
         new_journal_entry_id = db.create_journal_entry(transactions_list, user_id, date, description)
         event_log.write(requester_user_id, "Created a journal entry with ID: " + str(new_journal_entry_id))
