@@ -377,7 +377,7 @@ def get_event_log(user_id):
     # Add a debug dump
     if user_id == "dump":
         event_log.dump()
-        response = {"message": "Event Log dumped to debug log"}
+        response = jsonify({"message": "Event Log dumped to debug log"})
         response.status_code = 200
         return response
     # Authentication
