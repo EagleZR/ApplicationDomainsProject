@@ -298,7 +298,7 @@ def account(account_id):
     # Authentication
     requester_auth_token, requester_user_id, requester_user_type = authenticate_request(request)
     # Verify that the requester is a manager or regular user
-    assert_user_type_is(['manager', 'user'], requester_user_type)
+    assert_user_type_is(['admin', 'manager', 'user'], requester_user_type)
 
     # Use a GET request to retrieve either a list of all accounts, or a single account
     if request.method == 'GET':
