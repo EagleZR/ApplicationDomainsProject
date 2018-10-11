@@ -239,11 +239,11 @@ def user(user_id):
             raise get_error_response(400, "New user could not be added")
         # Retrieve the new user's ID
         new_user_id = db.get_user_id(json_data['username'])
-        event_log.write(requester_user_id, "Created a new user with ID: " + new_user_id)
+        event_log.write(requester_user_id, "Created a new user with ID: " + str(new_user_id))
         if not db.set_user_type(new_user_id, json_data['user_type']):
             raise get_error_response(400, "The new user's account type could not be set")
         # Return the success response
-        response = jsonify({"message": "The new user has been added", "user_id": new_user_id})
+        response = jsonify({"message": "The new user has been added", "user_id": str(new_user_id)})
         response.status_code = 200
         return response
 
