@@ -531,7 +531,12 @@ def list2string(lizt):
         return ""
     return_string = "[\n"
     for item in lizt:
-        return_string += dict2string(item)
+        if item is dict:
+            return_string += dict2string(item)
+        elif item is list:
+            return_string += list2string(item)
+        else:
+            return_string += item
     return_string += "]\n"
     return return_string
 
