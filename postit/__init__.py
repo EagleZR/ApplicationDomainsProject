@@ -195,7 +195,7 @@ def user(user_id):
         # Update user type
         if category == 'user_type':
             # Verify that the user is just an admin, and not someone trying to update their own user_type
-            assert_user_type_is(['admin'], requester_user_id)
+            assert_user_type_is(['admin'], requester_user_type)
             logging.info(
                 "An admin (user_id: " + str(requester_user_id) +
                 ") is changing the user_type for a user (user_id: " + str(user_id) + ") to " + str(value))
@@ -266,7 +266,7 @@ def forgot_password():
         # Authentication
         requester_auth_token, requester_user_id, requester_user_type = authenticate_request(request)
         # Verify that the requester is an admin
-        assert_user_type_is(['admin'], requester_user_id)
+        assert_user_type_is(['admin'], requester_user_type)
         # Retrieve the files from the database
         data = db.get_forgotten_passwords()
         # Send the success response
@@ -298,7 +298,7 @@ def account(account_id):
     # Authentication
     requester_auth_token, requester_user_id, requester_user_type = authenticate_request(request)
     # Verify that the requester is a manager or regular user
-    assert_user_type_is(['manager', 'user'], requester_user_id)
+    assert_user_type_is(['manager', 'user'], requester_user_type)
 
     # Use a GET request to retrieve either a list of all accounts, or a single account
     if request.method == 'GET':
@@ -365,7 +365,7 @@ def get_event_log(user_id):
     # Authentication
     requester_auth_token, requester_user_id, requester_user_type = authenticate_request(request)
     # Verify that the requester is a manager or regular user
-    assert_user_type_is(['admin', 'manager'], requester_user_id)
+    assert_user_type_is(['admin', 'manager'], requester_user_type)
 
     # Use a GET request to retrieve either a list of events for all users, or a list of events for a single user
     if request.method == "GET":
