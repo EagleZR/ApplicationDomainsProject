@@ -8,7 +8,7 @@ date_string_format = "%d-%b-%Y %H:%M:%S"
 
 
 def format_log_entry(log_entry):
-    return "[User ID: " + log_entry['user_id'] + "]: " + log_entry['timestamp'] + " -- " + log_entry['message']
+    return "[User ID: " + str(log_entry['user_id']) + "]: " + log_entry['timestamp'] + " -- " + log_entry['message']
 
 
 class EventLog:
