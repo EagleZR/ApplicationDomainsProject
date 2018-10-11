@@ -455,7 +455,7 @@ def journal_journal_id(journal_entry_id):
         user_id = data['user_id']
         date = data['date']
         description = data['description']
-        if transactions_list is not list:
+        if not isinstance(transactions_list, list):
             raise get_error_response(400, "The transactions must be sent as a list")
         has_positive = False
         has_negative = False
