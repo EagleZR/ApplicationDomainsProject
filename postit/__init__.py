@@ -523,6 +523,7 @@ def dict2string(dictionary):
         else:
             return_string += dictionary[key] + ", \n"
     return_string += "}"
+    logging.debug(return_string)
     return return_string
 
 
@@ -538,6 +539,7 @@ def list2string(lizt):
         else:
             return_string += item
     return_string += "]\n"
+    logging.debug(return_string)
     return return_string
 
 
