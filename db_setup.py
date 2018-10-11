@@ -49,3 +49,5 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/account_data_setup.txt
         created_by = users[random.randrange(0, len(users))]['user_id']
         db.add_account(account_id.strip(), account_title.strip(), normal_side.strip(), description.strip(), created_by)
         event_log.write(1, "Created account " + str(account_id))
+
+logging.debug(event_log.read_all_as_text())
