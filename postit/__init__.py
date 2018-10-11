@@ -466,12 +466,14 @@ def journal_journal_id(journal_entry_id):
                 raise get_error_response(400, "Each transaction must contain an amount")
             try:
                 amount = float(transaction['amount'])
+                logging.debug(amount)
                 if amount > 0:
                     debbit_side_sum += amount
                 if amount < 0:
                     credit_side_sum += amount
             except ValueError:
                 raise get_error_response(400, "The transaction amount must be a number")
+        logging.debug("Credit: " + credit_side_sum + "\tDebit: " + debbit_side_sum)
         if not debbit_side_sum == 0 or not credit_side_sum == 0:
             raise get_error_response(400, "Each journal entry must contain a debit and a credit")
         if not debbit_side_sum + credit_side_sum == 0:
