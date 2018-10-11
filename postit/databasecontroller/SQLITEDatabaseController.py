@@ -633,6 +633,11 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
                 transaction_cursor.close()
 
+                transactions_dicts = list()
+
+                for transaction in transactions:
+                    transactions_dicts.append({"account_id": transaction[0], "amount": transactions[1]})
+
                 results_dict_list.append(
                     {"journal_entry_id": result[0], "user_id": result[1], "date": result[2],
                      "description": result[3], "transactions": transactions})
