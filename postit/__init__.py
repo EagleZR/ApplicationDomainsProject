@@ -124,7 +124,7 @@ def register():
 @app.route('/user/<user_id>', methods=['GET', 'POST', 'PUT'])
 def user(user_id):
     log_request(request)
-    if user_id is None or user_id == "null":
+    if user_id is None or user_id == "null":  # TODO Conduct a more thorough check
         raise get_error_response(400, "The URL must refer to a valid User ID, or be 'info' or 'all'")
     logging.debug("User ID: " + user_id)
 
@@ -164,6 +164,7 @@ def user(user_id):
 
         # Verify that the requester is either updating own account or is an admin
         if not (user_id == requester_user_id or requester_user_type == 'admin'):
+            event_log.write(requester_user_id, "INVALID EDIT: A non-admin attempted to edit another user, " + user_id)
             raise get_error_response(403, "Only the given user or an admin can update a user's data")
 
         # Update Password
@@ -175,6 +176,7 @@ def user(user_id):
             if not db.update_password(user_id, value):
                 raise get_error_response(405, "The password was not updated")
             logging.info("The password was updated successfully")
+            event_log.write(requester_user_id, "Updated the password of user " + user_id)
             # Set the new expiration date
             db.set_password_expire(user_id, db.get_30_days_from_now())
             # Return success response
@@ -187,6 +189,7 @@ def user(user_id):
             # Attempt to update the data
             if not db.set_user_data(user_id, category, value):
                 raise get_error_response(405, "The data could not be set")
+            event_log.write(requester_user_id, "Updated the " + category + " of user " + user_id)
             # Send the success response
             response = jsonify({"message": "The data was successfully set"})
             response.status_code = 200
@@ -195,7 +198,12 @@ def user(user_id):
         # Update user type
         if category == 'user_type':
             # Verify that the user is just an admin, and not someone trying to update their own user_type
-            assert_user_type_is(['admin'], requester_user_type)
+            try:
+                assert_user_type_is(['admin'], requester_user_type)
+            except Exception as e:  # Catch it, log it, and throw it again
+                event_log.write(requester_user_id, "INVALID EDIT: User is not admin and attempted to set the user_type "
+                                + "of user " + user_id + " to " + value)
+                raise e
             logging.info(
                 "An admin (user_id: " + str(requester_user_id) +
                 ") is changing the user_type for a user (user_id: " + str(user_id) + ") to " + str(value))
@@ -203,6 +211,7 @@ def user(user_id):
             if not db.set_user_type(user_id, value):
                 raise get_error_response(405, "The user type could not be updated")
             logging.info("The user type was updated successfully")
+            event_log.write(requester_user_id, "Set user " + user_id + " user_type to " + value)
             # Return the success response
             response = jsonify({"message": "The user type was updated successfully"})
             response.status_code = 200
@@ -213,6 +222,7 @@ def user(user_id):
     if request.method == "POST":
         # Verify POSTer's user type
         if not db.get_user_type(requester_user_id) == "admin":
+            event_log.write(requester_user_id, "INVALID EDIT: Made an invalid attempt to create a new user.")
             raise (403, "Only admins can add new users")
         # Verify URL. To avoid conflicting POSTs to a single user ID, the address /user/new must be used
         if not user_id == 'new':
@@ -227,6 +237,7 @@ def user(user_id):
             raise get_error_response(400, "New user could not be added")
         # Retrieve the new user's ID
         new_user_id = db.get_user_id(json_data['username'])
+        event_log.write(requester_user_id, "Created a new user with ID: " + new_user_id)
         if not db.set_user_type(new_user_id, json_data['user_type']):
             raise get_error_response(400, "The new user's account type could not be set")
         # Return the success response
@@ -279,6 +290,7 @@ def forgot_password():
     return get_error_response(400, "Only GET and PUT requests are valid for this address")
 
 
+# TODO Might delete this, we don't really need it
 @app.route('/table/<table_name>', methods=['GET', 'POST', 'PUT'])
 def get_table(table_name):
     if request.method == "GET":
@@ -345,7 +357,7 @@ def account(account_id):
             raise get_error_response(400, "The account_id (/account/<account_id> must be an integer number")
         # Attempt to create the account
         if not db.add_account(account_id, account_title, normal_side, description, requester_user_id):
-            event_log.write(requester_user_id, "Unsuccessfully attempt to create Account " + account_id +
+            event_log.write(requester_user_id, "INVALID EDIT: Unsuccessfully attempt to create Account " + account_id +
                             " with title \"" + account_title + "\"")
             raise get_error_response(400, "The account was not successfully created")
         event_log.write(requester_user_id, "Created Account " + account_id + " with title \"" + account_title + "\"")
@@ -371,12 +383,12 @@ def get_event_log(user_id):
     if request.method == "GET":
         if user_id == "all":
             # Send success response
-            response = jsonify(event_log.read_all())
+            response = jsonify(event_log.get_all())
             response.status_code = 200
             return response
         else:
             # Send success response
-            response = jsonify(event_log.read_from_user(user_id))  # TODO Check potential typing issue (str vs int) here
+            response = jsonify(event_log.get_from_user(user_id))
             response.status_code = 200
             return response
 
