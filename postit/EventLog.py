@@ -13,7 +13,7 @@ def format_log_entry(log_entry):
 
 class EventLog:
     def __init__(self):
-        self.is_open = True  # TODO Why do I have this? 
+        self.is_open = True  # TODO Why do I have this?
 
         if os.path.isfile(file_name):
             logging.info("EventLog already exists")
