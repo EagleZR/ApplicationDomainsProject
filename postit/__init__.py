@@ -514,16 +514,16 @@ def dict2string(dictionary):
     if dictionary is None:
         return ""
     return_string = ""
-    return_string += "{\n"
+    return_string += str("{\n")
     for key in list(dictionary.keys()):
-        return_string += key + ": "
+        return_string += str(key + ": ")
         if dictionary[key] is dict:
-            return_string += dict2string(dictionary[key])
+            return_string += str(dict2string(dictionary[key]))
         elif dictionary[key] is list:
-            return_string += list2string(dictionary[key])
+            return_string += str(list2string(dictionary[key]))
         else:
-            return_string += dictionary[key] + ", \n"
-    return_string += "}"
+            return_string += str(dictionary[key] + ", \n")
+    return_string += str("}")
     logging.debug(return_string)
     return return_string
 
@@ -532,15 +532,15 @@ def list2string(lizt):
     if lizt is None:
         return ""
     return_string = ""
-    return_string += "[\n"
+    return_string += str("[\n")
     for item in lizt:
         if item is dict:
-            return_string += dict2string(item)
+            return_string += str(dict2string(item))
         elif item is list:
-            return_string += list2string(item)
+            return_string += str(list2string(item))
         else:
-            return_string += item
-    return_string += "]\n"
+            return_string += str(item)
+    return_string += str("]\n")
     logging.debug(return_string)
     return return_string
 
