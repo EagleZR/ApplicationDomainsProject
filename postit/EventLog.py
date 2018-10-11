@@ -8,7 +8,8 @@ date_string_format = "%d-%b-%Y %H:%M:%S"
 
 
 def format_log_entry(log_entry):
-    return "[User ID: " + str(log_entry['user_id']) + "]: " + log_entry['timestamp'] + " -- " + log_entry['message']
+    return "[User ID: " + str(log_entry['user_id']) + "]: " + log_entry['timestamp'] + " -- " + \
+           log_entry['message']
 
 
 class EventLog:
@@ -38,7 +39,7 @@ class EventLog:
     def read_all_as_text(self):
         return_string = ""
         for s in self.log:
-            return_string += format_log_entry(s)
+            return_string += format_log_entry(s) + "\n"
         return return_string
 
     def get_all(self):
@@ -57,6 +58,12 @@ class EventLog:
             if str(s['user_id'] == user_id):
                 return_list += s
         return return_list
+
+    def dump(self):
+        return_string = ""
+        for s in self.log:
+            logging.debug(format_log_entry(s))
+        return return_string
 
     def save(self):
         data = pickle.dumps(self.log)
