@@ -1,4 +1,4 @@
-class HTTPError(Exception):
+class PostitHTTPError(Exception):
     def __init__(self, message="default message", status_code=400):
         Exception.__init__(self)
         self.message = message

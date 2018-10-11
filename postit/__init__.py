@@ -3,7 +3,7 @@ from postit.EventLog import EventLog
 from flask import (Flask, request, jsonify)
 from datetime import datetime
 from flask_cors import CORS
-from postit.HTTPError import HTTPError
+from postit.PostitHTTPError import PostitHTTPError
 import configparser
 import os.path
 import logging
@@ -497,10 +497,10 @@ def journal_journal_id(journal_entry_id):
 
 def get_error_response(status_code, message):
     """This automatically generates an error response, it needs to be thrown once returned to be effective."""
-    return HTTPError(message, status_code)
+    return PostitHTTPError(message, status_code)
 
 
-@app.errorhandler(HTTPError)
+@app.errorhandler(PostitHTTPError)
 def handle_http_error(error):
     """This handles all HTTPErrors thrown within this program. It converts the exception into an appropriate HTTP
     response"""

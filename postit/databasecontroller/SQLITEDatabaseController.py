@@ -1,4 +1,4 @@
-from postit.HTTPError import HTTPError
+from postit.PostitHTTPError import PostitHTTPError
 from postit.databasecontroller.AbstractDatabaseController import AbstractDatabaseController
 from datetime import datetime
 import logging
@@ -683,16 +683,16 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             return results_dict_list
 
 
-class InvalidUserType(HTTPError):
+class InvalidUserType(PostitHTTPError):
     def __init__(self, user_type, account_types):
-        HTTPError.__init__(self,
+        PostitHTTPError.__init__(self,
                            "Invalid user type: " + user_type + ". Not in list of acceptable account types: " + str(
                                account_types))
 
 
-class DuplicateIDException(HTTPError):
+class DuplicateIDException(PostitHTTPError):
     def __init__(self, id_type, identifier):
-        HTTPError.__init__(self, "A user with the " + id_type + " " + identifier + " already exists.")
+        PostitHTTPError.__init__(self, "A user with the " + id_type + " " + identifier + " already exists.")
 
 
 def generate_auth_token():
