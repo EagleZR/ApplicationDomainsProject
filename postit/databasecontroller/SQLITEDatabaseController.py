@@ -563,9 +563,6 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         self.update_data("USERS", category, "USER_ID", user_id, value)
         return value == self.get_data("USERS", category, "USER_ID", user_id)
 
-    '''Create Table if Not Exists TRANSACTIONS(TRANSACTION_ID integer primary key autoincrement, ACCOUNT_ID integer not 
-                    null, AMOUNT real not null, FOREIGN KEY (ACCOUNT_ID) REFERENCES ACCOUNTS(ACCOUNT_ID));'''
-
     def create_journal_entry(self, transactions_list, user_id, date, description):
         db = sqlite3.connect(self.database_file_name)
         create_journal_cursor = db.cursor()
@@ -589,8 +586,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         for transaction in transactions_list:
             create_transaction_cursor = db.cursor()
-            insert_text = '''Insert into TRANSACTIONS(ACCOUNT_ID, AMOUNT) values ('%s', '%s')''' % \
-                          (transaction['account_id'], transaction['amount'])
+            insert_text = '''Insert into TRANSACTIONS(ACCOUNT_ID, AMOUNT, JOURNAL_ENTRY_ID) values ('%s', '%s', '%s')''' \
+                          % (transaction['account_id'], transaction['amount'], journal_id)
             logging.debug(insert_text)
             create_transaction_cursor.execute(insert_text)  # TODO Find a way to verify
             db.commit()
