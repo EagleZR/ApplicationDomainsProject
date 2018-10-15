@@ -686,8 +686,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 class InvalidUserType(PostitHTTPError):
     def __init__(self, user_type, account_types):
         PostitHTTPError.__init__(self,
-                           "Invalid user type: " + user_type + ". Not in list of acceptable account types: " + str(
-                               account_types))
+                                 "Invalid user type: " + user_type + ". Not in list of acceptable account types: " + str(
+                                     account_types))
 
 
 class DuplicateIDException(PostitHTTPError):

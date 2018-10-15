@@ -1,6 +1,6 @@
 from postit import databasecontroller
 from postit.EventLog import EventLog
-from flask import (Flask, request, jsonify)
+from flask import (Flask, request, jsonify, send_from_directory)
 from datetime import datetime
 from flask_cors import CORS
 from postit.PostitHTTPError import PostitHTTPError
@@ -16,6 +16,7 @@ config.read(os.path.dirname(os.path.realpath(__file__)) + '/config.ini')
 db = databasecontroller.get_database(config['database']['database_type'])
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = config['files']['upload_folder']
+app.config['MAX_CONTENT_LENGTH'] = int(config['files']['max_size'])
 CORS(app)
 event_log = EventLog()
 
@@ -407,7 +408,7 @@ def get_event_log(user_id):
 
 
 @app.route('/journal/<journal_entry_id>', methods=['GET', 'POST', 'PUT'])
-def journal_journal_id(journal_entry_id):
+def journal(journal_entry_id):
     log_request(request)
     # Authentication
     requester_auth_token, requester_user_id, requester_user_type = authenticate_request(request)
@@ -482,8 +483,17 @@ def journal_journal_id(journal_entry_id):
         # Attempt to create journal entry in database
         new_journal_entry_id = db.create_journal_entry(transactions_list, user_id, date, description)
         event_log.write(requester_user_id, "Created a journal entry with ID: " + str(new_journal_entry_id))
-        # TODO Provision a folder for source docs to be uploaded to
-
+        # Provision a folder for source docs to be uploaded to
+        if os.path.isdir(app.config['UPLOAD_FOLDER'] + str(new_journal_entry_id)):
+            logging.warning('The folder for a journal entry\'s files already exists. Its contents will be deleted.')
+            for a_file in os.listdir(app.config['UPLOAD_FOLDER'] + str(new_journal_entry_id)):
+                path = os.path.join(app.config['UPLOAD_FOLDER'] + str(new_journal_entry_id), a_file)
+                try:
+                    os.unlink(path)
+                except Exception:
+                    logging.warning('There was an error deleting the folder\'s contents.')
+        else:
+            os.mkdir(app.config['UPLOAD_FOLDER'] + str(new_journal_entry_id))
         # Send success response
         response = jsonify({"message": "The journal entry was successfully created",
                             "upload_folder": "http://" + config['host']['base_path'] + "journal/" +
@@ -494,6 +504,61 @@ def journal_journal_id(journal_entry_id):
     # This is the catch-all statement at the end of the method. If a conditional leaf doesn't return or raise
     # anything, it might overflow to here.
     raise get_error_response(404, "Not sure how you got here... that's not supposed to happen...")
+
+
+@app.route('/files/<journal_entry_id>/', methods=['GET', 'POST'])
+def upload_files(journal_entry_id):
+    log_request(request)
+
+    # Authentication
+    requester_auth_token, requester_user_id, requester_user_type = authenticate_request(request)
+    # Verify that the requester is a manager or regular user
+    assert_user_type_is(['manager', 'user'], requester_user_type)
+
+    # Verify that the correct directory exists
+    if not os.path.isdir(app.config['UPLOAD_FOLDER'] + str(journal_entry_id)):
+        raise get_error_response(403, "The given address is not associated with an existing journal entry.")
+
+    # POST a new file
+    if request.method == 'POST':
+        # Check that a file was sent
+        if 'file' not in request.files:
+            raise get_error_response(400, 'A file must be sent in a POST to this address')
+        file = request.files['file']
+        # Check that the file has a name
+        if file.filename == '':
+            raise get_error_response(400, 'The file must be named')
+        # Check the file type
+        if not allowed_file(file.filename):
+            raise get_error_response(403, 'A file of that filetype is not allowed on this server')
+        # Save the file
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+    # GET a list of files in a directory
+    if request.method == 'GET':
+        return_files = list()
+        for (dirpath, dirnames, filenames) in os.walk(app.config['UPLOAD_FOLDER'] + str(journal_entry_id)):
+            return_files.extend(filenames)
+            break  # Break so it only gets the top director and excludes subdirectory files, if there are any
+        response = jsonify({'filenames': return_files})
+        response.status_code = 200
+        return response
+
+    # This is the catch-all statement at the end of the method. If a conditional leaf doesn't return or raise
+    # anything, it might overflow to here.
+    raise get_error_response(404, "Not sure how you got here... that's not supposed to happen...")
+
+
+@app.route('/files/<journal_entry_id>/<filename>', methods=['GET'])
+def download_files(journal_entry_id, filename):
+    log_request(request)
+    # Authentication
+    requester_auth_token, requester_user_id, requester_user_type = authenticate_request(request)
+    # Verify that the requester is a manager or regular user
+    assert_user_type_is(['manager', 'user'], requester_user_type)
+    # Send file
+    return send_from_directory(app.config['UPLOAD_FOLDER'] + str(journal_entry_id), filename)
 
 
 def get_error_response(status_code, message):
@@ -627,6 +692,10 @@ def authenticate_request(request):
     if user_type == "new" or user_type == "deactivated":
         raise get_error_response(403, "This account is deactivated, please contact an administrator")
     return requester_auth_token, requester_user_id, user_type
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower in config['files']['allowed_extensions']
 
 
 if __name__ == "__main__":
