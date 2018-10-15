@@ -271,8 +271,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         return results_dict_list
 
     def set_user_type(self, user_id, account_type):
-        if account_type not in self.account_types:
-            raise InvalidUserType(account_type, self.account_types)
+        if account_type not in self.user_types:
+            raise InvalidUserType(account_type, self.user_types)
         self.update_data("USERS", "ACCOUNT_TYPE", "USER_ID", user_id, account_type)
         return self.get_user_type(user_id) == account_type
 

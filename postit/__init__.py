@@ -134,7 +134,7 @@ def user(user_id):
 
     # Pre-authentication checks
     if request.method == 'GET' and user_id == 'info':
-        response = jsonify({"user_types": db.account_types})
+        response = jsonify({"user_types": db.user_types})
         response.status_code = 200
         return response
 
