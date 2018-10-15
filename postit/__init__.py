@@ -15,7 +15,8 @@ config = configparser.ConfigParser()
 config.read(os.path.dirname(os.path.realpath(__file__)) + '/config.ini')
 db = databasecontroller.get_database(config['database']['database_type'])
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = config['files']['upload_folder']
+app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                           config['files']['upload_folder'])
 app.config['MAX_CONTENT_LENGTH'] = int(config['files']['max_size'])
 CORS(app)
 event_log = EventLog()
