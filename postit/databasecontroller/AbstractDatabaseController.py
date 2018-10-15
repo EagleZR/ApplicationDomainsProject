@@ -6,7 +6,7 @@ class AbstractDatabaseController(abc.ABC):
     def __init__(self):
         self.user_types = ["admin", "manager", "user", "deactivated", "new"]
         self.journal_entry_types = ['regular', 'adjusting']
-        # New users have to change their password
+        self.journal_entry_statuses = ['new', 'posted', 'rejected']
         self.default_account_type = "new"
         self.date_string_format = "%d-%b-%Y"
         self.date_time_string_format = self.date_string_format + " %H:%M:%S"
@@ -109,7 +109,7 @@ class AbstractDatabaseController(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def create_journal_entry(self, transactions_list, user_id, date, description):
+    def create_journal_entry(self, transactions_list, user_id, date, description, journal_type):
         pass
 
     @abc.abstractmethod

@@ -99,7 +99,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             logging.warning("Creating Journal Entry table")
             journal_cursor.execute(
                 '''Create Table if Not Exists JOURNAL_ENTRIES(JOURNAL_ENTRY_ID integer primary key autoincrement, USER_ID integer not 
-                null, DATE text not null, DESCRIPTION text, FOREIGN KEY (USER_ID) REFERENCES USERS(USER_ID));''')
+                null, DATE text not null, DESCRIPTION text, TYPE text not null, STATUS text not null, 
+                POSTING_REFERENCE text, FOREIGN KEY (USER_ID) REFERENCES USERS(USER_ID));''')
             db.commit()
         journal_cursor.close()
 
@@ -563,11 +564,11 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         self.update_data("USERS", category, "USER_ID", user_id, value)
         return value == self.get_data("USERS", category, "USER_ID", user_id)
 
-    def create_journal_entry(self, transactions_list, user_id, date, description):
+    def create_journal_entry(self, transactions_list, user_id, date, description, journal_type):
         db = sqlite3.connect(self.database_file_name)
         create_journal_cursor = db.cursor()
-        insert_text = '''Insert into JOURNAL_ENTRIES (USER_ID, DATE, DESCRIPTION) values ('%s', '%s', '%s');''' \
-                      % (user_id, date, description)
+        insert_text = '''Insert into JOURNAL_ENTRIES (USER_ID, DATE, DESCRIPTION, TYPE, STATUS) 
+        values ('%s', '%s', '%s', '%s', '%s');''' % (user_id, date, description, journal_type, 'new')
         logging.debug(insert_text)
         create_journal_cursor.execute(insert_text)
         db.commit()
@@ -601,7 +602,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         journal_cursor = db.cursor()
 
         journal_cursor.execute(
-            '''Select JOURNAL_ENTRY_ID, USER_ID, DATE, DESCRIPTION from JOURNAL_ENTRIES WHERE JOURNAL_ENTRY_ID is '%s' 
+            '''Select JOURNAL_ENTRY_ID, USER_ID, DATE, DESCRIPTION, TYPE, STATUS, POSTING_REFERENCE, from JOURNAL_ENTRIES 
+            WHERE JOURNAL_ENTRY_ID is '%s' 
             ''' % journal_entry_id)
 
         results = list()
@@ -617,7 +619,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             transaction_cursor = db.cursor()
 
             transaction_cursor.execute(
-                '''Select ACCOUNT_ID, AMOUNT from TRANSACTIONS where JOURNAL_ENTRY_ID is '%s' ''' % result[0])
+                '''Select TRANSACTIONS.ACCOUNT_ID, TRANSACTIONS.AMOUNT, ACCOUNT.ACCOUNT_TITLE from TRANSACTIONS 
+                 left join ACCOUNTS on TRANSACTIONS.ACCOUNT_ID = ACCOUNTS.ACCOUNT_ID
+                 where JOURNAL_ENTRY_ID is '%s' ''' % result[0])
 
             transactions = list()
             transactions.extend(transaction_cursor.fetchall())
@@ -627,11 +631,13 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             transactions_dicts = list()
 
             for transaction in transactions:
-                transactions_dicts.append({"account_id": transaction[0], "amount": transactions[1]})
+                transactions_dicts.append({"account_id": transaction[0], "account_title": transactions[1],
+                                           "amount": transactions[2]})
 
             results_dict_list.append(
                 {"journal_entry_id": result[0], "user_id": result[1], "date": result[2],
-                 "description": result[3], "transactions": transactions})
+                 "description": result[3], "type": result[4], "status": result[5], "posting_reference": result[6],
+                 "transactions": transactions})
 
         db.close()
         return results_dict_list
@@ -648,7 +654,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             db = sqlite3.connect(self.database_file_name)
             journal_cursor = db.cursor()
 
-            journal_cursor.execute('''Select JOURNAL_ENTRY_ID, USER_ID, DATE, DESCRIPTION from JOURNAL_ENTRIES''')
+            journal_cursor.execute(
+                '''Select JOURNAL_ENTRY_ID, USER_ID, DATE, DESCRIPTION, TYPE, STATUS, POSTING_REFERENCE, 
+                from JOURNAL_ENTRIES''')
 
             results = list()
             results.extend(journal_cursor.fetchall())
@@ -663,7 +671,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 transaction_cursor = db.cursor()
 
                 transaction_cursor.execute(
-                    '''Select ACCOUNT_ID, AMOUNT from TRANSACTIONS where JOURNAL_ENTRY_ID is '%s' ''' % result[0])
+                    '''Select TRANSACTIONS.ACCOUNT_ID, TRANSACTIONS.AMOUNT, ACCOUNT.ACCOUNT_TITLE from TRANSACTIONS 
+                     left join ACCOUNTS on TRANSACTIONS.ACCOUNT_ID = ACCOUNTS.ACCOUNT_ID
+                     where JOURNAL_ENTRY_ID is '%s' ''' % result[0])
 
                 transactions = list()
                 transactions.extend(transaction_cursor.fetchall())
@@ -673,11 +683,13 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 transactions_dicts = list()
 
                 for transaction in transactions:
-                    transactions_dicts.append({"account_id": transaction[0], "amount": transactions[1]})
+                    transactions_dicts.append({"account_id": transaction[0], "account_title": transactions[1],
+                                               "amount": transactions[2]})
 
                 results_dict_list.append(
                     {"journal_entry_id": result[0], "user_id": result[1], "date": result[2],
-                     "description": result[3], "transactions": transactions})
+                     "description": result[3], "type": result[4], "status": result[5], "posting_reference": result[6],
+                     "transactions": transactions})
 
             db.close()
             return results_dict_list

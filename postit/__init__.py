@@ -451,12 +451,12 @@ def journal(journal_entry_id):
             raise get_error_response(400, "POSTS only allowed on /journal/new")
         # Verify request data
         data = request.get_json()
-        assert_json_data_contains(['transactions_list', 'user_id', 'date', 'description'], data,
+        assert_json_data_contains(['transactions_list', 'date', 'description', 'journal_type'], data,
                                   'journal/' + journal_entry_id, 'POST')
         transactions_list = data['transactions_list']
-        user_id = data['user_id']
         date = data['date']
         description = data['description']
+        journal_type = data['journal_type']
         if not isinstance(transactions_list, list):
             raise get_error_response(400, "The transactions must be sent as a list")
         debit_side_sum = 0
@@ -481,7 +481,8 @@ def journal(journal_entry_id):
         if not debit_side_sum + credit_side_sum == 0:
             raise get_error_response(400, "Credits and Debits must be equal")
         # Attempt to create journal entry in database
-        new_journal_entry_id = db.create_journal_entry(transactions_list, user_id, date, description)
+        new_journal_entry_id = db.create_journal_entry(transactions_list, requester_user_id, date, description,
+                                                       journal_type)
         event_log.write(requester_user_id, "Created a journal entry with ID: " + str(new_journal_entry_id))
         # Provision a folder for source docs to be uploaded to
         if os.path.isdir(app.config['UPLOAD_FOLDER'] + str(new_journal_entry_id)):

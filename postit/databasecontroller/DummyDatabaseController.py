@@ -12,7 +12,7 @@ class DummyDatabaseController(AbstractDatabaseController):
     def get_journal_entry(self, journal_entry_id):
         pass
 
-    def create_journal_entry(self, transactions_list, user_id, date, description):
+    def create_journal_entry(self, transactions_list, user_id, date, description, journal_type):
         pass
 
     def add_account(self, account_id, account_title, normal_side, description, created_by):
