@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 class AbstractDatabaseController(abc.ABC):
     def __init__(self):
         self.user_types = ["admin", "manager", "user", "deactivated", "new"]
+        self.journal_entry_types = ['regular', 'adjusting']
         # New users have to change their password
         self.default_account_type = "new"
         self.date_string_format = "%d-%b-%Y"
