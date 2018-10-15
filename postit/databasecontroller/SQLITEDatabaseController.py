@@ -671,7 +671,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 transaction_cursor = db.cursor()
 
                 transaction_cursor.execute(
-                    '''Select TRANSACTIONS.ACCOUNT_ID, TRANSACTIONS.AMOUNT, ACCOUNT.ACCOUNT_TITLE from TRANSACTIONS 
+                    '''Select TRANSACTIONS.ACCOUNT_ID, TRANSACTIONS.AMOUNT, ACCOUNTS.ACCOUNT_TITLE from TRANSACTIONS 
                      left join ACCOUNTS on TRANSACTIONS.ACCOUNT_ID = ACCOUNTS.ACCOUNT_ID
                      where JOURNAL_ENTRY_ID is '%s' ''' % result[0])
 
