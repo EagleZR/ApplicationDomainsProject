@@ -637,7 +637,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             results_dict_list.append(
                 {"journal_entry_id": result[0], "user_id": result[1], "date": result[2],
                  "description": result[3], "type": result[4], "status": result[5], "posting_reference": result[6],
-                 "transactions": transactions})
+                 "transactions": transactions_dicts})
 
         db.close()
         return results_dict_list
@@ -689,7 +689,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 results_dict_list.append(
                     {"journal_entry_id": result[0], "user_id": result[1], "date": result[2],
                      "description": result[3], "type": result[4], "status": result[5], "posting_reference": result[6],
-                     "transactions": transactions})
+                     "transactions": transactions_dicts})
 
             db.close()
             return results_dict_list
