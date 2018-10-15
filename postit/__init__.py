@@ -53,10 +53,10 @@ def login():
             event_log.write(user_id, "Attempted to log in. Password is expired.")
             return get_error_response(401, "Your password has expired, please contact an administrator")
         # Check if the user account is active
-        account_type = db.get_user_type(user_id)
+        user_type = db.get_user_type(user_id)
         logging.debug("account_type extracted in /signin")
-        if account_type == "deactivated" or account_type == "new":
-            event_log.write(user_id, "Attempted to log in. Account type is " + account_type + ".")
+        if user_type == "deactivated" or user_type == "new":
+            event_log.write(user_id, "Attempted to log in. Account type is " + user_type + ".")
             raise get_error_response(401, "This user account is not active. Please contact an administrator.")
         # Login is successful
         logging.debug("Account type is valid in /signin")
@@ -64,8 +64,9 @@ def login():
         # Update the last login date in the database
         db.update_last_login(user_id, datetime.today())
         # Return the success response
-        response = jsonify({"user_id": user_id, "auth_token": auth_token, "last_login": last_login,
-                            "passwd_time_remaining": passwd_time_remaining.days})
+        response = jsonify(
+            {"user_id": user_id, "auth_token": auth_token, 'user_type': user_type, "last_login": last_login,
+             "passwd_time_remaining": passwd_time_remaining.days})
         response.status_code = 200
         return response
 
