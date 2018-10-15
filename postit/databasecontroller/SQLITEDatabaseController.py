@@ -655,7 +655,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             journal_cursor = db.cursor()
 
             journal_cursor.execute(
-                '''Select JOURNAL_ENTRY_ID, USER_ID, DATE, DESCRIPTION, TYPE, STATUS, POSTING_REFERENCE, 
+                '''Select JOURNAL_ENTRY_ID, USER_ID, DATE, DESCRIPTION, TYPE, STATUS, POSTING_REFERENCE 
                 from JOURNAL_ENTRIES''')
 
             results = list()
