@@ -4,5 +4,5 @@ ali, password2018, admin@markzeagler.com, Muhammad,  Ali
 shamita, password2018, admin@markzeagler.com, Shamita, Hattangady
 mark, password2018, admin@markzeagler.com, Mark, Zeagler
 manager1, managerPassword, manager@markzeagler.com, Mr, Manager
-accountant1, accountantPassword, accountant@markzeagler.com, Accountant, Snuffy
+accountant1, accountantPassword, user@markzeagler.com, Accountant, Snuffy
 deactivate1, deactivatedPassword, deactivated@markzeagler.com, Bad, User
