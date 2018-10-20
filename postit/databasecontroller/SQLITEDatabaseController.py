@@ -565,7 +565,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db = sqlite3.connect(self.database_file_name)
         create_journal_cursor = db.cursor()
         insert_text = '''Insert into JOURNAL_ENTRIES (USER_ID, DATE, DESCRIPTION, TYPE, STATUS) 
-        values ('%s', '%s', '%s', '%s', '%s');''' % (user_id, date, description, journal_type, 'new')
+        values ('%s', '%s', '%s', '%s', '%s');''' % (user_id, date, description, journal_type, 'pending')
         logging.debug(insert_text)
         create_journal_cursor.execute(insert_text)
         db.commit()
