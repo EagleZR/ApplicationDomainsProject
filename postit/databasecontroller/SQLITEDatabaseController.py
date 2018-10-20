@@ -398,28 +398,29 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         return len(results) == 1
 
     def get_user_has_account_access(self, user_id, account_id):
-        account_type = self.get_user_type(user_id)
-        if account_type == 'admin':
-            return True
-        if account_type == 'manager':  # Keeping these separate because these authorizations might change
-            return True
+        return True
+        # account_type = self.get_user_type(user_id)
+        # if account_type == 'admin':
+        #     return True
+        # if account_type == 'manager':  # Keeping these separate because these authorizations might change
+        #     return True
 
-        db = sqlite3.connect(self.database_file_name)
-        cursor = db.cursor()
-
-        command = '''Select * from USER_ACCOUNT_ACCESS where USER_ID is '%s' and ACCOUNT_ID is '%s' ''' % (
-            user_id, account_id)
-        logging.debug(command)
-        cursor.execute(command)
-
-        results = list()
-        results.extend(cursor.fetchall())
-        logging.debug(str(results))
-
-        if results is None or len(results) is 0:
-            return False
-        else:
-            return True
+        # db = sqlite3.connect(self.database_file_name)
+        # cursor = db.cursor()
+        #
+        # command = '''Select * from USER_ACCOUNT_ACCESS where USER_ID is '%s' and ACCOUNT_ID is '%s' ''' % (
+        #     user_id, account_id)
+        # logging.debug(command)
+        # cursor.execute(command)
+        #
+        # results = list()
+        # results.extend(cursor.fetchall())
+        # logging.debug(str(results))
+        #
+        # if results is None or len(results) is 0:
+        #     return False
+        # else:
+        #     return True
 
     def set_user_account_access(self, user_id, account_id, can_access):
         if can_access:
@@ -481,36 +482,32 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         return results_dict_list
 
     def get_viewable_accounts(self, user_id):
-        user_type = self.get_user_type(user_id)
-        if user_type == 'admin':
-            return self.get_accounts()
-        if user_type == 'manager':  # Keeping these separate because these authorizations might change
-            return self.get_accounts()
+        return self.get_accounts()
 
-        db = sqlite3.connect(self.database_file_name)
-        cursor = db.cursor()
-
-        command = '''Select ACCOUNT_ID, ACCOUNT_TITLE, NORMAL_SIDE, BALANCE, DATE_CREATED, CREATED_BY, LAST_EDITED_DATE, 
-            LAST_EDITED_BY, DESCRIPTION, IS_ACTIVE From ACCOUNTS where ACCOUNT.ACCOUNT_ID in 
-            (SELECT ACCOUNT_ID FROM USER_ACCOUNT_ACCESS where USER_ID is %s)''' % user_id
-        logging.debug(command)
-
-        cursor.execute(command)
-        results = list()
-        results.extend(cursor.fetchall())
-        logging.debug(str(results))
-
-        db.commit()
-        cursor.close()
-        db.close()
-
-        results_dict_list = list()
-        for result in results:
-            results_dict_list.append(
-                {"account_id": result[0], "account_title": result[1], "normal_side": result[2], "balance": result[3],
-                 "date_created": result[4], "created_by": result[5], "last_edited_date": result[6],
-                 "last_edited_by": result[7], "description": result[8], "is_active": result[9]})
-        return results_dict_list
+        # db = sqlite3.connect(self.database_file_name)
+        # cursor = db.cursor()
+        #
+        # command = '''Select ACCOUNT_ID, ACCOUNT_TITLE, NORMAL_SIDE, BALANCE, DATE_CREATED, CREATED_BY, LAST_EDITED_DATE,
+        #     LAST_EDITED_BY, DESCRIPTION, IS_ACTIVE From ACCOUNTS where ACCOUNT.ACCOUNT_ID in
+        #     (SELECT ACCOUNT_ID FROM USER_ACCOUNT_ACCESS where USER_ID is %s)''' % user_id
+        # logging.debug(command)
+        #
+        # cursor.execute(command)
+        # results = list()
+        # results.extend(cursor.fetchall())
+        # logging.debug(str(results))
+        #
+        # db.commit()
+        # cursor.close()
+        # db.close()
+        #
+        # results_dict_list = list()
+        # for result in results:
+        #     results_dict_list.append(
+        #         {"account_id": result[0], "account_title": result[1], "normal_side": result[2], "balance": result[3],
+        #          "date_created": result[4], "created_by": result[5], "last_edited_date": result[6],
+        #          "last_edited_by": result[7], "description": result[8], "is_active": result[9]})
+        # return results_dict_list
 
     def get_account(self, account_id):
         db = sqlite3.connect(self.database_file_name)
@@ -650,49 +647,48 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         return False  # TODO Check with the User Journal Access table to verify
 
     def get_viewable_journal_entries(self, user_id):
-        if self.get_user_type(user_id) == "manager":
-            db = sqlite3.connect(self.database_file_name)
-            journal_cursor = db.cursor()
+        db = sqlite3.connect(self.database_file_name)
+        journal_cursor = db.cursor()
 
-            journal_cursor.execute(
-                '''Select JOURNAL_ENTRY_ID, USER_ID, DATE, DESCRIPTION, TYPE, STATUS, POSTING_REFERENCE 
-                from JOURNAL_ENTRIES''')
+        journal_cursor.execute(
+            '''Select JOURNAL_ENTRY_ID, USER_ID, DATE, DESCRIPTION, TYPE, STATUS, POSTING_REFERENCE 
+            from JOURNAL_ENTRIES''')
 
-            results = list()
-            results.extend(journal_cursor.fetchall())
+        results = list()
+        results.extend(journal_cursor.fetchall())
 
-            journal_cursor.close()
+        journal_cursor.close()
 
-            if len(results) is 0:
-                return None
+        if len(results) is 0:
+            return None
 
-            results_dict_list = list()
-            for result in results:
-                transaction_cursor = db.cursor()
+        results_dict_list = list()
+        for result in results:
+            transaction_cursor = db.cursor()
 
-                transaction_cursor.execute(
-                    '''Select TRANSACTIONS.ACCOUNT_ID, TRANSACTIONS.AMOUNT, ACCOUNTS.ACCOUNT_TITLE from TRANSACTIONS 
-                     left join ACCOUNTS on TRANSACTIONS.ACCOUNT_ID = ACCOUNTS.ACCOUNT_ID
-                     where JOURNAL_ENTRY_ID is '%s' ''' % result[0])
+            transaction_cursor.execute(
+                '''Select TRANSACTIONS.ACCOUNT_ID, TRANSACTIONS.AMOUNT, ACCOUNTS.ACCOUNT_TITLE from TRANSACTIONS 
+                 left join ACCOUNTS on TRANSACTIONS.ACCOUNT_ID = ACCOUNTS.ACCOUNT_ID
+                 where JOURNAL_ENTRY_ID is '%s' ''' % result[0])
 
-                transactions = list()
-                transactions.extend(transaction_cursor.fetchall())
+            transactions = list()
+            transactions.extend(transaction_cursor.fetchall())
 
-                transaction_cursor.close()
+            transaction_cursor.close()
 
-                transactions_dicts = list()
+            transactions_dicts = list()
 
-                for transaction in transactions:
-                    transactions_dicts.append({"account_id": transaction[0], "account_title": transaction[1],
-                                               "amount": transaction[2]})
+            for transaction in transactions:
+                transactions_dicts.append({"account_id": transaction[0], "account_title": transaction[1],
+                                           "amount": transaction[2]})
 
-                results_dict_list.append(
-                    {"journal_entry_id": result[0], "user_id": result[1], "date": result[2],
-                     "description": result[3], "type": result[4], "status": result[5], "posting_reference": result[6],
-                     "transactions": transactions_dicts})
+            results_dict_list.append(
+                {"journal_entry_id": result[0], "user_id": result[1], "date": result[2],
+                 "description": result[3], "type": result[4], "status": result[5], "posting_reference": result[6],
+                 "transactions": transactions_dicts})
 
-            db.close()
-            return results_dict_list
+        db.close()
+        return results_dict_list
 
 
 class InvalidUserType(PostitHTTPError):
