@@ -460,7 +460,7 @@ def journal(journal_entry_id):
         # Check if posting
         if category == 'status':
             logging.debug("Setting status")
-            curr_status = db.get_journal_entry_data(journal_entry_id, 'STATUS')
+            curr_status = str(db.get_journal_entry_data(journal_entry_id, 'STATUS'))
             if not curr_status == "pending":
                 raise get_error_response(400, "Only pending journal entries can be posted or rejected. Journal entry "
                                          + str(journal_entry_id) + "'s status is " + curr_status)
