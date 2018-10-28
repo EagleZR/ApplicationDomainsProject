@@ -115,7 +115,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 '''Create Table if Not Exists TRANSACTIONS(TRANSACTION_ID integer primary key autoincrement, JOURNAL_ENTRY_ID 
     integer not null, ACCOUNT_ID integer not null, AMOUNT real not null, STATUS text not null, POSTING_MANAGER integer,
     POSTING_REFERENCE integer, FOREIGN KEY (JOURNAL_ENTRY_ID) REFERENCES JOURNAL_ENTRIES(JOURNAL_ENTRY_ID), 
-     FOREIGN KEY (ACCOUNT_ID) REFERENCES ACCOUNTS(ACCOUNT_ID)),
+     FOREIGN KEY (ACCOUNT_ID) REFERENCES ACCOUNTS(ACCOUNT_ID), 
      FOREIGN KEY (POSTING_MANAGER) REFERENCES USERS(USER_ID));''')
             db.commit()
         transaction_cursor.close()
