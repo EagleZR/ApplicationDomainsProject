@@ -1,0 +1,15 @@
+{ def create_journal_entry(self, transactions_list, user_id, date, description, journal_type)
+  "journal_entries": [
+    {
+      "transactions": [
+        {
+          "account_id": 1001,
+          "amount": 100
+        },
+        {
+
+        }
+      ]
+    }
+  ]
+}
