@@ -5,6 +5,12 @@ class DummyDatabaseController(AbstractDatabaseController):
     """This class was originally intended to provide a dummy database so the frontend could communicate with the backend
      while the database was still being developed, but it's become unused and obsolete """
 
+    def post_journal_entry(self, journal_entry_id, user_id):
+        pass
+
+    def get_account_balance(self, account_id):
+        pass
+
     def get_journal_entry_data(self, journal_entry_id, category):
         pass
 
