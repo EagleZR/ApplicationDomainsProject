@@ -545,9 +545,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         for result in results:
             results_dict_list.append(
                 {"account_id": result[0], "account_title": result[1], "normal_side": result[2],
-                 "balance": self.get_account_balance(result[0]), "date_created": result[4], "created_by": result[5],
-                 "last_edited_date": result[6], "last_edited_by": result[7], "description": result[8],
-                 "is_active": result[9]})
+                 "balance": self.get_account_balance(result[0]), "date_created": result[3], "created_by": result[4],
+                 "last_edited_date": result[5], "last_edited_by": result[6], "description": result[7],
+                 "is_active": result[8]})
         return results_dict_list
 
     def get_table(self, table_name):
