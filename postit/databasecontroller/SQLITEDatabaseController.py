@@ -709,7 +709,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
     def set_journal_entry_data(self, journal_entry_id, category, value):
         self.update_data("JOURNAL_ENTRIES", category, "JOURNAL_ENTRY_ID", journal_entry_id, value)
-        return value == self.get_journal_entry_data(journal_entry_id, category)
+        return str(value) == str(self.get_journal_entry_data(journal_entry_id, category))
 
     def get_journal_entry_data(self, journal_entry_id, category):
         return self.get_data("JOURNAL_ENTRIES", category, "JOURNAL_ENTRY_ID", journal_entry_id)[0][0]
