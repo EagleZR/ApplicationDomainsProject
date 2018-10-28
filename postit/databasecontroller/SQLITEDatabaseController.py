@@ -751,7 +751,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db.commit()
         amount_cursor.close()
         db.close()
-        return amount
+        return amount[0][0] if amount[0][0] is not None else 0
 
 
 class InvalidUserType(PostitHTTPError):
