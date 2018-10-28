@@ -463,12 +463,12 @@ def journal(journal_entry_id):
                 raise get_error_response(400, "Journal entries can only be posted or rejected")
             if value == 'posted':
                 if not db.set_journal_entry_data(journal_entry_id, category, value):
-                    raise get_error_response(500, "The journal entry could not be posted")
+                    raise get_error_response(405, "The journal entry could not be posted")
                 if not db.set_journal_entry_data(journal_entry_id, "POSTING_MANAGER", requester_user_id):
-                    raise get_error_response(500, "The posting manager could not be set")
+                    raise get_error_response(405, "The posting manager could not be set")
                 # TODO Set Separate Posting Reference
                 if not db.set_journal_entry_data(journal_entry_id, "POSTING_REFERENCE", journal_entry_id):
-                    raise get_error_response(500, "The posting reference could not be set")
+                    raise get_error_response(405, "The posting reference could not be set")
                 response = jsonify({"message": "The journal entry was successfully posted"})
                 response.status_code = 200
                 return response
