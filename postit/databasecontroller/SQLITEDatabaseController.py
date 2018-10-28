@@ -172,9 +172,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
-        insert_text = '''Insert into ACCOUNTS (ACCOUNT_ID, ACCOUNT_TITLE, NORMAL_SIDE, DESCRIPTION, IS_ACTIVE, BALANCE, 
-        DATE_CREATED, CREATED_BY, LAST_EDITED_DATE) values ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');''' \
-                      % (account_id, account_title, normal_side, description, "Y", 0,
+        insert_text = '''Insert into ACCOUNTS (ACCOUNT_ID, ACCOUNT_TITLE, NORMAL_SIDE, DESCRIPTION, IS_ACTIVE,  
+        DATE_CREATED, CREATED_BY, LAST_EDITED_DATE) values ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');''' \
+                      % (account_id, account_title, normal_side, description, "Y",
                          datetime.today().strftime(self.date_string_format), created_by,
                          datetime.today().strftime(self.date_string_format))
         logging.debug(insert_text)
