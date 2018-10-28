@@ -99,8 +99,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             logging.warning("Creating Journal Entry table")
             journal_cursor.execute(
                 '''Create Table if Not Exists JOURNAL_ENTRIES(JOURNAL_ENTRY_ID integer primary key autoincrement, USER_ID integer not 
-                null, DATE text not null, DESCRIPTION text, TYPE text not null, FOREIGN KEY (USER_ID) REFERENCES 
-                USERS(USER_ID));''')
+                null, DATE text not null, DESCRIPTION text, TYPE text not null, STATUS text not null, 
+                POSTING_REFERENCE integer, POSTING_MANAGER integer, FOREIGN KEY (USER_ID) REFERENCES USERS(USER_ID), 
+                FOREIGN KEY (POSTING_MANAGER) REFERENCES USERS(USER_ID));''')
             db.commit()
         journal_cursor.close()
 
@@ -113,10 +114,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             logging.warning("Creating Transactions table")
             transaction_cursor.execute(
                 '''Create Table if Not Exists TRANSACTIONS(TRANSACTION_ID integer primary key autoincrement, JOURNAL_ENTRY_ID 
-    integer not null, ACCOUNT_ID integer not null, AMOUNT real not null, STATUS text not null, POSTING_MANAGER integer,
-    POSTING_REFERENCE integer, FOREIGN KEY (JOURNAL_ENTRY_ID) REFERENCES JOURNAL_ENTRIES(JOURNAL_ENTRY_ID), 
-     FOREIGN KEY (ACCOUNT_ID) REFERENCES ACCOUNTS(ACCOUNT_ID), 
-     FOREIGN KEY (POSTING_MANAGER) REFERENCES USERS(USER_ID));''')
+    integer not null, ACCOUNT_ID integer not null, AMOUNT real not null,  FOREIGN KEY (JOURNAL_ENTRY_ID) REFERENCES JOURNAL_ENTRIES(JOURNAL_ENTRY_ID), 
+     FOREIGN KEY (ACCOUNT_ID) REFERENCES ACCOUNTS(ACCOUNT_ID));''')
             db.commit()
         transaction_cursor.close()
 
