@@ -628,8 +628,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             transactions_dicts = list()
 
             for transaction in transactions:
-                transactions_dicts.append({"account_id": transaction[0], "account_title": transaction[1],
-                                           "amount": transaction[2]})
+                transactions_dicts.append({"account_id": transaction[0], "account_title": transaction[2],
+                                           "amount": transaction[1]})
 
             results_dict_list.append(
                 {"journal_entry_id": result[0], "user_id": result[1], "date": result[2],
