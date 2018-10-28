@@ -682,6 +682,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 transactions_dicts.append({"account_id": transaction[0], "amount": transaction[1],
                                            "account_title": transaction[2]})
 
+            transactions_dicts.sort(key=get_transaction_amount)
+
             results_dict_list.append(
                 {"journal_entry_id": result[0], "user_id": result[1], "date": result[2],
                  "description": result[3], "type": result[4], "status": result[5], "posting_reference": result[6],
@@ -712,3 +714,6 @@ def hash_password(password):
     m = hashlib.sha256()
     m.update(password.encode())
     return str(m.hexdigest())
+
+def get_transaction_amount(transaction):
+    return transaction['amount']
