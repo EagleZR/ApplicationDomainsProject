@@ -28,7 +28,7 @@ event_log = EventLog()
 
 # User seed data
 email_regex = re.compile("(\S*)@")
-with open(os.path.dirname(os.path.realpath(__file__)) + '/user_setup_data.txt', 'r') as f:
+with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/user_setup_data.txt', 'r') as f:
     for line in f.readlines():
         username, password, email, first_name, last_name = line.split(', ')
         user_type = email_regex.search(email).group(1)
@@ -43,7 +43,7 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/user_setup_data.txt', 
                                                   random.random()))
 
 # Account seed data
-with open(os.path.dirname(os.path.realpath(__file__)) + '/account_data_setup.txt', 'r') as f:
+with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/account_data_setup.txt', 'r') as f:
     for line in f.readlines():
         account_id, account_title, normal_side, description = line.split(', ')
         users = db.get_all_user_accounts()
@@ -52,7 +52,7 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/account_data_setup.txt
         event_log.write(1, "Created account " + str(account_id))
 
 # Transactions
-with open(os.path.dirname(os.path.realpath(__file__)) + '/journal_setup_data.json', 'r') as json_file:
+with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/journal_setup_data.json', 'r') as json_file:
     json_data = json.load(json_file)
     journal_entries = json_data['journal_entries']
     for journal_entry in journal_entries:
