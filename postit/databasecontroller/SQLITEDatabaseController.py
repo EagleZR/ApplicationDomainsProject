@@ -712,7 +712,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         return value == self.get_journal_entry_data(journal_entry_id, category)
 
     def get_journal_entry_data(self, journal_entry_id, category):
-        return self.get_data("JOURNAL_ENTRIES", category, "JOURNAL_ENTRY_ID", journal_entry_id)
+        return self.get_data("JOURNAL_ENTRIES", category, "JOURNAL_ENTRY_ID", journal_entry_id)[0][0]
 
     def post_journal_entry(self, journal_entry_id, user_id):
         db = sqlite3.connect(self.database_file_name)
