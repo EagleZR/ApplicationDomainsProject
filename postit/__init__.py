@@ -439,8 +439,51 @@ def journal(journal_entry_id):
 
     # Use a PUT request to update data about an existing journal entry
     elif request.method == 'PUT':
-        logging.info("This functionality has not been programmed yet (/journal/<journal_entry_id>) 2")
-        raise get_error_response(400, "This functionality has not been programmed yet (/journal/<journal_entry_id>) 2")
+        # Verify only manager
+        assert_user_type_is(['manager'], requester_user_type)
+        # Verify request data
+        data = request.get_json()
+        assert_json_data_contains(['category', 'value'], data, "user/<user_id>", "PUT")
+        category = data.get('category')
+        value = data.get('value')
+        # Verify valid category
+        if category not in ['status', 'description']:
+            raise get_error_response(400, "The category must be either 'status' or 'description'")
+        # Check if posting
+        if category == 'status':
+            if not db.get_journal_entry_data(journal_entry_id, 'status') == "pending":
+                raise get_error_response(400, "Only pending journal entries can be posted or rejected")
+            if value not in ['posted', 'rejected']:
+                raise get_error_response(400, "Journal entries can only be posted or rejected")
+            if value == 'posted':
+                if not db.set_journal_entry_data(journal_entry_id, category, value):
+                    raise get_error_response(500, "The journal entry could not be posted")
+                if not db.set_journal_entry_data(journal_entry_id, "POSTING_MANAGER", requester_user_id):
+                    raise get_error_response(500, "The posting manager could not be set")
+                # TODO Set Separate Posting Reference
+                if not db.set_journal_entry_data(journal_entry_id, "POSTING_REFERENCE", journal_entry_id):
+                    raise get_error_response(500, "The posting reference could not be set")
+                response = jsonify({"message": "The journal entry was successfully posted"})
+                response.status_code = 200
+                return response
+            if value == 'rejected':
+                assert_json_data_contains(['description'], data, "user/<user_id>", "PUT")
+                description = data.get('description')
+                if not db.set_journal_entry_data(journal_entry_id, category, value):
+                    raise get_error_response(405, "The journal entry could not be rejected")
+                if not db.set_journal_entry_data(journal_entry_id, "DESCRIPTION", description):
+                    raise get_error_response(405, "The journal entry could not be posted")
+                response = jsonify({"message": "The journal entry was successfully rejected"})
+                response.status_code = 200
+                return response
+        # Attempt to update the data
+        if not db.set_journal_entry_data(journal_entry_id, category, value):
+            raise get_error_response(405, "The journal entry could not be updated")
+        event_log.write(requester_user_id, "Updated the " + category + " of journal entry " + journal_entry_id)
+        # Send the success response
+        response = jsonify({"message": "The data was successfully set"})
+        response.status_code = 200
+        return response
 
     # Use a POST account to create a new journal entry. The journal entry ID is not very important, so POST to
     # /journal/new to avoid collisions

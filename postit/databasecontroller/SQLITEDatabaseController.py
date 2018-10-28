@@ -99,8 +99,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             logging.warning("Creating Journal Entry table")
             journal_cursor.execute(
                 '''Create Table if Not Exists JOURNAL_ENTRIES(JOURNAL_ENTRY_ID integer primary key autoincrement, USER_ID integer not 
-                null, DATE text not null, DESCRIPTION text, TYPE text not null, STATUS text not null, 
-                POSTING_REFERENCE text, FOREIGN KEY (USER_ID) REFERENCES USERS(USER_ID));''')
+                null, DATE text not null, DESCRIPTION text, TYPE text not null, FOREIGN KEY (USER_ID) REFERENCES 
+                USERS(USER_ID));''')
             db.commit()
         journal_cursor.close()
 
@@ -113,12 +113,26 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             logging.warning("Creating Transactions table")
             transaction_cursor.execute(
                 '''Create Table if Not Exists TRANSACTIONS(TRANSACTION_ID integer primary key autoincrement, JOURNAL_ENTRY_ID 
-    integer not null, ACCOUNT_ID integer not null, AMOUNT real not null, FOREIGN KEY (JOURNAL_ENTRY_ID) REFERENCES 
-    JOURNAL_ENTRIES(JOURNAL_ENTRY_ID), FOREIGN KEY (ACCOUNT_ID) REFERENCES ACCOUNTS(ACCOUNT_ID));''')
+    integer not null, ACCOUNT_ID integer not null, AMOUNT real not null, STATUS text not null, POSTING_MANAGER integer,
+    POSTING_REFERENCE integer, FOREIGN KEY (JOURNAL_ENTRY_ID) REFERENCES JOURNAL_ENTRIES(JOURNAL_ENTRY_ID), 
+     FOREIGN KEY (ACCOUNT_ID) REFERENCES ACCOUNTS(ACCOUNT_ID)),
+     FOREIGN KEY (POSTING_MANAGER) REFERENCES USERS(USER_ID));''')
             db.commit()
         transaction_cursor.close()
 
-        # User-Journal Access Table
+        # # Posting Table
+        # posting_cursor = db.cursor()
+        # try:
+        #     posting_cursor.execute('''SELECT * FROM POSTINGS''')
+        #     logging.debug("Postings Table already exists")
+        # except sqlite3.OperationalError:
+        #     logging.warning("Creating Postings Table")
+        #     posting_cursor.execute('''Create Table if Not Exists POSTINGS(POSTING_REFERENCE integer primary key autoincrement,
+        #     JOURNAL_ENTRY_ID integer not null, POSTING_MANAGER integer not null, POSTING_DATE text not null,
+        #     FOREIGN KEY (POSTING_MANAGER) REFERENCES USERS(USER_ID), FOREIGN KEY (JOURNAL_ENTRY_ID) REFERENCES
+        #     JOURNAL_ENTRIES(JOURNAL_ENTRY_ID))''')
+        #     db.commit()
+        # transaction_cursor.close()
 
         # TODO Add tables as they're designed
         db.close()
@@ -599,8 +613,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         journal_cursor = db.cursor()
 
         journal_cursor.execute(
-            '''Select JOURNAL_ENTRY_ID, USER_ID, DATE, DESCRIPTION, TYPE, STATUS, POSTING_REFERENCE, from JOURNAL_ENTRIES 
-            WHERE JOURNAL_ENTRY_ID is '%s' 
+            '''Select JOURNAL_ENTRY_ID, USER_ID, DATE, DESCRIPTION, TYPE, STATUS, POSTING_REFERENCE, POSTING_MANAGER
+            from JOURNAL_ENTRIES WHERE JOURNAL_ENTRY_ID is '%s' 
             ''' % journal_entry_id)
 
         results = list()
@@ -636,7 +650,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             results_dict_list.append(
                 {"journal_entry_id": result[0], "user_id": result[1], "date": result[2],
                  "description": result[3], "type": result[4], "status": result[5], "posting_reference": result[6],
-                 "transactions": transactions_dicts})
+                 "posting_manager": result[7], "transactions": transactions_dicts})
 
         db.close()
         return results_dict_list
@@ -653,7 +667,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         journal_cursor = db.cursor()
 
         journal_cursor.execute(
-            '''Select JOURNAL_ENTRY_ID, USER_ID, DATE, DESCRIPTION, TYPE, STATUS, POSTING_REFERENCE 
+            '''Select JOURNAL_ENTRY_ID, USER_ID, DATE, DESCRIPTION, TYPE, STATUS, POSTING_REFERENCE, POSTING_MANAGER
             from JOURNAL_ENTRIES''')
 
         results = list()
@@ -689,10 +703,39 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             results_dict_list.append(
                 {"journal_entry_id": result[0], "user_id": result[1], "date": result[2],
                  "description": result[3], "type": result[4], "status": result[5], "posting_reference": result[6],
-                 "transactions": transactions_dicts})
+                 "posting_manager": result[7], "transactions": transactions_dicts})
 
         db.close()
         return results_dict_list
+
+    def set_journal_entry_data(self, journal_entry_id, category, value):
+        self.update_data("JOURNAL_ENTRIES", category, "JOURNAL_ENTRY_ID", journal_entry_id, value)
+        return value == self.get_journal_entry_data(journal_entry_id, category)
+
+    def get_journal_entry_data(self, journal_entry_id, category):
+        return self.get_data("JOURNAL_ENTRIES", category, "JOURNAL_ENTRY_ID", journal_entry_id)
+
+    def post_journal_entry(self, journal_entry_id, user_id):
+        db = sqlite3.connect(self.database_file_name)
+        post_journal_cursor = db.cursor()
+        insert_text = '''Insert into POSTINGS (JOURNAL_ENTRY_ID, POSTING_MANAGER, POSTING_DATE) 
+                values ('%s', '%s', '%s');''' % (journal_entry_id, user_id,
+                                                 datetime.today().strftime(self.date_string_format))
+        logging.debug(insert_text)
+        post_journal_cursor.execute(insert_text)
+        db.commit()
+
+        posting_reference = post_journal_cursor.lastrowid
+        post_journal_cursor.close()
+        try:
+            float(posting_reference)
+        except ValueError:
+            return None
+
+        #
+
+        db.close()
+        return posting_reference
 
 
 class InvalidUserType(PostitHTTPError):
@@ -716,6 +759,7 @@ def hash_password(password):
     m = hashlib.sha256()
     m.update(password.encode())
     return str(m.hexdigest())
+
 
 def get_transaction_amount(transaction):
     return transaction['amount']

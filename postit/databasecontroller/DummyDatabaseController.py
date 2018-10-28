@@ -2,6 +2,14 @@ from postit.databasecontroller.AbstractDatabaseController import AbstractDatabas
 
 
 class DummyDatabaseController(AbstractDatabaseController):
+    """This class was originally intended to provide a dummy database so the frontend could communicate with the backend
+     while the database was still being developed, but it's become unused and obsolete """
+
+    def get_journal_entry_data(self, journal_entry_id, category):
+        pass
+
+    def set_journal_entry_data(self, journal_entry_id, category, value):
+        pass
 
     def get_user_has_journal_access(self, user_id, journal_entry_id):
         pass
