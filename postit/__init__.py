@@ -498,7 +498,7 @@ def journal(journal_entry_id):
             os.mkdir(os.path.join(app.config['UPLOAD_FOLDER'], str(new_journal_entry_id)))
         # Send success response
         response = jsonify({"message": "The journal entry was successfully created",
-                            "upload_folder": "http://" + config['host']['base_path'] + "journal/" +
+                            "upload_folder": "https://" + config['host']['base_path'] + "journal/" +
                                              str(new_journal_entry_id) + "/"})
         response.status_code = 200
         return response
