@@ -4,6 +4,7 @@ import logging
 import random
 from datetime import (datetime, timedelta)
 import re
+import json
 
 from postit import databasecontroller, EventLog
 
@@ -50,6 +51,18 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/account_data_setup.txt
         db.add_account(account_id.strip(), account_title.strip(), normal_side.strip(), description.strip(), created_by)
         event_log.write(1, "Created account " + str(account_id))
 
+# Transactions
+with open(os.path.dirname(os.path.realpath(__file__)) + '/journal_setup_data.json', 'r') as json_file:
+    json_data = json.load(json_file)
+    journal_entries = json_data['journal_entries']
+    for journal_entry in journal_entries:
+        transactions = journal_entry['transactions']
+        user_id = journal_entry['user_id']
+        description = journal_entry['description']
+        journal_type = journal_entry['journal_type']
+        db.create_journal_entry(transactions, user_id, datetime.today(), description, journal_type)
+
+# Print logs to manually verify they work correctly
 messages = event_log.get_all()
 
 for message in messages:

@@ -1,15 +1,38 @@
-{ def create_journal_entry(self, transactions_list, user_id, date, description, journal_type)
+{
   "journal_entries": [
     {
       "transactions": [
         {
           "account_id": 1001,
-          "amount": 100
+          "amount": -300
         },
         {
-
+          "account_id": 2002,
+          "amount": 200
+        },
+        {
+          "account_id": 1003,
+          "amount": 100
         }
-      ]
+      ],
+      "user_id": 1,
+      "description": "A pre-loaded transaction meant only to populate the site with data.",
+      "journal_type": "regular"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 1001,
+          "amount": -100
+        },
+        {
+          "account_id": 1003,
+          "amount": 100
+        }
+      ],
+      "user_id": 1,
+      "description": "A pre-loaded transaction meant only to populate the site with data.",
+      "journal_type": "regular"
     }
   ]
 }
