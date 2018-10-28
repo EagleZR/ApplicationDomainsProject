@@ -53,7 +53,7 @@ def login():
         passwd_time_remaining = password_expire_date - datetime.today()
         if passwd_time_remaining.days < 0:
             event_log.write(user_id, "Attempted to log in. Password is expired.")
-            return get_error_response(401, "Your password has expired, please contact an administrator")
+            raise get_error_response(401, "Your password has expired, please contact an administrator")
         # Check if the user account is active
         user_type = db.get_user_type(user_id)
         logging.debug("account_type extracted in /signin")
@@ -292,7 +292,7 @@ def forgot_password():
 
     # This is the catch-all statement at the end of the method. If a conditional leaf doesn't return or raise
     # anything, it might overflow to here.
-    return get_error_response(400, "Only GET and PUT requests are valid for this address")
+    raise get_error_response(400, "Only GET and PUT requests are valid for this address")
 
 
 # TODO Might delete this, we don't really need it
@@ -306,7 +306,7 @@ def get_table(table_name):
         response.status_code = 200
         return response
     else:
-        return get_error_response(400, "Only GET requests are valid for this address")
+        raise get_error_response(400, "Only GET requests are valid for this address")
 
 
 @app.route('/account/<account_id>', methods=['GET', 'POST', 'PUT'])
@@ -405,7 +405,7 @@ def get_event_log(user_id):
 
     # This is the catch-all statement at the end of the method. If a conditional leaf doesn't return or raise
     # anything, it might overflow to here.
-    return get_error_response(400, "Only GET requests are valid for this address")
+    raise get_error_response(400, "Only GET requests are valid for this address")
 
 
 @app.route('/journal/<journal_entry_id>', methods=['GET', 'POST', 'PUT'])
