@@ -462,7 +462,6 @@ def journal(journal_entry_id):
             raise get_error_response(400, "The transactions must be sent as a list")
         debit_side_sum = 0
         credit_side_sum = 0
-        transactions_list.sort(reverse=True, key=get_transaction_amount)
         for transaction in transactions_list:
             if transaction['account_id'] is None or transaction['account_id'] == "":
                 raise get_error_response(400, "Each transaction must contain an account ID")
