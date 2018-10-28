@@ -443,42 +443,56 @@ def journal(journal_entry_id):
 
     # Use a PUT request to update data about an existing journal entry
     elif request.method == 'PUT':
+        logging.debug("PUTting new data")
         # Verify only manager
         assert_user_type_is(['manager'], requester_user_type)
+        logging.debug("User is a manager")
         # Verify request data
         data = request.get_json()
         assert_json_data_contains(['category', 'value'], data, "user/<user_id>", "PUT")
         category = data.get('category')
         value = data.get('value')
+        logging.debug("Request has appropriate data")
         # Verify valid category
         if category not in ['status', 'description']:
             raise get_error_response(400, "The category must be either 'status' or 'description'")
+        logging.debug("Category is appropriate")
         # Check if posting
         if category == 'status':
+            logging.debug("Setting status")
             curr_status = db.get_journal_entry_data(journal_entry_id, 'STATUS')
             if not curr_status == "pending":
                 raise get_error_response(400, "Only pending journal entries can be posted or rejected. Journal entry "
                                          + str(journal_entry_id) + "'s status is " + curr_status)
+            logging.debug("Current status is pending")
             if value not in ['posted', 'rejected']:
                 raise get_error_response(400, "Journal entries can only be posted or rejected")
             if value == 'posted':
+                logging.debug("Posting journal")
                 if not db.set_journal_entry_data(journal_entry_id, category, value):
                     raise get_error_response(405, "The journal entry could not be posted")
+                logging.debug("Posted Journal")
                 if not db.set_journal_entry_data(journal_entry_id, "POSTING_MANAGER", requester_user_id):
                     raise get_error_response(405, "The posting manager could not be set")
+                logging.debug("Updated the posting manager")
                 # TODO Set Separate Posting Reference
                 if not db.set_journal_entry_data(journal_entry_id, "POSTING_REFERENCE", journal_entry_id):
                     raise get_error_response(405, "The posting reference could not be set")
+                logging.debug("Updated the posting reference")
                 response = jsonify({"message": "The journal entry was successfully posted"})
                 response.status_code = 200
                 return response
             if value == 'rejected':
+                logging.debug("Rejecting journal")
                 assert_json_data_contains(['description'], data, "user/<user_id>", "PUT")
                 description = data.get('description')
+                logging.debug("Request contains the description")
                 if not db.set_journal_entry_data(journal_entry_id, category, value):
                     raise get_error_response(405, "The journal entry could not be rejected")
+                logging.debug("Journal rejected")
                 if not db.set_journal_entry_data(journal_entry_id, "DESCRIPTION", description):
                     raise get_error_response(405, "The journal entry could not be posted")
+                logging.debug("Description updated")
                 response = jsonify({"message": "The journal entry was successfully rejected"})
                 response.status_code = 200
                 return response
