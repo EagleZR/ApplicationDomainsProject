@@ -128,7 +128,8 @@ def register():
 
 @app.route('/user/<user_id>', methods=['GET', 'POST', 'PUT'])
 def user(user_id):
-    log_request(request)
+    if not user_id == 'all' or not user_id == 'info':
+        log_request(request)
     if user_id is None or user_id == "null":  # TODO Conduct a more thorough check
         raise get_error_response(400, "The URL must refer to a valid User ID, or be 'info' or 'all'")
     logging.debug("User ID: " + user_id)
@@ -257,7 +258,8 @@ def user(user_id):
 
 @app.route('/forgotpassword', methods=['GET', 'POST', 'PUT'])
 def forgot_password():
-    log_request(request)
+    if not request.method == 'GET':
+        log_request(request)
 
     # Use a POST request when someone forgets their password
     if request.method == 'POST':
@@ -311,7 +313,8 @@ def get_table(table_name):
 
 @app.route('/account/<account_id>', methods=['GET', 'POST', 'PUT'])
 def account(account_id):
-    log_request(request)
+    if not account_id == 'all':
+        log_request(request)
     # Authentication
     requester_auth_token, requester_user_id, requester_user_type = authenticate_request(request)
     # Verify that the requester is a manager or regular user
@@ -410,7 +413,8 @@ def get_event_log(user_id):
 
 @app.route('/journal/<journal_entry_id>', methods=['GET', 'POST', 'PUT'])
 def journal(journal_entry_id):
-    log_request(request)
+    if not journal_entry_id == 'all':
+        log_request(request)
     # Authentication
     requester_auth_token, requester_user_id, requester_user_type = authenticate_request(request)
     # Verify that the requester is a manager or regular user
