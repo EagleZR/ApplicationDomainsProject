@@ -763,9 +763,9 @@ def authenticate_request(request):
 
 def allowed_file(filename):
     logging.debug(filename)
-    logging.debug(filename.rsplit('.', 1)[1].lower)
+    logging.debug(filename.rsplit('.', 1)[1].lower())
     logging.debug(str(config['files']['allowed_extensions']))
-    return '.' in filename and filename.rsplit('.', 1)[1].lower in config['files']['allowed_extensions']
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in config['files']['allowed_extensions']
 
 
 if __name__ == "__main__":
