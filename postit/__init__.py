@@ -598,7 +598,7 @@ def upload_files(journal_entry_id):
             raise get_error_response(403, 'A file of that filetype is not allowed on this server')
         # Save the file
         filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(journal_entry_id), filename))
         # Verify file exists
         if not os.path.isfile(app.config['UPLOAD_FOLDER'] + str(journal_entry_id) + filename):
             response = jsonify({"message": "The file was not successfully saved"})
