@@ -619,9 +619,9 @@ def upload_files(journal_entry_id):
 def download_files(journal_entry_id, filename):
     log_request(request)
     # Authentication
-    requester_auth_token, requester_user_id, requester_user_type = authenticate_request(request)
+    # requester_auth_token, requester_user_id, requester_user_type = authenticate_request(request)
     # Verify that the requester is a manager or regular user
-    assert_user_type_is(['manager', 'user'], requester_user_type)
+    # assert_user_type_is(['manager', 'user'], requester_user_type)
     # Send file
     return send_from_directory(app.config['UPLOAD_FOLDER'] + str(journal_entry_id), filename)
 
