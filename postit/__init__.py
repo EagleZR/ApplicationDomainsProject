@@ -617,7 +617,7 @@ def upload_files(journal_entry_id):
 
 @app.route('/files/<journal_entry_id>/<filename>/<auth_token>', methods=['GET'])
 def download_files(journal_entry_id, filename, auth_token):
-    log_request(request)
+    # log_request(request)
     # Authentication
     # requester_auth_token, requester_user_id, requester_user_type = authenticate_request(request)
     requester_user_id = db.get_user_id(auth_token=auth_token)
