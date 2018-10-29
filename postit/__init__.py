@@ -599,6 +599,14 @@ def upload_files(journal_entry_id):
         # Save the file
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        # Verify file exists
+        if not os.path.isfile(app.config['UPLOAD_FOLDER'] + str(journal_entry_id) + filename):
+            response = jsonify({"message": "The file was not successfully saved"})
+            response.status_code = 405
+            return response
+        response = jsonify({"message": "Successfully uploaded"})
+        response.status_code = 200
+        return response
 
     # GET a list of files in a directory
     if request.method == 'GET':
