@@ -615,15 +615,15 @@ def upload_files(journal_entry_id):
     raise get_error_response(404, "Not sure how you got here... that's not supposed to happen...")
 
 
-# @app.route('/files/<journal_entry_id>/<filename>', methods=['GET'])
-# def download_files(journal_entry_id, filename):
-#     log_request(request)
-#     # Authentication
-#     requester_auth_token, requester_user_id, requester_user_type = authenticate_request(request)
-#     # Verify that the requester is a manager or regular user
-#     assert_user_type_is(['manager', 'user'], requester_user_type)
-#     # Send file
-#     return send_from_directory(app.config['UPLOAD_FOLDER'] + str(journal_entry_id), filename)
+@app.route('/files/<journal_entry_id>/<filename>', methods=['GET'])
+def download_files(journal_entry_id, filename):
+    log_request(request)
+    # Authentication
+    requester_auth_token, requester_user_id, requester_user_type = authenticate_request(request)
+    # Verify that the requester is a manager or regular user
+    assert_user_type_is(['manager', 'user'], requester_user_type)
+    # Send file
+    return send_from_directory(app.config['UPLOAD_FOLDER'] + str(journal_entry_id), filename)
 
 
 def get_error_response(status_code, message):
