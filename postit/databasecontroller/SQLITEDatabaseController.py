@@ -354,15 +354,13 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         cursor = db.cursor()
 
         if identifier_type is not None:
-            cursor.execute("Select " + field + " from " + table + " where ? is ?", (identifier_type, identifier))
+            cursor.execute('''Select %s from %s where ? is ?''' % (field, table), (identifier_type, identifier))
         else:
-            cursor.execute("Select " + field + " from " + table)
+            cursor.execute('''Select %s from %s''' % (field, table))
 
         results = list()
         results.extend(cursor.fetchall())
         logging.debug(str(results))
-        if len(results) > 1:
-            logging.debug("Multiple results from get_data select statement: " + str(results))
         if len(results) is 0:
             return None
         return results
