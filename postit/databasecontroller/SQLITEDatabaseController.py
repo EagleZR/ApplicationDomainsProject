@@ -342,8 +342,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
-        cursor.execute("UPDATE " + table + " SET " + field + " = :data where :identifier_type is :identifier;",
-                       {"data": data, "identifier_type": identifier_type, "identifier": identifier})
+        cursor.execute("UPDATE {} SET {} = :data where {} is :identifier;".format(table, field, identifier_type),
+                       {"data": data, "identifier": identifier})
 
         db.commit()
         cursor.close()
@@ -354,9 +354,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         cursor = db.cursor()
 
         if identifier_type is not None:
-            cursor.execute('''Select %s from %s where ? is ?''' % (field, table), (identifier_type, identifier))
+            cursor.execute("Select {} from {} where {} is ?".format(field, table, identifier_type), (identifier,))
         else:
-            cursor.execute('''Select %s from %s''' % (field, table))
+            cursor.execute("Select {} from {}".format(field, table))
 
         results = list()
         results.extend(cursor.fetchall())
@@ -369,7 +369,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
-        cursor.execute("DELETE FROM " + table + " where " + identifier_type + " is ?", (identifier,))
+        cursor.execute("DELETE FROM {} where {} is ?".format(table, identifier_type), (identifier,))
 
         db.commit()
         cursor.close()
