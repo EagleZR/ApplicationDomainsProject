@@ -1,4 +1,4 @@
-﻿500004, Overhead, Debit, Description to be added, Expenses, Cost of Goods Sold
+500004, Overhead, Debit, Description to be added, Expenses, Cost of Goods Sold
 500005, Cost of Goods Sold, Debit, Description to be added, Expenses, Cost of Goods Sold
 500011, Wages Expense, Debit, Description to be added, Expenses, Selling Expenses
 500012, Advertising Expense, Debit, Description to be added, Expenses, Selling Expenses
@@ -9,7 +9,7 @@
 500017, Travel and Entertainment Expense, Debit, Description to be added, Expenses, Selling Expenses
 500021, Rent Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
 500022, Office Salaries Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
-500023, Ofiice Supplies Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
+500023, Office Supplies Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
 500024, Other Supplies, Debit, Description to be added, Expenses, General and Administrative Expenses
 500025, Telephone, Debit, Description to be added, Expenses, General and Administrative Expenses
 500026, Transportation Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
