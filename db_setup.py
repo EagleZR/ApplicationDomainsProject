@@ -45,10 +45,11 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/user_setup_data.
 # Account seed data
 with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/account_data_setup.txt', 'r') as f:
     for line in f.readlines():
-        account_id, account_title, normal_side, description = line.split(', ')
+        account_id, account_title, normal_side, description, category, subcategory = line.split(', ')
         users = db.get_all_user_accounts()
         created_by = users[random.randrange(0, len(users))]['user_id']
-        db.add_account(account_id.strip(), account_title.strip(), normal_side.strip(), description.strip(), created_by)
+        db.add_account(account_id.strip(), account_title.strip(), normal_side.strip().lower(), description.strip(),
+                       created_by)
         event_log.write(1, "Created account " + str(account_id))
 
 # Transactions
