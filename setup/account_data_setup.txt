@@ -31,7 +31,7 @@
 200002, Accounts Payable, Credit, Money owed by a company to its creditors, Liabilities, Current Liabilities
 200003, Dividends Payable, Credit, Dividends that a company's board of directors has declared to be payable to its shareholders, Liabilities, Current Liabilities
 200004, Interest Payable, Credit, Interest that has been incurred but has not yet been paid, Liabilities, Current Liabilities
-200015, Wages Payable, Credit, Wages that a company employees have earned, but have not been paid yet, Liabilities, Current Liabilities
+200015, Wages Payable, Credit, Wages that a company employees have earned but have not been paid yet, Liabilities, Current Liabilities
 200031, Sales Tax Payable, Credit, Sales tax that a business has collected from customers on behalf of a governing tax authority, but have not been paid yet, Liabilities, Current Liabilities
 200041, Unearned Revenue, Credit, Amounts received in advance of providing goods or services, Liabilities, Long Term Liabilities
 200051, Mortgage Payable, Credit, Loan payment owed by the business, Liabilities, Long Term Liabilities
