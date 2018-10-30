@@ -4,7 +4,7 @@
 100022, Accounts Receivable, Debit, Money owed to the company by its debtors, Assets, Current Assets
 100023, Allowance for Bad Debt, Debit, Reduces the amount of accounts receivable, Assets, Contra-entry Liabilities
 100024, Interest Receivable, Debit, Interest income that the business has earned, Assets, Current Assets
-100025, Common Stock Subscriptions Receivable, Debit, When shares are fully paid for in one month the common stock subscribed balance, transfers to this account, Assets, Contra-entry Equity
+100025, Common Stock Subscriptions Receivable, Debit, When shares are fully paid for in one month the common stock subscribed balance transfers to this account, Assets, Contra-entry Equity
 100031, Merchandise Inventory, Debit, Also known as Inventory, Assets, Current Assets
 100032, Raw Materials, Debit, Basic materials from which the product is made, Assets, Current Assets
 100033, Work In Process, Debit, Partially finished products, Assets, Current Assets
