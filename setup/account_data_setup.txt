@@ -10,7 +10,7 @@
 100033, Work In Process, Debit, Partially finished products, Assets, Current Assets
 100034, Finished goods, Debit, Product that is either ready to be sold or ready to be stored in inventory, Assets, Current Assets
 100041, Supplies, Debit, Stock of resources to produce the product, Assets, Current Assets
-100042, Office Supplies, Debit, Supplies for the office, for example stationery, paper, Assets, Current Assets
+100042, Office Supplies, Debit, Supplies for the office for example stationery or paper, Assets, Current Assets
 100044, Food Supplies, Debit, Food obtained for the business, Assets, Current Assets
 100045, Prepaid Insurance, Debit, Insurance paid in advance, Assets, Current Assets
 100046, Prepaid Rent, Debit, Rent paid in advance, Assets, Current Assets
@@ -40,7 +40,7 @@
 300011, Capital, Credit, Equity brought into the company by the owners, Owner's Equity, Owner's Equity
 300012, Drawings, Credit, Amount withdrawn from the business for the owner's personal use, Owner's Equity, Owner's Equity
 300013, Common Stock, Credit, Shares entitling their holder to dividends, Owner's Equity, Owner's Equity
-300014, Preferred Stock, Credit, Stock that entitles the holder to a fixed dividend, whose payment takes priority over that of common-stock dividends., Owner's Equity, Owner's Equity
+300014, Preferred Stock, Credit, Stock that entitles the holder to a fixed dividend whose payment takes priority over that of common-stock dividends., Owner's Equity, Owner's Equity
 300021, Retained Earnings, Credit, Amount of profit that is re-invested in the business, Owner's Equity, Owner's Equity
 400001, Delivery Fees, Credit, Amount if revenue received by the business for delivery of its products, Revenue, Operating Revenue
 400001, Service Fees, Credit, Amount charged for service provided on the product. For example installation charges, Revenue, Operating Revenue
@@ -51,7 +51,7 @@
 400011, Interest Revenue, Credit, Interest earned by the business, Revenue, Other Revenue
 400012, Rent Revenue, Credit, Rent earned by the business, Revenue, Other Revenue
 400013, Subscriptions Revenue, Credit, Subscriptions earned by the business, Revenue, Other Revenue
-400014, Sinking Fund Revenue, Credit, Fund established by an economic entity by setting aside revenue over a period of time to fund a future capital expense, or repayment of a long-term debt, Revenue, Other Revenue
+400014, Sinking Fund Revenue, Credit, Fund established by an economic entity by setting aside revenue over a period of time to fund a future capital expense or repayment of a long-term debt, Revenue, Other Revenue
 400015, Uncollectible Accounts Recovers, Credit, Description to be added, Revenue, Other Revenue
 400016, Gain on Exchange or Sale of Equipment, Credit, Description to be added, Revenue, Other Revenue
 500001, Purchases, Debit, Description to be added, Expenses, Cost of Goods Sold
