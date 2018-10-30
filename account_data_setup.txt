@@ -1,98 +1,38 @@
-100001,	Cash,	Debit,	Cash available for business,	Assets,	Current Assets
-100005,	Petty Cash,	Debit,	Cash on hand,	Assets,	Current Assets
-100021,	Notes Receivable,	Debit,	Written promise to receive money at a future date,	Assets,	Current Assets
-100022,	Accounts Receivable,	Debit,	Money owed to the company by its debtors,	Assets,	Current Assets
-100023,	Allowance for Bad Debt,	Debit,	Reduces the amount of accounts receivable,	Assets,	Contra-entry Liabilities
-1000024,	Interest Receivable,	Debit,	Interest income that the business has earned,	Assets,	Current Assets
-100025,	Common Stock Subscriptions Receivable,	Debit,	When shares are fully paid for in one month, the common stock subscribed balance, transfers to this account,	Assets,	Contra-entry Equity
-100031,	Merchandise Inventory,	Debit,	Also known as Inventory,	Assets,	Current Assets
-100032,	Raw Materials,	Debit,	Basic matriels from which the product is made,	Assets,	Current Assets
-100033,	Work In Process,	Debit,	Partially finished products,	Assets,	Current Assets
-100034,	Finished goods,	Debit,	Product that is either ready to be sold or ready to be stored in inventory,	Assets,	Current Assets
-100041,	Supplies,	Debit,	Stock of resources to produce the product,	Assets,	Current Assets
-100042,	Office Supplies,	Debit,	Supplies for the office, for example stationery, paper,	Assets,	Current Assets
-100044,	Food Supplies,	Debit,	Food obtained for the business,	Assets,	Current Assets
-100045,	Prepaid Insurance,	Debit,	Insurance paid in advance,	Assets,	Current Assets
-100046,	Prepaid Rent,	Debit,	Rent paid in advance,	Assets,	Current Assets
-100053,	Bond Sinking Fund,	Debit,	Money set aside for redeeming or buying back some of the Bonds Payable,	Assets,	Long Term Assets
-100061,	Land,	Debit,	Land owned by the business,	Assets,	Fixed Assets
-100062,	Natural Resources,	Debit,	Natural resources available for use to the business,	Assets,	Fixed Assets
-100063,	Accumulated Depletion,	Debit,	Accumulated depletion of natural resources,	Assets,	Contra-entry Assets
-100071,	Building,	Debit,	Buildings owned by the business,	Assets,	Fixed Assets
-100072,	Accumulated Depreciation - Building,	Debit,	Depreciation on building,	Assets,	Contra-entry Assets
-100081,	Office Equipment,	Debit,	Equipment in the office,	Assets,	Fixed Assets
-100082,	Accumulated Depreciation - Office Equipment,	Debit,	Depreciation on Office Equipment,	Assets,	Contra-entry Assets
-100083,	Office Furniture,	Debit,	Furniture present in the office,	Assets,	Fixed Assets
-100084,	Accumulated Depreciation - Office Furniture,	Debit,	Depreciation on Furniture,	Assets,	Contra-entry Assets
-100091,	Patents,	Debit,	Patents held by the company,	Assets,	Intangible Assets
-100092,	Copyrights,	Debit,	Copyrights owned by the company,	Assets,	Intangible Assets
-100093,	Organizational Costs,	Debit,	Cost incurred to create a company,	Assets,	Intangible Assets
-200001,	Notes Payable,	Credit,	Written promise to pay money at a future date,	Liabilities,	Current Liabilities
-200002,	Accounts Payable,	Credit,	Money owed by a company to its creditors,	Liabilities,	Current Liabilities
-200003,	Dividends Payable,	Credit,	Dividends that a company's board of directors has declared to be payable to its shareholders,	Liabilities,	Current Liabilities
-200004,	Interest Payable,	Credit,	Interest that has been incurred but has not yet been paid,	Liabilities,	Current Liabilities
-200015,	Wages Payable,	Credit,	Wages that a compann'y employees have earned, but have not been paid yet,	Liabilities,	Current Liabilities
-200031,	Sales Tax Payable,	Credit,	Sales tax that a business has collected from customers on behalf of a governing tax authority, but have not been paid yet,	Liabilities,	Current Liabilities
-200041,	Unearned Revenue,	Credit,	Amounts received in advance of providing goods or services,	Liabilities,	Long Term Liabilities
-200051,	Mortagage Payable,	Credit,	Loan payment owed by the business,	Liabilities,	Long Term Liabilities
-200052,	Bonds payable,	Credit,	Interest on Bonds payable to the Bond Holders,	Liabilities,	Long Term Liabilities
-200053,	Premium on Bonds Payable,	Credit,	Principal amount of bonds payable on a specified date in the future ,	Liabilities,	Long Term Liabilities
-300011,	Capital,	Credit,	Equity brought into the company by the owners,	Owner's Equity,	Owner's Equity
-300012,	Drawings,	Credit,	Amount withdrawn from the business for the owner's personal use,	Owner's Equity,	Owner's Equity
-300013,	Common Stock,	Credit,	Shares entitling their holder to dividends,	Owner's Equity,	Owner's Equity
-300014,	Preferred Stock,	Credit,	Stock that entitles the holder to a fixed dividend, whose payment takes priority over that of common-stock dividends.,	Owner's Equity,	Owner's Equity
-300021,	Retained Earnings,	Credit,	Amount of profit that is re-invested in the business,	Owner's Equity,	Owner's Equity
-400001,	Delivery Fees,	Credit,	Amount if revenue received by the business for delivery of its products,	Revenue,	Operating Revenue
-400001,	Service Fees,	Credit,	Amount charged for service provided on the product. For example installation charges,	Revenue,	Operating Revenue
-400001,	Repair Fees,	Credit,	Amount charged for the repair of product,	Revenue,	Operating Revenue
-400001,	Sales,	Credit,	Revenue earned on sale of produced goods,	Revenue,	Operating Revenue
-400002,	Sales Returns and Allowance,	Credit,	Return on Sales,	Revenue,	Contra-entry Revenue
-400003,	Sales Discounts,	Credit,	Discount provided on Sales,	Revenue,	Contra-entry Revenue
-400011,	Interest Revenue,	Credit,	Interest earned by the business,	Revenue,	Other Revenue
-400012,	Rent Revenue,	Credit,	Rent earned by the business,	Revenue,	Other Revenue
-400013,	Subscriptions Revenue,	Credit,	Subscriptions earned by the business,	Revenue,	Other Revenue
-400014,	Sinking Fund Revenue,	Credit,	Fund established by an economic entity by setting aside revenue over a period of time to fund a future capital expense, or repayment of a long-term debt,	Revenue,	Other Revenue
-400015,	Uncollectible Accounts Recovers,	Credit,	 Description to be added,	Revenue,	Other Revenue
-400016,	Gain on Exchange or Sale of Equipment,	Credit,	 Description to be added,	Revenue,	Other Revenue
-500001,	Purchases,	Debit,	 Description to be added,	Expenses,	Cost of Goods Sold
-500006,	Purchase Returns and Allowance,	Debit,	 Description to be added,	Expenses,	Cost of Goods Sold
-500007,	Purchase Discount,	Debit,	 Description to be added,	Expenses,	Cost of Goods Sold
-500003,	Freight-In,	Debit,	 Description to be added,	Expenses,	Cost of Goods Sold
-500004,	Overhead,	Debit,	 Description to be added,	Expenses,	Cost of Goods Sold
-500005,	Cost of Goods Sold,	Debit,	 Description to be added,	Expenses,	Cost of Goods Sold
-500011,	Wages Expense,	Debit,	 Description to be added,	Expenses,	Selling Expenses
-500012,	Advertising Expense,	Debit,	 Description to be added,	Expenses,	Selling Expenses
-500013,	Bank Credit Card Expense,	Debit,	 Description to be added,	Expenses,	Selling Expenses
-500014,	Cash Short and Over,	Debit,	 Description to be added,	Expenses,	Selling Expenses
-500015,	Depreciation Expenses - Equipment and Fixtures,	Debit,	 Description to be added,	Expenses,	Selling Expenses
-500016,	Store Supplies Expense,	Debit,	 Description to be added,	Expenses,	Selling Expenses
-500017,	Travel and Entertainment Expense,	Debit,	 Description to be added,	Expenses,	Selling Expenses
-500021,	Rent Expense,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500022,	Office Salaries Expense,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500023,	Ofiice Supplies Expense,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500024,	Other Supplies,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500025,	Telephone,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500026,	Transportation Expense,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500027,	Collection Expense,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500028,	Inventory Short and Over,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500029,	Loss on Write Down of Inventory,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500030,	Payroll Taxes Expense,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500031,	Workers' Compensation Insurance Expense,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500032,	Bad Debt Expense,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500033,	Utilities Expense,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500034,	Charitable Contributions Expense,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500035,	Insurance Expense,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500036,	Postage Expense,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500037,	Repair Expense,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500038,	Oil and Gas Expense,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500039,	Depreciation Expense - Building,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500040,	Depreciation Expense - Equipment,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500041,	Depletion Expense,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500042,	Patent Amortization,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500043,	Amortization of Organization Costs,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500044,	Miscellaneous Expense,	Debit,	 Description to be added,	Expenses,	General and Administrative Expenses
-500051,	Interest Expense,	Debit,	 Description to be added,	Expenses,	Other Expenses
-500052,	Income Tax Expense,	Debit,	 Description to be added,	Expenses,	Other Expenses
-500053,	Loss on Discarded Equipment,	Debit,	 Description to be added,	Expenses,	Other Expenses
-500054,	Loss on Sale/Exchange of Equipment,	Debit,	 Description to be added,	Expenses,	Other Expenses
-500055,	Loss on Bonds Redeemable,	Debit,	 Description to be added,	Expenses,	Other Expenses
+500004, Overhead, Debit, Description to be added, Expenses, Cost of Goods Sold
+500005, Cost of Goods Sold, Debit, Description to be added, Expenses, Cost of Goods Sold
+500011, Wages Expense, Debit, Description to be added, Expenses, Selling Expenses
+500012, Advertising Expense, Debit, Description to be added, Expenses, Selling Expenses
+500013, Bank Credit Card Expense, Debit, Description to be added, Expenses, Selling Expenses
+500014, Cash Short and Over, Debit, Description to be added, Expenses, Selling Expenses
+500015, Depreciation Expenses - Equipment and Fixtures, Debit, Description to be added, Expenses, Selling Expenses
+500016, Store Supplies Expense, Debit, Description to be added, Expenses, Selling Expenses
+500017, Travel and Entertainment Expense, Debit, Description to be added, Expenses, Selling Expenses
+500021, Rent Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
+500022, Office Salaries Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
+500023, Ofiice Supplies Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
+500024, Other Supplies, Debit, Description to be added, Expenses, General and Administrative Expenses
+500025, Telephone, Debit, Description to be added, Expenses, General and Administrative Expenses
+500026, Transportation Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
+500027, Collection Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
+500028, Inventory Short and Over, Debit, Description to be added, Expenses, General and Administrative Expenses
+500029, Loss on Write Down of Inventory, Debit, Description to be added, Expenses, General and Administrative Expenses
+500030, Payroll Taxes Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
+500031, Workers' Compensation Insurance Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
+500032, Bad Debt Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
+500033, Utilities Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
+500034, Charitable Contributions Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
+500035, Insurance Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
+500036, Postage Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
+500037, Repair Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
+500038, Oil and Gas Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
+500039, Depreciation Expense - Building, Debit, Description to be added, Expenses, General and Administrative Expenses
+500040, Depreciation Expense - Equipment, Debit, Description to be added, Expenses, General and Administrative Expenses
+500041, Depletion Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
+500042, Patent Amortization, Debit, Description to be added, Expenses, General and Administrative Expenses
+500043, Amortization of Organization Costs, Debit, Description to be added, Expenses, General and Administrative Expenses
+500044, Miscellaneous Expense, Debit, Description to be added, Expenses, General and Administrative Expenses
+500051, Interest Expense, Debit, Description to be added, Expenses, Other Expenses
+500052, Income Tax Expense, Debit, Description to be added, Expenses, Other Expenses
+500053, Loss on Discarded Equipment, Debit, Description to be added, Expenses, Other Expenses
+500054, Loss on Sale/Exchange of Equipment, Debit, Description to be added, Expenses, Other Expenses
+500055, Loss on Bonds Redeemable, Debit, Description to be added, Expenses, Other Expenses
