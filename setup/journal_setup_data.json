@@ -3,35 +3,43 @@
     {
       "transactions": [
         {
-          "account_id": 1001,
-          "amount": -300
+          "account_id": 100001,
+          "amount": -10000
         },
         {
-          "account_id": 2002,
-          "amount": 200
+          "account_id": 100022,
+          "amount": -1500
         },
         {
-          "account_id": 1003,
-          "amount": 100
+          "account_id": 100041,
+          "amount": -1250
+        },
+        {
+          "account_id": 1000083,
+          "amount": -7500
+        },
+        {
+          "account_id": 300011,
+          "amount": 20250
         }
       ],
       "user_id": 1,
-      "description": "A pre-loaded transaction meant only to populate the site with data.",
+      "description": "Cash, A/R, Supplies, and Office Equipment brought in as Capital.",
       "journal_type": "regular"
     },
     {
       "transactions": [
         {
-          "account_id": 1001,
-          "amount": -100
+          "account_id": 100046,
+          "amount": -4500
         },
         {
-          "account_id": 1003,
-          "amount": 100
+          "account_id": 100001,
+          "amount": 4500
         }
       ],
       "user_id": 1,
-      "description": "A pre-loaded transaction meant only to populate the site with data.",
+      "description": "Rent paid in advance with cash.",
       "journal_type": "regular"
     }
   ]
