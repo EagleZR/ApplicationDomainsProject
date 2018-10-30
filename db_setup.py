@@ -46,6 +46,8 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/user_setup_data.
 with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/account_data_setup.txt', 'r') as f:
     for line in f.readlines():
         account_id, account_title, normal_side, description, category, subcategory = line.split(', ')
+        print(str(account_id) + ", " + str(account_title) + ", " + str(normal_side) + ", " + str(
+            description) + ", " + str(category) + ", " + str(subcategory))
         users = db.get_all_user_accounts()
         created_by = users[random.randrange(0, len(users))]['user_id']
         db.add_account(account_id.strip(), account_title.strip(), normal_side.strip().lower(), description.strip(),
