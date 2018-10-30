@@ -351,6 +351,9 @@ def account(account_id):
     elif request.method == 'POST':
         # Make sure only managers are using this
         assert_user_type_is(['manager'], requester_user_type)
+        # Make sure that the Account ID is 6 digits
+        if not int(account_id) >= 100000 or not int(account_id) < 1000000:
+            raise get_error_response(400, "The Account ID must be only 6 digits long")
         # Verify request data
         data = request.get_json()
         assert_json_data_contains(['account_title', 'normal_side', 'description'], data, 'account/' + account_id,
