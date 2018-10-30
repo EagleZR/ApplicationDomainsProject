@@ -1,0 +1,17 @@
+Assets,	Current Assets
+Liabilities,	Contra-entry Liabilities
+Owner's Equity,	Contra-entry Equity
+Expenses,	Long Term Assets
+Revenue,	Fixed Assets
+ ,	Contra-entry Assets
+ ,	Intangible Assets
+ ,	Current Liabilities
+ ,	Long Term Liabilities
+ ,	Owner's Equity
+ ,	Operating Revenue
+ ,	Contra-entry Revenue
+ ,	Other Revenue
+ ,	Cost of Goods Sold
+ ,	Selling Expenses
+ ,	General and Administrative Expenses
+ ,	Other Expenses
