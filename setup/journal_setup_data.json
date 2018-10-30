@@ -4,23 +4,23 @@
       "transactions": [
         {
           "account_id": 100001,
-          "amount": -10000
+          "amount": 10000
         },
         {
           "account_id": 100022,
-          "amount": -1500
+          "amount": 1500
         },
         {
           "account_id": 100041,
-          "amount": -1250
+          "amount": 1250
         },
         {
           "account_id": 100083,
-          "amount": -7500
+          "amount": 7500
         },
         {
           "account_id": 300011,
-          "amount": 20250
+          "amount": -20250
         }
       ],
       "user_id": 1,
@@ -31,11 +31,11 @@
       "transactions": [
         {
           "account_id": 100046,
-          "amount": -4500
+          "amount": 4500
         },
         {
           "account_id": 100001,
-          "amount": 4500
+          "amount": -4500
         }
       ],
       "user_id": 1,
