@@ -51,7 +51,7 @@
 411,	Interest Revenue,	Credit,	Interest earned by the business,	Revenue,	Other Revenue,
 412,	Rent Revenue,	Credit,	Rent earned by the business,	Revenue,	Other Revenue,
 413,	Subscriptions Revenue,	Credit,	Subscriptions earned by the business,	Revenue,	Other Revenue,
-414,	Sinking Fund Revenue,	Credit,	Fund established by an economic entity by setting aside revenue over a period of time to fund a future capital expense, or repayment of a long-term debt,	Revenue,	Other Revenue,
+414,	Sinking Fund Revenue,	Credit,	FundÂ established by an economic entity by setting aside revenueÂ over a period of time toÂ fundÂ a future capital expense, or repayment of a long-term debt,	Revenue,	Other Revenue,
 415,	Uncollectible Accounts Recovers,	Credit,		Revenue,	Other Revenue,
 416,	Gain on Exchange or Sale of Equipment,	Credit,		Revenue,	Other Revenue,
 501,	Purchases,	Debit,		Expenses,	Cost of Goods Sold,

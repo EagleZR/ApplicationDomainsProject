@@ -525,7 +525,11 @@ def journal(journal_entry_id):
             raise get_error_response(400, "The transactions must be sent as a list")
         debit_side_sum = 0
         credit_side_sum = 0
+        changing_accounts = list()
         for transaction in transactions_list:
+            if transaction['account_id'] in changing_accounts:
+                raise get_error_response(400, "A account can only be used once in a journal entry")
+            changing_accounts.append(transaction['account_id'])
             if transaction['account_id'] is None or transaction['account_id'] == "":
                 raise get_error_response(400, "Each transaction must contain an account ID")
             if transaction['amount'] is None or transaction['amount'] == "":

@@ -54,12 +54,12 @@
 414,	Sinking Fund Revenue,	Credit,	Fund established by an economic entity by setting aside revenue over a period of time to fund a future capital expense, or repayment of a long-term debt,	Revenue,	Other Revenue,
 415,	Uncollectible Accounts Recovers,	Credit,		Revenue,	Other Revenue,
 416,	Gain on Exchange or Sale of Equipment,	Credit,		Revenue,	Other Revenue,
-501,	Purchases,	Debit,		Expenses,	Cost of Goods Sold,
-501.1,	Purchase Returns and Allowance,	Debit,		Expenses,	Cost of Goods Sold,
-501.2,	Purchase Discount,	Debit,		Expenses,	Cost of Goods Sold,
-503,	Freight-In,	Debit,		Expenses,	Cost of Goods Sold,
-504,	Overhead,	Debit,		Expenses,	Cost of Goods Sold,
-505,	Cost of Goods Sold,	Debit,		Expenses,	Cost of Goods Sold,
+501,	Purchases,	Debit,		Expenses,	Cost of Goods Sold
+501.1,	Purchase Returns and Allowance,	Debit,		Expenses,	Cost of Goods Sold
+501.2,	Purchase Discount,	Debit,		Expenses,	Cost of Goods Sold
+503,	Freight-In,	Debit,		Expenses,	Cost of Goods Sold
+504,	Overhead,	Debit,		Expenses,	Cost of Goods Sold
+505,	Cost of Goods Sold,	Debit,		Expenses,	Cost of Goods Sold
 511,	Wages Expense,	Debit,		Expenses,	Selling Expenses,
 512,	Advertising Expense,	Debit,		Expenses,	Selling Expenses,
 513,	Bank Credit Card Expense,	Debit,		Expenses,	Selling Expenses,
