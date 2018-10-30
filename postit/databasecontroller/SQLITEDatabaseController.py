@@ -145,16 +145,10 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
             db = sqlite3.connect(self.database_file_name)
             cursor = db.cursor()
-            parameter_dictionary = {"first_name": first_name, "last_name": last_name, "username": username,
-                                    "email": email, "password_hash": hash_password(password),
-                                    "auth_token": generate_auth_token(), "account_type": self.default_account_type,
-                                    "expire_date": password_expire_date}
-            insert_text = '''Insert into Users (FIRST_NAME, LAST_NAME, USERNAME, EMAIL, PASSWORD_HASH, AUTH_TOKEN, 
-            ACCOUNT_TYPE, PASSWORD_EXPIRE_DATE) values('{first_name}', '{last_name}', '{username}', '{email}', 
-            '{password_hash}', '{auth_token}', '{account_type}', '{expire_date}');'''.format(
-                **parameter_dictionary)
-            logging.debug(insert_text)
-            cursor.execute(insert_text)
+            parameters = (first_name, last_name, username, email, hash_password(password),
+                          generate_auth_token(), self.default_account_type, password_expire_date)
+            cursor.execute('''Insert into Users (FIRST_NAME, LAST_NAME, USERNAME, EMAIL, PASSWORD_HASH, AUTH_TOKEN, 
+            ACCOUNT_TYPE, PASSWORD_EXPIRE_DATE) values(?, ?, ?, ?, ?, ?, ?, ?);''', parameters)
             db.commit()
             cursor.close()
 
@@ -166,19 +160,20 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         logging.info(
             "Adding account with account_id: " + account_id + ", account_title: " + account_title + ", normal_side: "
             + normal_side + ", description: \"" + description + "\"")
-        check_exists = self.get_account(account_id)
-        if check_exists is not None and len(check_exists) > 0:
-            raise DuplicateIDException("account_id", account_id)
+        try:
+            check_exists = self.get_account(account_id)
+            if check_exists is not None and len(check_exists) > 0:
+                raise DuplicateIDException("account_id", account_id)
+        except sqlite3.OperationalError:
+            pass
 
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
-        insert_text = '''Insert into ACCOUNTS (ACCOUNT_ID, ACCOUNT_TITLE, NORMAL_SIDE, DESCRIPTION, IS_ACTIVE,  
-        DATE_CREATED, CREATED_BY, LAST_EDITED_DATE) values ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');''' \
-                      % (account_id, account_title, normal_side, description, "Y",
-                         datetime.today().strftime(self.date_string_format), created_by,
-                         datetime.today().strftime(self.date_string_format))
-        logging.debug(insert_text)
-        cursor.execute(insert_text)
+        cursor.execute('''Insert into ACCOUNTS (ACCOUNT_ID, ACCOUNT_TITLE, NORMAL_SIDE, DESCRIPTION, IS_ACTIVE,  
+        DATE_CREATED, CREATED_BY, LAST_EDITED_DATE) values (?, ?, ?, ?, ?, ?, ?, ?);''',
+                       (account_id, account_title, normal_side, description, "Y",
+                        datetime.today().strftime(self.date_string_format), created_by,
+                        datetime.today().strftime(self.date_string_format)))
         db.commit()
         cursor.close()
 
@@ -190,11 +185,10 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         if username is not None:
             cursor.execute(
-                '''Select USER_ID from USERS where USERNAME = '%s' ''' % username)
+                '''Select USER_ID from USERS where USERNAME = ?''', (username,))
 
         if auth_token is not None:
-            command = '''Select USER_ID from USERS where AUTH_TOKEN = '%s' ''' % auth_token
-            cursor.execute(command)
+            cursor.execute('''Select USER_ID from USERS where AUTH_TOKEN = ? ''', (auth_token,))
 
         results = list()
         results.extend(cursor.fetchall())
@@ -211,7 +205,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         cursor = db.cursor()
 
         cursor.execute(
-            '''Select AUTH_TOKEN from USERS where USERNAME = '%s' and PASSWORD_HASH = '%s' ''' % (
+            '''Select AUTH_TOKEN from USERS where USERNAME = ? and PASSWORD_HASH = ? ''', (
                 username, hash_password(password)))
         results = list()
         results.extend(cursor.fetchall())
@@ -225,8 +219,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db = sqlite3.connect(self.database_file_name)
         check_cursor = db.cursor()
 
-        parameter_dictionary = {"username": username}
-        check_cursor.execute('''Select * from Users where USERNAME = '{username}';'''.format(**parameter_dictionary))
+        check_cursor.execute('''Select * from Users where USERNAME = ?;''', (username,))
         response = check_cursor.fetchall()
 
         check_cursor.close()
@@ -239,8 +232,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         cursor = db.cursor()
 
         cursor.execute(
-            '''Select USER_ID, AUTH_TOKEN, LAST_LOGIN, PASSWORD_EXPIRE_DATE from USERS where USERNAME = '%s' and 
-            PASSWORD_HASH = '%s' ''' % (username, hash_password(password)))
+            '''Select USER_ID, AUTH_TOKEN, LAST_LOGIN, PASSWORD_EXPIRE_DATE from USERS where USERNAME = ? and 
+            PASSWORD_HASH = ? ''', (username, hash_password(password)))
         results = list()
         results.extend(cursor.fetchall())
         logging.debug(results)
@@ -307,10 +300,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
     def forgot_password(self, user_id):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
-        command = '''Insert into FORGOTPASSWORD (USER_ID, SUBMISSIONDATE) values ('%s', '%s')''' % (
-            user_id, self.get_date_string(datetime.today()))
-        logging.debug(command)
-        cursor.execute(command)
+        cursor.execute('''Insert into FORGOTPASSWORD (USER_ID, SUBMISSIONDATE) values (?, ?)''', (
+            user_id, self.get_date_string(datetime.today())))
         db.commit()
         cursor.close()
         db.close()
@@ -351,11 +342,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
-        logging.debug(
-            '''UPDATE %s SET %s = '%s' where %s is '%s' ''' % (table, field, data, identifier_type, identifier))
-
-        cursor.execute('''UPDATE %s SET %s = '%s' where %s is '%s' ''' % (
-            table, field, data, identifier_type, identifier))
+        cursor.execute("UPDATE " + table + " SET " + field + " = :data where :identifier_type is :identifier;",
+                       {"data": data, "identifier_type": identifier_type, "identifier": identifier})
 
         db.commit()
         cursor.close()
@@ -366,13 +354,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         cursor = db.cursor()
 
         if identifier_type is not None:
-            command = '''Select %s from %s where %s is '%s' ''' % (field, table, identifier_type, identifier)
-            logging.debug(command)
-            cursor.execute(command)
+            cursor.execute("Select " + field + " from " + table + " where ? is ?", (identifier_type, identifier))
         else:
-            command = '''Select %s from %s ''' % (field, table)
-            logging.debug(command)
-            cursor.execute(command)
+            cursor.execute("Select " + field + " from " + table)
 
         results = list()
         results.extend(cursor.fetchall())
@@ -387,9 +371,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
-        command = '''DELETE FROM %s where %s is '%s' ''' % (table, identifier_type, identifier)
-        logging.debug(command)
-        cursor.execute(command)
+        cursor.execute("DELETE FROM " + table + " where " + identifier_type + " is ?", (identifier,))
 
         db.commit()
         cursor.close()
@@ -403,7 +385,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         cursor = db.cursor()
 
         cursor.execute(
-            '''SELECT USERNAME FROM USERS WHERE AUTH_TOKEN is '%s' and USER_ID is '%s' ''' % (auth_token, user_id))
+            '''SELECT USERNAME FROM USERS WHERE AUTH_TOKEN is ? and USER_ID is ? ''', (auth_token, user_id))
 
         results = cursor.fetchall()
         logging.debug("There are " + str(len(results)) + " who match this verification information")
@@ -442,10 +424,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 db = sqlite3.connect(self.database_file_name)
                 cursor = db.cursor()
 
-                command = '''Insert into USER_ACCOUNT_ACCESS (USER_ID, ACCOUNT_ID) values ('%s', '%s')''' % (
-                    user_id, account_id)
-                logging.debug(command)
-                cursor.execute(command)
+                cursor.execute('''Insert into USER_ACCOUNT_ACCESS (USER_ID, ACCOUNT_ID) values (?, ?)''', (
+                    user_id, account_id))
                 db.commit()
                 cursor.close()
                 db.close()
@@ -457,11 +437,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 db = sqlite3.connect(self.database_file_name)
                 cursor = db.cursor()
 
-                command = '''DELETE FROM USER_ACCOUNT_ACCESS where USER_ID is '%s' and ACCOUNT_ID is '%s' ''' % \
-                          (user_id, account_id)
-                logging.debug(command)
-
-                cursor.execute(command)
+                cursor.execute('''DELETE FROM USER_ACCOUNT_ACCESS where USER_ID is ? and ACCOUNT_ID is ? ''',
+                               (user_id, account_id))
                 db.commit()
                 cursor.close()
                 db.close()
@@ -528,11 +505,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
 
-        command = '''Select ACCOUNT_ID, ACCOUNT_TITLE, NORMAL_SIDE, DATE_CREATED, CREATED_BY, LAST_EDITED_DATE, 
-                    LAST_EDITED_BY, DESCRIPTION, IS_ACTIVE From ACCOUNTS where ACCOUNT_ID is %s''' % account_id
-        logging.debug(command)
-
-        cursor.execute(command)
+        cursor.execute('''Select ACCOUNT_ID, ACCOUNT_TITLE, NORMAL_SIDE, DATE_CREATED, CREATED_BY, LAST_EDITED_DATE, 
+                    LAST_EDITED_BY, DESCRIPTION, IS_ACTIVE From ACCOUNTS where ACCOUNT_ID is ?''', (account_id,))
         results = list()
         results.extend(cursor.fetchall())
         logging.debug(str(results))
@@ -559,7 +533,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         cursor.execute(
             '''Select USER_ID, USERNAME, FIRST_NAME, LAST_NAME, EMAIL, ACCOUNT_TYPE, LAST_LOGIN, 
-            PASSWORD_EXPIRE_DATE from USERS where USER_ID is %s''' % user_id)
+            PASSWORD_EXPIRE_DATE from USERS where USER_ID is ?''', (user_id,))
 
         results = list()
         results.extend(cursor.fetchall())
@@ -580,10 +554,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
     def create_journal_entry(self, transactions_list, user_id, date, description, journal_type):
         db = sqlite3.connect(self.database_file_name)
         create_journal_cursor = db.cursor()
-        insert_text = '''Insert into JOURNAL_ENTRIES (USER_ID, DATE, DESCRIPTION, TYPE, STATUS) 
-        values ('%s', '%s', '%s', '%s', '%s');''' % (user_id, date, description, journal_type, 'pending')
-        logging.debug(insert_text)
-        create_journal_cursor.execute(insert_text)
+        create_journal_cursor.execute('''Insert into JOURNAL_ENTRIES (USER_ID, DATE, DESCRIPTION, TYPE, STATUS) 
+        values (?, ?, ?, ?, ?);''', (user_id, date, description, journal_type, 'pending'))
         db.commit()
 
         # get_journal_id_cursor = db.cursor()
@@ -600,10 +572,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         for transaction in transactions_list:
             create_transaction_cursor = db.cursor()
-            insert_text = '''Insert into TRANSACTIONS(ACCOUNT_ID, AMOUNT, JOURNAL_ENTRY_ID) values ('%s', '%s', '%s')''' \
-                          % (transaction['account_id'], transaction['amount'], journal_id)
-            logging.debug(insert_text)
-            create_transaction_cursor.execute(insert_text)  # TODO Find a way to verify
+            create_transaction_cursor.execute(
+                '''Insert into TRANSACTIONS(ACCOUNT_ID, AMOUNT, JOURNAL_ENTRY_ID) values (?, ?, ?)''',
+                (transaction['account_id'], transaction['amount'], journal_id))
             db.commit()
             create_journal_cursor.close()
 
@@ -616,8 +587,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         journal_cursor.execute(
             '''Select JOURNAL_ENTRY_ID, USER_ID, DATE, DESCRIPTION, TYPE, STATUS, POSTING_REFERENCE, POSTING_MANAGER
-            from JOURNAL_ENTRIES WHERE JOURNAL_ENTRY_ID is '%s' 
-            ''' % journal_entry_id)
+            from JOURNAL_ENTRIES WHERE JOURNAL_ENTRY_ID is ? ''', (journal_entry_id,))
 
         results = list()
         results.extend(journal_cursor.fetchall())
@@ -634,7 +604,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             transaction_cursor.execute(
                 '''Select TRANSACTIONS.ACCOUNT_ID, TRANSACTIONS.AMOUNT, ACCOUNT.ACCOUNT_TITLE from TRANSACTIONS 
                  left join ACCOUNTS on TRANSACTIONS.ACCOUNT_ID = ACCOUNTS.ACCOUNT_ID
-                 where JOURNAL_ENTRY_ID is '%s' ''' % result[0])
+                 where JOURNAL_ENTRY_ID is ? ''', (result[0],))
 
             transactions = list()
             transactions.extend(transaction_cursor.fetchall())
@@ -686,8 +656,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
             transaction_cursor.execute(
                 '''Select TRANSACTIONS.ACCOUNT_ID, TRANSACTIONS.AMOUNT, ACCOUNTS.ACCOUNT_TITLE from TRANSACTIONS 
-                 left join ACCOUNTS on TRANSACTIONS.ACCOUNT_ID = ACCOUNTS.ACCOUNT_ID
-                 where JOURNAL_ENTRY_ID is '%s' ''' % result[0])
+                 left join ACCOUNTS on TRANSACTIONS.ACCOUNT_ID = ACCOUNTS.ACCOUNT_ID where JOURNAL_ENTRY_ID is ? ''',
+                (result[0],))
 
             transactions = list()
             transactions.extend(transaction_cursor.fetchall())
@@ -720,11 +690,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
     def post_journal_entry(self, journal_entry_id, user_id):
         db = sqlite3.connect(self.database_file_name)
         post_journal_cursor = db.cursor()
-        insert_text = '''Insert into POSTINGS (JOURNAL_ENTRY_ID, POSTING_MANAGER, POSTING_DATE) 
-                values ('%s', '%s', '%s');''' % (journal_entry_id, user_id,
-                                                 datetime.today().strftime(self.date_string_format))
-        logging.debug(insert_text)
-        post_journal_cursor.execute(insert_text)
+        post_journal_cursor.execute(
+            '''Insert into POSTINGS (JOURNAL_ENTRY_ID, POSTING_MANAGER, POSTING_DATE)  values (?, ?, ?);''',
+            (journal_entry_id, user_id, datetime.today().strftime(self.date_string_format)))
         db.commit()
 
         posting_reference = post_journal_cursor.lastrowid
@@ -743,9 +711,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db = sqlite3.connect(self.database_file_name)
         amount_cursor = db.cursor()
 
-        amount_cursor.execute('''Select Sum(Transactions.Amount) from transactions where Transactions.Account_ID is '%s' 
+        amount_cursor.execute('''Select Sum(Transactions.Amount) from transactions where Transactions.Account_ID is ? 
                             and Transactions.Journal_Entry_ID in (Select Journal_Entries.Journal_Entry_ID from 
-                            Journal_Entries where Journal_Entries.Status is 'posted')''' % account_id)
+                            Journal_Entries where Journal_Entries.Status is 'posted')''', (account_id,))
         amount = amount_cursor.fetchall()
 
         db.commit()
@@ -757,8 +725,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 class InvalidUserType(PostitHTTPError):
     def __init__(self, user_type, account_types):
         PostitHTTPError.__init__(self,
-                                 "Invalid user type: " + user_type + ". Not in list of acceptable account types: " + str(
-                                     account_types))
+                                 "Invalid user type: " + user_type + ". Not in list of acceptable account types: " +
+                                 str(account_types))
 
 
 class DuplicateIDException(PostitHTTPError):
