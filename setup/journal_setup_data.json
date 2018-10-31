@@ -99,8 +99,39 @@
         }
       ],
       "user_id": 1,
-      "description": "Insurance paid in advance with cash.",
+      "description": "Office Equipment bought on credit.",
       "journal_type": "regular"
-    }
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 100001,
+          "amount": 800
+        },
+        {
+          "account_id": 100022,
+          "amount": -800
+        }
+      ],
+      "user_id": 1,
+      "description": "Cash received on accounts receivable.",
+      "journal_type": "regular"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 200002,
+          "amount": 800
+        },
+        {
+          "account_id": 100001,
+          "amount": -800
+        }
+      ],
+      "user_id": 1,
+      "description": "Cash paid on accounts payable.",
+      "journal_type": "regular"
+    },
+
   ]
 }
