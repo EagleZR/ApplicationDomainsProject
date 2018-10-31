@@ -513,8 +513,10 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         transactions_cursor = db.cursor()
 
-        transactions_cursor.execute('''Select JOURNAL_ENTRIES.DATE, JOURNAL_ENTRIES.DESCRIPTION, JOURNAL_ENTRIES.POSTING_REFERENCE 
-        TRANSACTIONS.AMOUNT from transactions where Transactions.Account_ID is ? and Transactions.status in  is 'posted';''',
+        transactions_cursor.execute('''Select DATE, DESCRIPTION, POSTING_REFERENCE, AMOUNT
+                from transactions left join JOURNAL_ENTRIES ON TRANSACTIONS.JOURNAL_ENTRY_ID = JOURNAL_ENTRIES.JOURNAL_ENTRY_ID
+                where TRANSACTIONS.ACCOUNT_ID is ? and JOURNAL_ENTRIES.STATUS is not null and JOURNAL_ENTRIES.STATUS is 'posted'
+                order by POSTING_REFERENCE;''',
                                     (account_id,))
         transactions = transactions_cursor.fetchall()
         transaction_dict_list = list()
