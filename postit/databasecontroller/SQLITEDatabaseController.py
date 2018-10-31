@@ -514,7 +514,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         transactions_cursor = db.cursor()
 
         transactions_cursor.execute('''Select JOURNAL_ENTRIES.DATE, JOURNAL_ENTRIES.DESCRIPTION, JOURNAL_ENTRIES.POSTING_REFERENCE 
-        TRANSACTION.AMOUNT from transactions where Transactions.Account_ID is ? and Transactions.status in  is 'posted';''',
+        TRANSACTIONS.AMOUNT from transactions where Transactions.Account_ID is ? and Transactions.status in  is 'posted';''',
                                     (account_id,))
         transactions = transactions_cursor.fetchall()
         transaction_dict_list = list()
