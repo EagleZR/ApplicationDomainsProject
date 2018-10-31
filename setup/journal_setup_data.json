@@ -131,7 +131,7 @@
       "user_id": 1,
       "description": "Cash paid on accounts payable.",
       "journal_type": "regular"
-    },
+    }
 
   ]
 }
