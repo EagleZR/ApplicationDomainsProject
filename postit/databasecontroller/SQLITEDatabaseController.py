@@ -509,8 +509,20 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         results.extend(cursor.fetchall())
         logging.debug(str(results))
 
-        db.commit()
         cursor.close()
+
+        transactions_cursor = db.cursor()
+
+        transactions_cursor.execute('''Select JOURNAL_ENTRIES.DATE, JOURNAL_ENTRIES.DESCRIPTION, JOURNAL_ENTRIES.POSTING_REFERENCE 
+        TRANSACTION.AMOUNT from transactions where Transactions.Account_ID is ? and Transactions.status in  is 'posted';''',
+                                    (account_id,))
+        transactions = transactions_cursor.fetchall()
+        transaction_dict_list = list()
+        for transaction in transactions:
+            transaction_dict_list.append({"date": transaction[0], "description": transaction[1],
+                                          "posting_reference": transaction[2], "amount": transaction[3]})
+        transactions_cursor.close()
+        db.commit()
         db.close()
 
         results_dict_list = list()
@@ -519,7 +531,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 {"account_id": result[0], "account_title": result[1], "normal_side": result[2],
                  "balance": self.get_account_balance(result[0]), "date_created": result[3], "created_by": result[4],
                  "last_edited_date": result[5], "last_edited_by": result[6], "description": result[7],
-                 "is_active": result[8]})
+                 "is_active": result[8], "transactions": transaction_dict_list})
         return results_dict_list
 
     def get_table(self, table_name):
