@@ -41,6 +41,66 @@
       "user_id": 1,
       "description": "Rent paid in advance with cash.",
       "journal_type": "regular"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 100045,
+          "amount": 1800
+        },
+        {
+          "account_id": 100001,
+          "amount": -1800
+        }
+      ],
+      "user_id": 1,
+      "description": "Insurance paid in advance with cash.",
+      "journal_type": "regular"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 100001,
+          "amount": 3000
+        },
+        {
+          "account_id": 200041,
+          "amount": -3000
+        }
+      ],
+      "user_id": 1,
+      "description": "Cash received for service not yet provided.",
+      "journal_type": "regular"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 500012,
+          "amount": 120
+        },
+        {
+          "account_id": 100001,
+          "amount": -120
+        }
+      ],
+      "user_id": 1,
+      "description": "Cash paid for advertising.",
+      "journal_type": "regular"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 100081,
+          "amount": 1800
+        },
+        {
+          "account_id": 200002,
+          "amount": -1800
+        }
+      ],
+      "user_id": 1,
+      "description": "Insurance paid in advance with cash.",
+      "journal_type": "regular"
     }
   ]
 }
