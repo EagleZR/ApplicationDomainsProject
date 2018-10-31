@@ -131,7 +131,51 @@
       "user_id": 1,
       "description": "Cash paid on accounts payable.",
       "journal_type": "regular"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 100022,
+          "amount": 2250
+        },
+        {
+          "account_id": 400002,
+          "amount": -2250
+        }
+      ],
+      "user_id": 1,
+      "description": "Recorded services provided for an earlier accounting period.",
+      "journal_type": "regular"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 500022,
+          "amount": 400
+        },
+        {
+          "account_id": 100001,
+          "amount": -400
+        }
+      ],
+      "user_id": 1,
+      "description": "Salaries paid with cash.",
+      "journal_type": "regular"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 100001,
+          "amount": 3175
+        },
+        {
+          "account_id": 400002,
+          "amount": -3175
+        }
+      ],
+      "user_id": 1,
+      "description": "Cash received for service provided.",
+      "journal_type": "regular"
     }
-
   ]
 }
