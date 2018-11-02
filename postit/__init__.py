@@ -22,7 +22,7 @@ app.config['MAX_CONTENT_LENGTH'] = int(config['files']['max_size'])
 CORS(app)
 event_log = EventLog()
 
-with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/journal_setup_data.json', 'r') as json_file:
+with open(os.path.dirname(os.path.realpath(__file__)) + './account_categories.json', 'r') as json_file:
     categories = json.load(json_file)
 
 
