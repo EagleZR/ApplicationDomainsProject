@@ -1,77 +1,77 @@
 {
-	"categories": [
-		{
-			"name": "Assets",
-			"subcategories": [
-				{
-					"name": "Current Assets"
-				},
-				{
-					"name": "Long Term Assets"
-				}
-				{
-					"name": "Fixed Assets"
-				},
-				{
-					"name": "Contra-entry Assets"
-				},
-				{
-					"name": "Intangible Assets"
-				},
-			]
-		},
-		{
-			"name": "Liabilities",
-			"subcategories": [
-				{
-					"name": "Contra-entry Liabilities"
-				},
-				{
-					"name": "Current Liabilities"
-				}
-				{
-					"name": "Long Term Liabilities"
-				},
-			]
-		},
-		{
-			"name": "Owners Equity",
-			"subcategories": [
-				{
-					"name": "Owners Equity"
-				},
-			]
-		},
-		{
-			"name": "Revenue",
-			"subcategories": [
-				{
-					"name": "Operating Revenue"
-				},
-				{
-					"name": "Other Revenue"
-				}
-				{
-					"name": "Contra-entry Revenue"
-				},
-			]
-		},
-		{
-			"name": "Expenses",
-			"subcategories": [
-				{
-					"name": "Cost of Goods Sold"
-				},
-				{
-					"name": "Selling Expenses"
-				}
-				{
-					"name": "General and Administrative Expenses"
-				},
-				{
-					"name": "Other Expenses"
-				},
-			]
-		},
-	]
-|
+  "categories": [
+    {
+      "name": "Assets",
+      "subcategories": [
+        {
+          "name": "Current Assets"
+        },
+        {
+          "name": "Long Term Assets"
+        },
+        {
+          "name": "Fixed Assets"
+        },
+        {
+          "name": "Contra-entry Assets"
+        },
+        {
+          "name": "Intangible Assets"
+        }
+      ]
+    },
+    {
+      "name": "Liabilities",
+      "subcategories": [
+        {
+          "name": "Contra-entry Liabilities"
+        },
+        {
+          "name": "Current Liabilities"
+        },
+        {
+          "name": "Long Term Liabilities"
+        }
+      ]
+    },
+    {
+      "name": "Owners Equity",
+      "subcategories": [
+        {
+          "name": "Owners Equity"
+        }
+      ]
+    },
+    {
+      "name": "Revenue",
+      "subcategories": [
+        {
+          "name": "Operating Revenue"
+        },
+        {
+          "name": "Other Revenue"
+        },
+        {
+          "name": "Contra-entry Revenue"
+        }
+      ]
+    },
+    {
+      "name": "Expenses",
+      "subcategories": [
+        {
+          "name": "Cost of Goods Sold"
+        },
+        {
+          "name": "Selling Expenses"
+        },
+        {
+          "name": "General and Administrative Expenses"
+        },
+        {
+          "name": "Other Expenses"
+        }
+      ]
+    }
+  ]
+}
