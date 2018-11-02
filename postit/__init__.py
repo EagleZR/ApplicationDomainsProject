@@ -8,6 +8,7 @@ import configparser
 import os.path
 import logging
 from werkzeug.utils import secure_filename
+import json
 
 from postit.databasecontroller.SQLITEDatabaseController import DuplicateIDException, InvalidUserType
 
@@ -20,6 +21,9 @@ app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.realpath(__fi
 app.config['MAX_CONTENT_LENGTH'] = int(config['files']['max_size'])
 CORS(app)
 event_log = EventLog()
+
+with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/journal_setup_data.json', 'r') as json_file:
+    categories = json.load(json_file)
 
 
 @app.route('/')
@@ -313,7 +317,7 @@ def get_table(table_name):
 
 @app.route('/account/<account_id>', methods=['GET', 'POST', 'PUT'])
 def account(account_id):
-    if not account_id == 'all':
+    if not (account_id == 'all' or account_id == 'categories'):
         log_request(request)
     # Authentication
     requester_auth_token, requester_user_id, requester_user_type = authenticate_request(request)
@@ -328,6 +332,11 @@ def account(account_id):
             accounts = db.get_viewable_accounts(requester_user_id)
             # Send success response
             response = jsonify({"accounts": accounts})
+            response.status_code = 200
+            return response
+        # Account categories
+        elif account_id == 'categories':
+            response = categories
             response.status_code = 200
             return response
         # Single account
