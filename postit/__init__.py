@@ -336,7 +336,7 @@ def account(account_id):
             return response
         # Account categories
         elif account_id == 'categories':
-            response = categories
+            response = jsonify(categories)
             response.status_code = 200
             return response
         # Single account
