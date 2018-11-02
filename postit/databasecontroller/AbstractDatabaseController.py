@@ -73,7 +73,7 @@ class AbstractDatabaseController(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def add_account(self, account_id, account_title, normal_side, description, created_by):
+    def add_account(self, account_id, account_title, normal_side, description, category, subcategory, created_by):
         pass
 
     @abc.abstractmethod

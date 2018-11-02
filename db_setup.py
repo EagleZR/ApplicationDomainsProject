@@ -51,7 +51,7 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/account_data_set
         users = db.get_all_user_accounts()
         created_by = users[random.randrange(0, len(users))]['user_id']
         db.add_account(account_id.strip(), account_title.strip(), normal_side.strip().lower(), description.strip(),
-                       created_by)
+                       category, subcategory, created_by)
         event_log.write(1, "Created account " + str(account_id))
 
 # Transactions

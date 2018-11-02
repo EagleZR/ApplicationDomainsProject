@@ -29,7 +29,7 @@ class DummyDatabaseController(AbstractDatabaseController):
     def create_journal_entry(self, transactions_list, user_id, date, description, journal_type):
         pass
 
-    def add_account(self, account_id, account_title, normal_side, description, created_by):
+    def add_account(self, account_id, account_title, normal_side, description, category, subcategory, created_by):
         pass
 
     def get_user(self, user_id):

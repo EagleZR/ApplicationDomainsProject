@@ -70,8 +70,9 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             accounts_cursor.execute(
                 '''Create Table if Not Exists ACCOUNTS(ACCOUNT_ID integer not null, ACCOUNT_TITLE TEXT not null, 
                 NORMAL_SIDE TEXT not null, DESCRIPTION TEXT, IS_ACTIVE TEXT not null, DATE_CREATED TEXT not null, 
-                CREATED_BY INTEGER not null, LAST_EDITED_DATE TEXT not null, LAST_EDITED_BY INTEGER, 
-                FOREIGN KEY (CREATED_BY) REFERENCES USERS(USER_ID), FOREIGN KEY (LAST_EDITED_BY) REFERENCES USERS(USER_ID));''')
+                CREATED_BY INTEGER not null, LAST_EDITED_DATE TEXT not null, CATEGORY TEXT not null, 
+                SUBCATEGORY TEXT not null, LAST_EDITED_BY INTEGER, FOREIGN KEY (CREATED_BY) REFERENCES USERS(USER_ID), 
+                FOREIGN KEY (LAST_EDITED_BY) REFERENCES USERS(USER_ID));''')
             db.commit()
         accounts_cursor.close()
 
@@ -156,7 +157,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         except sqlite3.OperationalError:
             return False
 
-    def add_account(self, account_id, account_title, normal_side, description, created_by):
+    def add_account(self, account_id, account_title, normal_side, description, category, subcategory, created_by):
         logging.info(
             "Adding account with account_id: " + account_id + ", account_title: " + account_title + ", normal_side: "
             + normal_side + ", description: \"" + description + "\"")
@@ -170,10 +171,10 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db = sqlite3.connect(self.database_file_name)
         cursor = db.cursor()
         cursor.execute('''Insert into ACCOUNTS (ACCOUNT_ID, ACCOUNT_TITLE, NORMAL_SIDE, DESCRIPTION, IS_ACTIVE,  
-        DATE_CREATED, CREATED_BY, LAST_EDITED_DATE) values (?, ?, ?, ?, ?, ?, ?, ?);''',
+        DATE_CREATED, CREATED_BY, LAST_EDITED_DATE, CATEGORY, SUBCATEGORY) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);''',
                        (account_id, account_title, normal_side, description, "Y",
                         datetime.today().strftime(self.date_string_format), created_by,
-                        datetime.today().strftime(self.date_string_format)))
+                        datetime.today().strftime(self.date_string_format), category, subcategory))
         db.commit()
         cursor.close()
 
@@ -448,7 +449,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         cursor.execute(
             '''Select ACCOUNT_ID, ACCOUNT_TITLE, NORMAL_SIDE, DATE_CREATED, CREATED_BY, LAST_EDITED_DATE, 
-            LAST_EDITED_BY, DESCRIPTION, IS_ACTIVE from ACCOUNTS''')
+            LAST_EDITED_BY, DESCRIPTION, IS_ACTIVE, CATEGORY, SUBCATEGORY from ACCOUNTS''')
 
         results = list()
         results.extend(cursor.fetchall())
@@ -465,7 +466,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 {"account_id": result[0], "account_title": result[1], "normal_side": result[2],
                  "balance": self.get_account_balance(result[0]), "date_created": result[3], "created_by": result[4],
                  "last_edited_date": result[5], "last_edited_by": result[6], "description": result[7],
-                 "is_active": result[8]})
+                 "is_active": result[8], "category": result[9], "subcategory": result[10]})
 
         db.close()
 

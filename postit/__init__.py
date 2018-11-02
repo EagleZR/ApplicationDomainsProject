@@ -365,18 +365,21 @@ def account(account_id):
             raise get_error_response(400, "The Account ID must be only 6 digits long")
         # Verify request data
         data = request.get_json()
-        assert_json_data_contains(['account_title', 'normal_side', 'description'], data, 'account/' + account_id,
-                                  'POST')
+        assert_json_data_contains(['account_title', 'normal_side', 'description', 'category', 'subcategory'], data,
+                                  'account/' + account_id, 'POST')
         account_title = data['account_title']
         normal_side = data['normal_side']
         description = data['description']
+        category = data['category']
+        subcategory = data['subcategory']
         # Make sure the account_id is an integer number
         try:
             int(account_id)
         except ValueError:
             raise get_error_response(400, "The account_id (/account/<account_id> must be an integer number")
         # Attempt to create the account
-        if not db.add_account(account_id, account_title, normal_side, description, requester_user_id):
+        if not db.add_account(account_id, account_title, normal_side, description, category, subcategory,
+                              requester_user_id):
             event_log.write(requester_user_id, "WARNING: Unsuccessfully attempt to create Account " + account_id +
                             " with title \"" + account_title + "\"")
             raise get_error_response(400, "The account was not successfully created")
