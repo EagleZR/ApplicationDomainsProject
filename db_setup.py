@@ -63,7 +63,8 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/journal_setup_da
         user_id = journal_entry['user_id']
         description = journal_entry['description']
         journal_type = journal_entry['journal_type']
-        db.create_journal_entry(transactions, user_id, datetime.today(), description, journal_type)
+        db.create_journal_entry(transactions, user_id, datetime.today().strftime(db.date_string_format), description,
+                                journal_type)
 
 # Print logs to manually verify they work correctly
 messages = event_log.get_all()
