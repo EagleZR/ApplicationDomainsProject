@@ -176,6 +176,141 @@
       "user_id": 1,
       "description": "Cash received for service provided.",
       "journal_type": "regular"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 100041,
+          "amount": 750
+        },
+        {
+          "account_id": 100001,
+          "amount": -750
+        }
+      ],
+      "user_id": 1,
+      "description": "Supplies purchased with cash.",
+      "journal_type": "regular"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 100022,
+          "amount": 1100
+        },
+        {
+          "account_id": 400002,
+          "amount": -1100
+        }
+      ],
+      "user_id": 1,
+      "description": "Services provided on account.",
+      "journal_type": "regular"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 100001,
+          "amount": 1850
+        },
+        {
+          "account_id": 400002,
+          "amount": -1850
+        }
+      ],
+      "user_id": 1,
+      "description": "Cash received for service provided.",
+      "journal_type": "regular"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 100001,
+          "amount": 3175
+        },
+        {
+          "account_id": 100022,
+          "amount": -3175
+        }
+      ],
+      "user_id": 1,
+      "description": "Cash received on a past account.",
+      "journal_type": "regular"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 500025,
+          "amount": 130
+        },
+        {
+          "account_id": 100001,
+          "amount": -130
+        }
+      ],
+      "user_id": 1,
+      "description": "Telephone Expense paid in cash.",
+      "journal_type": "regular"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 500033,
+          "amount": 200
+        },
+        {
+          "account_id": 100001,
+          "amount": -200
+        }
+      ],
+      "user_id": 1,
+      "description": "Utilities expense paid in cash.",
+      "journal_type": "regular"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 100001,
+          "amount": 2050
+        },
+        {
+          "account_id": 400002,
+          "amount": -2050
+        }
+      ],
+      "user_id": 1,
+      "description": "Cash received for service provided.",
+      "journal_type": "regular"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 100022,
+          "amount": 3175
+        },
+        {
+          "account_id": 400002,
+          "amount": -3175
+        }
+      ],
+      "user_id": 1,
+      "description": "Services provided on account.",
+      "journal_type": "regular"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 5000022,
+          "amount": 3175
+        },
+        {
+          "account_id": 100001,
+          "amount": -3175
+        }
+      ],
+      "user_id": 1,
+      "description": "Salaries paid.",
+      "journal_type": "regular"
     }
   ]
 }
