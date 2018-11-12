@@ -36,9 +36,9 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/user_setup_data.
                     random_date((datetime.today() + timedelta(days=20)) + timedelta(days=10), datetime.today(),
                                 random.random()).strftime(db.date_string_format))
         user_id = db.get_user_id(username)
-        event_log.write(1, "Added user " + str(user_id))
+        event_log.write(1, "Added user " + str(user_id), "", str(db.get_user(user_id)))
         db.set_user_type(user_id, user_type)
-        event_log.write(1, "Set user " + str(user_id) + " to " + user_type)
+        event_log.write(1, "Set user " + str(user_id) + " to " + user_type, "new", db.get_user_type(user_id))
         db.update_last_login(user_id, random_date((datetime.today() - timedelta(days=30)), datetime.today(),
                                                   random.random()))
 
@@ -52,7 +52,7 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/account_data_set
         created_by = users[random.randrange(0, len(users))]['user_id']
         db.add_account(account_id.strip(), account_title.strip(), normal_side.strip().lower(), description.strip(),
                        category, subcategory, created_by)
-        event_log.write(1, "Created account " + str(account_id))
+        event_log.write(1, "Created account " + str(account_id), "", str(db.get_account(account_id)))
 
 # Transactions
 with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/journal_setup_data.json', 'r') as json_file:
