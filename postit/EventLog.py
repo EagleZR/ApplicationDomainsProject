@@ -79,4 +79,4 @@ class EventLog:
             logging.warning("!!!!!!!!EVENTLOG FILE DOES NOT EXIST!!!!!!!!")
             logging.warning("Creating new EventLog")
             self.log = list()
-            self.write(1, "Created Log")  # Attribute any automatic actions to the root admin
+            self.write(1, "Created Log", "", "")  # Attribute any automatic actions to the root admin
