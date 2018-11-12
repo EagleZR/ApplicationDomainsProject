@@ -530,11 +530,13 @@ def journal(journal_entry_id):
             raise get_error_response(400, "POSTS only allowed on /journal/new")
         # Verify request data
         data = request.get_json()
-        assert_json_data_contains(['transactions_list', 'date', 'description', 'journal_type'], data,
+        assert_json_data_contains(['transactions_list', 'date', 'journal_type'], data,
                                   'journal/' + journal_entry_id, 'POST')
         transactions_list = data['transactions_list']
         date = data['date']
-        description = data['description']
+        description = ""
+        if 'description' in data:
+            description = data['description']
         journal_type = data['journal_type']
         if not isinstance(transactions_list, list):
             raise get_error_response(400, "The transactions must be sent as a list")
