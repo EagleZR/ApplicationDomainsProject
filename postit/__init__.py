@@ -56,19 +56,21 @@ def login():
         # Check if the password has expired
         passwd_time_remaining = password_expire_date - datetime.today()
         if passwd_time_remaining.days < 0:
-            event_log.write(user_id, "Attempted to log in. Password is expired.")
+            event_log.write(user_id, "Attempted to log in. Password is expired.", "", "")
             raise get_error_response(401, "Your password has expired, please contact an administrator")
         # Check if the user account is active
         user_type = db.get_user_type(user_id)
         logging.debug("account_type extracted in /signin")
         if user_type == "deactivated" or user_type == "new":
-            event_log.write(user_id, "Attempted to log in. Account type is " + user_type + ".")
+            event_log.write(user_id, "Attempted to log in. Account type is " + user_type + ".", "", "")
             raise get_error_response(401, "This user account is not active. Please contact an administrator.")
+        # Update the last login date in the database
+        last_login = db.get_user(user_id)["last_login"]
+        db.update_last_login(user_id, datetime.today())
         # Login is successful
         logging.debug("Account type is valid in /signin")
-        event_log.write(user_id, "Logged in.")
-        # Update the last login date in the database
-        db.update_last_login(user_id, datetime.today())
+        event_log.write(user_id, "Logged in.", "Last Login: " + last_login,
+                        "Last Login: " + db.get_user(user_id)["last_login"])
         # Return the success response
         response = jsonify(
             {"user_id": user_id, "auth_token": auth_token, 'user_type': user_type, "last_login": last_login,
@@ -121,7 +123,8 @@ def register():
         # activate their account first
         response = jsonify({
             "message": "An admin will need to activate the account before logging in is permitted"})
-        event_log.write(user_id, "Registered as a new user. User is now pending activation.")
+        event_log.write(user_id, "Registered as a new user. User is now pending activation.", "",
+                        str(db.get_user(user_id)))
         response.status_code = 200
         return response
 
@@ -174,7 +177,8 @@ def user(user_id):
 
         # Verify that the requester is either updating own account or is an admin
         if not (user_id == requester_user_id or requester_user_type == 'admin'):
-            event_log.write(requester_user_id, "WARNING: A non-admin attempted to edit another user, " + user_id)
+            event_log.write(requester_user_id, "WARNING: A non-admin attempted to edit another user, " + user_id,
+                            str(db.get_user(user_id)), str(db.get_user(user_id)))
             raise get_error_response(403, "Only the given user or an admin can update a user's data")
 
         # Update Password
@@ -186,7 +190,8 @@ def user(user_id):
             if not db.update_password(user_id, value):
                 raise get_error_response(405, "The password was not updated")
             logging.info("The password was updated successfully")
-            event_log.write(requester_user_id, "Updated the password of user " + user_id)
+            event_log.write(requester_user_id, "Updated the password of user " + user_id, "Data Restricted",
+                            "Data Restricted")
             # Set the new expiration date
             db.set_password_expire(user_id, db.get_30_days_from_now())
             # Return success response
@@ -196,10 +201,12 @@ def user(user_id):
 
         # Update general user information
         if category in ['first_name', 'last_name', 'email']:
+            precondition = db.get_user(user_id)[category]
             # Attempt to update the data
             if not db.set_user_data(user_id, category, value):
                 raise get_error_response(405, "The data could not be set")
-            event_log.write(requester_user_id, "Updated the " + category + " of user " + user_id)
+            event_log.write(requester_user_id, "Updated the " + category + " of user " + user_id, precondition,
+                            db.get_user(user_id)[category])
             # Send the success response
             response = jsonify({"message": "The data was successfully set"})
             response.status_code = 200
@@ -207,12 +214,13 @@ def user(user_id):
 
         # Update user type
         if category == 'user_type':
+            precondition = db.get_user_type(user_id)
             # Verify that the user is just an admin, and not someone trying to update their own user_type
             try:
                 assert_user_type_is(['admin'], requester_user_type)
             except Exception as e:  # Catch it, log it, and throw it again
                 event_log.write(requester_user_id, "WARNING: User is not admin and attempted to set the user_type "
-                                + "of user " + user_id + " to " + value)
+                                + "of user " + user_id + " to " + value, precondition, db.get_user_type(user_id))
                 raise e
             logging.info(
                 "An admin (user_id: " + str(requester_user_id) +
@@ -221,7 +229,8 @@ def user(user_id):
             if not db.set_user_type(user_id, value):
                 raise get_error_response(405, "The user type could not be updated")
             logging.info("The user type was updated successfully")
-            event_log.write(requester_user_id, "Set user " + user_id + " user_type to " + value)
+            event_log.write(requester_user_id, "Set user " + user_id + " user_type to " + value, precondition,
+                            db.get_user_type(user_id))
             # Return the success response
             response = jsonify({"message": "The user type was updated successfully"})
             response.status_code = 200
@@ -232,7 +241,7 @@ def user(user_id):
     if request.method == "POST":
         # Verify POSTer's user type
         if not db.get_user_type(requester_user_id) == "admin":
-            event_log.write(requester_user_id, "WARNING: Made an invalid attempt to create a new user.")
+            event_log.write(requester_user_id, "WARNING: Made an invalid attempt to create a new user.", "", "")
             raise (403, "Only admins can add new users")
         # Verify URL. To avoid conflicting POSTs to a single user ID, the address /user/new must be used
         if not user_id == 'new':
@@ -247,7 +256,8 @@ def user(user_id):
             raise get_error_response(400, "New user could not be added")
         # Retrieve the new user's ID
         new_user_id = db.get_user_id(json_data['username'])
-        event_log.write(requester_user_id, "Created a new user with ID: " + str(new_user_id))
+        event_log.write(requester_user_id, "Created a new user with ID: " + str(new_user_id), "",
+                        str(db.get_user(new_user_id)))
         if not db.set_user_type(new_user_id, json_data['user_type']):
             raise get_error_response(400, "The new user's account type could not be set")
         # Return the success response
@@ -381,9 +391,10 @@ def account(account_id):
         if not db.add_account(account_id, account_title, normal_side, description, category, subcategory,
                               requester_user_id):
             event_log.write(requester_user_id, "WARNING: Unsuccessfully attempt to create Account " + account_id +
-                            " with title \"" + account_title + "\"")
+                            " with title \"" + account_title + "\"", "", "")
             raise get_error_response(400, "The account was not successfully created")
-        event_log.write(requester_user_id, "Created Account " + account_id + " with title \"" + account_title + "\"")
+        event_log.write(requester_user_id, "Created Account " + account_id + " with title \"" + account_title + "\"",
+                        "", db.get_account(account_id))
         # Send success response
         response = jsonify({"message": "The account was successfully created"})
         response.status_code = 200
@@ -512,9 +523,11 @@ def journal(journal_entry_id):
                 response.status_code = 200
                 return response
         # Attempt to update the data
+        precondition = str(db.get_journal_entry_data(journal_entry_id, category))
         if not db.set_journal_entry_data(journal_entry_id, category, value):
             raise get_error_response(405, "The journal entry could not be updated")
-        event_log.write(requester_user_id, "Updated the " + category + " of journal entry " + journal_entry_id)
+        event_log.write(requester_user_id, "Updated the " + category + " of journal entry " + journal_entry_id,
+                        precondition, str(db.get_journal_entry_data(journal_entry_id, category)))
         # Send the success response
         response = jsonify({"message": "The data was successfully set"})
         response.status_code = 200
@@ -568,7 +581,8 @@ def journal(journal_entry_id):
         # Attempt to create journal entry in database
         new_journal_entry_id = db.create_journal_entry(transactions_list, requester_user_id, date, description,
                                                        journal_type)
-        event_log.write(requester_user_id, "Created a journal entry with ID: " + str(new_journal_entry_id))
+        event_log.write(requester_user_id, "Created a journal entry with ID: " + str(new_journal_entry_id), "",
+                        str(db.get_journal_entry(new_journal_entry_id)))
         # Provision a folder for source docs to be uploaded to
         if os.path.isdir(app.config['UPLOAD_FOLDER'] + str(new_journal_entry_id)):
             logging.warning('The folder for a journal entry\'s files already exists. Its contents will be deleted.')

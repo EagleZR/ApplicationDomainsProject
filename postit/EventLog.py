@@ -17,10 +17,11 @@ class EventLog:
         self.log = list()
         self.update()
 
-    def write(self, user_id, text):
+    def write(self, user_id, text, precondition, postcondition):
         logging.info("Writing to EventLog: \t" + text)
-        self.log.append({"user_id": user_id, "message": text,
-                         "timestamp": datetime.today().strftime(date_string_format)})
+        self.log.append(
+            {"user_id": user_id, "message": text, "precondition": precondition, "postcondition": postcondition,
+             "timestamp": datetime.today().strftime(date_string_format)})
         self.save()
 
     def read_last(self):
