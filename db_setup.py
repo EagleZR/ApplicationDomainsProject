@@ -64,8 +64,16 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/journal_setup_da
         user_id = journal_entry['user_id']
         description = journal_entry['description']
         journal_type = journal_entry['journal_type']
-        db.create_journal_entry(transactions, user_id, datetime.today().strftime(db.date_string_format), description,
-                                journal_type)
+        status = journal_entry['status']
+        journal_entry_id = db.create_journal_entry(transactions, user_id,
+                                                   datetime.today().strftime(db.date_string_format), description,
+                                                   journal_type)
+        if not status == 'pending':
+            db.set_journal_entry_data(journal_entry_id, 'status', status)
+            if status == 'rejected':
+                db.set_journal_entry_data(journal_entry_id, 'description',
+                                          db.get_journal_entry_data(journal_entry_id, 'description') + journal_entry[
+                                              'rejection_reason'])
 
 # Print logs to manually verify they work correctly
 messages = event_log.get_all()
