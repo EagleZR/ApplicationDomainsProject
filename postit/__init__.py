@@ -497,6 +497,17 @@ def journal(journal_entry_id):
             if value not in ['posted', 'rejected']:
                 raise get_error_response(400, "Journal entries can only be posted or rejected")
             if value == 'posted':
+                logging.debug("Checking account balances")
+                for transaction in db.get_journal_entry(journal_entry_id)['transactions']:
+                    account_id = transaction['account_id']
+                    normal_side = db.get_account(account_id)['normal_side']
+                    balance = db.get_account_balance(account_id)
+                    if (normal_side == 'debit' and balance + transaction['amount'] < 0) or (
+                            normal_side == 'credit' and balance + transaction['amount'] > 0):
+                        raise get_error_response(400,
+                                                 "This journal entry cannot be posted. A " + normal_side +
+                                                 " account cannot have a "
+                                                 + "negative" if normal_side == "debit" else "positive" + " balance.")
                 logging.debug("Posting journal")
                 if not db.set_journal_entry_data(journal_entry_id, category, value):
                     raise get_error_response(405, "The journal entry could not be posted")
