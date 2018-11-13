@@ -25,7 +25,8 @@
       ],
       "user_id": 1,
       "description": "Cash, A/R, Supplies, and Office Equipment brought in as Capital.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "pasted"
     },
     {
       "transactions": [
