@@ -26,7 +26,7 @@
       "user_id": 1,
       "description": "Cash, A/R, Supplies, and Office Equipment brought in as Capital.",
       "journal_type": "regular",
-      "status": "pasted"
+      "status": "posted"
     },
     {
       "transactions": [
@@ -41,7 +41,8 @@
       ],
       "user_id": 1,
       "description": "Rent paid in advance with cash.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "posted"
     },
     {
       "transactions": [
@@ -56,7 +57,8 @@
       ],
       "user_id": 1,
       "description": "Insurance paid in advance with cash.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "posted"
     },
     {
       "transactions": [
@@ -71,7 +73,8 @@
       ],
       "user_id": 1,
       "description": "Cash received for service not yet provided.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "pending"
     },
     {
       "transactions": [
@@ -86,7 +89,8 @@
       ],
       "user_id": 1,
       "description": "Cash paid for advertising.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "posted"
     },
     {
       "transactions": [
@@ -101,22 +105,25 @@
       ],
       "user_id": 1,
       "description": "Office Equipment bought on credit.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "pending"
     },
     {
       "transactions": [
         {
           "account_id": 100001,
-          "amount": 800
+          "amount": 700
         },
         {
           "account_id": 100022,
-          "amount": -800
+          "amount": -700
         }
       ],
       "user_id": 1,
       "description": "Cash received on accounts receivable.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "rejected",
+      "rejection_reason": "Amount of cash was $800"
     },
     {
       "transactions": [
@@ -131,7 +138,8 @@
       ],
       "user_id": 1,
       "description": "Cash paid on accounts payable.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "pending"
     },
     {
       "transactions": [
@@ -146,7 +154,8 @@
       ],
       "user_id": 1,
       "description": "Recorded services provided for an earlier accounting period.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "posted"
     },
     {
       "transactions": [
@@ -161,7 +170,8 @@
       ],
       "user_id": 1,
       "description": "Salaries paid with cash.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "posted"
     },
     {
       "transactions": [
@@ -176,7 +186,8 @@
       ],
       "user_id": 1,
       "description": "Cash received for service provided.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "posted"
     },
     {
       "transactions": [
@@ -191,7 +202,8 @@
       ],
       "user_id": 1,
       "description": "Supplies purchased with cash.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "posted"
     },
     {
       "transactions": [
@@ -206,7 +218,8 @@
       ],
       "user_id": 1,
       "description": "Services provided on account.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "posted"
     },
     {
       "transactions": [
@@ -221,7 +234,8 @@
       ],
       "user_id": 1,
       "description": "Cash received for service provided.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "posted"
     },
     {
       "transactions": [
@@ -236,7 +250,8 @@
       ],
       "user_id": 1,
       "description": "Cash received on a past account.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "posted"
     },
     {
       "transactions": [
@@ -251,7 +266,8 @@
       ],
       "user_id": 1,
       "description": "Telephone Expense paid in cash.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "posted"
     },
     {
       "transactions": [
@@ -266,7 +282,8 @@
       ],
       "user_id": 1,
       "description": "Utilities expense paid in cash.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "posted"
     },
     {
       "transactions": [
@@ -281,7 +298,8 @@
       ],
       "user_id": 1,
       "description": "Cash received for service provided.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "posted"
     },
     {
       "transactions": [
@@ -296,7 +314,8 @@
       ],
       "user_id": 1,
       "description": "Services provided on account.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "posted"
     },
     {
       "transactions": [
@@ -311,7 +330,8 @@
       ],
       "user_id": 1,
       "description": "Salaries paid.",
-      "journal_type": "regular"
+      "journal_type": "regular",
+      "status": "posted"
     }
   ]
 }
