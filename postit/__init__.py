@@ -205,8 +205,9 @@ def user(user_id):
             # Attempt to update the data
             if not db.set_user_data(user_id, category, value):
                 raise get_error_response(405, "The data could not be set")
-            event_log.write(requester_user_id, "Updated the " + category + " of user " + user_id, precondition,
-                            db.get_user(user_id)[category])
+            event_log.write(requester_user_id, "Updated the " + category + " of user " + user_id,
+                            category + ": " + precondition,
+                            category + ": " + db.get_user(user_id)[category])
             # Send the success response
             response = jsonify({"message": "The data was successfully set"})
             response.status_code = 200
@@ -220,7 +221,8 @@ def user(user_id):
                 assert_user_type_is(['admin'], requester_user_type)
             except Exception as e:  # Catch it, log it, and throw it again
                 event_log.write(requester_user_id, "WARNING: User is not admin and attempted to set the user_type "
-                                + "of user " + user_id + " to " + value, precondition, db.get_user_type(user_id))
+                                + "of user " + user_id + " to " + value, "User Type: " + precondition,
+                                "User Type: " + db.get_user_type(user_id))
                 raise e
             logging.info(
                 "An admin (user_id: " + str(requester_user_id) +
@@ -229,8 +231,9 @@ def user(user_id):
             if not db.set_user_type(user_id, value):
                 raise get_error_response(405, "The user type could not be updated")
             logging.info("The user type was updated successfully")
-            event_log.write(requester_user_id, "Set user " + user_id + " user_type to " + value, precondition,
-                            db.get_user_type(user_id))
+            event_log.write(requester_user_id, "Set user " + user_id + " user_type to " + value,
+                            "User Type: " + precondition,
+                            "User Type: " + db.get_user_type(user_id))
             # Return the success response
             response = jsonify({"message": "The user type was updated successfully"})
             response.status_code = 200
@@ -527,7 +530,8 @@ def journal(journal_entry_id):
         if not db.set_journal_entry_data(journal_entry_id, category, value):
             raise get_error_response(405, "The journal entry could not be updated")
         event_log.write(requester_user_id, "Updated the " + category + " of journal entry " + journal_entry_id,
-                        precondition, str(db.get_journal_entry_data(journal_entry_id, category)))
+                        category + ": " + precondition,
+                        category + ": " + str(db.get_journal_entry_data(journal_entry_id, category)))
         # Send the success response
         response = jsonify({"message": "The data was successfully set"})
         response.status_code = 200

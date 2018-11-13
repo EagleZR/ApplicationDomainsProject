@@ -38,7 +38,8 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/user_setup_data.
         user_id = db.get_user_id(username)
         event_log.write(1, "Added user " + str(user_id), "", str(db.get_user(user_id)))
         db.set_user_type(user_id, user_type)
-        event_log.write(1, "Set user " + str(user_id) + " to " + user_type, "new", db.get_user_type(user_id))
+        event_log.write(1, "Set user " + str(user_id) + " to " + user_type, "User Type: new",
+                        "User Type: " + db.get_user_type(user_id))
         db.update_last_login(user_id, random_date((datetime.today() - timedelta(days=30)), datetime.today(),
                                                   random.random()))
 
