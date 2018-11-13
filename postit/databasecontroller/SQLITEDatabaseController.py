@@ -307,6 +307,8 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         cursor.close()
         db.close()
 
+        return len(self.get_data('FORGOTPASSWORD', identifier_type='USER_ID', identifier=user_id)) >= 1
+
     def get_forgotten_passwords(self):
         # TODO Optimize this so it can all be done with a single request
         data = self.get_data("FORGOTPASSWORD", "*")
