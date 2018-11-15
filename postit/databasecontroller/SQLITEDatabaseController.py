@@ -508,9 +508,19 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         cursor.execute('''Select ACCOUNT_ID, ACCOUNT_TITLE, NORMAL_SIDE, DATE_CREATED, CREATED_BY, LAST_EDITED_DATE, 
                     LAST_EDITED_BY, DESCRIPTION, IS_ACTIVE From ACCOUNTS where ACCOUNT_ID is ?''', (account_id,))
+
         results = list()
         results.extend(cursor.fetchall())
         logging.debug(str(results))
+
+        if len(results) == 0:
+            return None
+
+        if len(results) > 1:
+            raise DuplicateIDException(
+                message='The account with ID ' + account_id + " is associated with multiple accounts")
+
+        result = results[0]
 
         cursor.close()
 
@@ -521,8 +531,10 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 where TRANSACTIONS.ACCOUNT_ID is ? and JOURNAL_ENTRIES.STATUS is not null and JOURNAL_ENTRIES.STATUS is 'posted'
                 order by POSTING_REFERENCE;''',
                                     (account_id,))
+
         transactions = transactions_cursor.fetchall()
         transaction_dict_list = list()
+
         for transaction in transactions:
             transaction_dict_list.append({"date": transaction[0], "description": transaction[1],
                                           "posting_reference": transaction[2], "amount": transaction[3]})
@@ -530,14 +542,11 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         db.commit()
         db.close()
 
-        results_dict_list = list()
-        for result in results:
-            results_dict_list.append(
-                {"account_id": result[0], "account_title": result[1], "normal_side": result[2],
-                 "balance": self.get_account_balance(result[0]), "date_created": result[3], "created_by": result[4],
-                 "last_edited_date": result[5], "last_edited_by": result[6], "description": result[7],
-                 "is_active": result[8], "transactions": transaction_dict_list})
-        return results_dict_list
+        results_dict = {"account_id": result[0], "account_title": result[1], "normal_side": result[2],
+                        "balance": self.get_account_balance(result[0]), "date_created": result[3],
+                        "created_by": result[4], "last_edited_date": result[5], "last_edited_by": result[6],
+                        "description": result[7], "is_active": result[8], "transactions": transaction_dict_list}
+        return results_dict
 
     def get_table(self, table_name):
         return self.get_data(table_name)
