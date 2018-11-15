@@ -612,129 +612,139 @@ class SQLITEDatabaseController(AbstractDatabaseController):
         if len(results) is 0:
             return None
 
-        results_dict_list = list()
-        for result in results:
-            transaction_cursor = db.cursor()
+        if len(results) > 1:
+            raise DuplicateIDException(message="The journal entry ID " + journal_entry_id +
+                                               " is associated with multiple journal entries")
 
-            transaction_cursor.execute(
-                '''Select TRANSACTIONS.ACCOUNT_ID, TRANSACTIONS.AMOUNT, ACCOUNTS.ACCOUNT_TITLE from TRANSACTIONS 
-                 left join ACCOUNTS on TRANSACTIONS.ACCOUNT_ID = ACCOUNTS.ACCOUNT_ID
-                 where JOURNAL_ENTRY_ID is ? ''', (result[0],))
+        result = results[0]
 
-            transactions = list()
-            transactions.extend(transaction_cursor.fetchall())
+        transaction_cursor = db.cursor()
 
-            transaction_cursor.close()
+        transaction_cursor.execute(
+            '''Select TRANSACTIONS.ACCOUNT_ID, TRANSACTIONS.AMOUNT, ACCOUNTS.ACCOUNT_TITLE from TRANSACTIONS 
+             left join ACCOUNTS on TRANSACTIONS.ACCOUNT_ID = ACCOUNTS.ACCOUNT_ID
+             where JOURNAL_ENTRY_ID is ? ''', (result[0],))
 
-            transactions_dicts = list()
+        transactions = list()
+        transactions.extend(transaction_cursor.fetchall())
 
-            for transaction in transactions:
-                transactions_dicts.append({"account_id": transaction[0], "amount": transaction[1],
-                                           "account_title": transaction[2]})
+        transaction_cursor.close()
 
-            transactions_dicts.sort(reverse=True, key=get_transaction_amount)
+        transactions_dicts = list()
 
-            results_dict_list.append(
-                {"journal_entry_id": result[0], "user_id": result[1], "date": result[2],
-                 "description": result[3], "type": result[4], "status": result[5], "posting_reference": result[6],
-                 "posting_manager": result[7], "transactions": transactions_dicts})
+        for transaction in transactions:
+            transactions_dicts.append({"account_id": transaction[0], "amount": transaction[1],
+                                       "account_title": transaction[2]})
 
-        db.close()
-        return results_dict_list
+        transactions_dicts.sort(reverse=True, key=get_transaction_amount)
 
-    def get_user_has_journal_access(self, user_id, journal_entry_id):
-        if self.get_user_type(user_id) == "admin":
-            return False
-        if self.get_user_type(user_id) == "manager":
-            return True
-        return False  # TODO Check with the User Journal Access table to verify
-
-    def get_viewable_journal_entries(self, user_id):
-        db = sqlite3.connect(self.database_file_name)
-        journal_cursor = db.cursor()
-
-        journal_cursor.execute(
-            '''Select JOURNAL_ENTRY_ID, USER_ID, DATE, DESCRIPTION, TYPE, STATUS, POSTING_REFERENCE, POSTING_MANAGER
-            from JOURNAL_ENTRIES''')
-
-        results = list()
-        results.extend(journal_cursor.fetchall())
-
-        journal_cursor.close()
-
-        if len(results) is 0:
-            return None
-
-        results_dict_list = list()
-        for result in results:
-            transaction_cursor = db.cursor()
-
-            transaction_cursor.execute(
-                '''Select TRANSACTIONS.ACCOUNT_ID, TRANSACTIONS.AMOUNT, ACCOUNTS.ACCOUNT_TITLE from TRANSACTIONS 
-                 left join ACCOUNTS on TRANSACTIONS.ACCOUNT_ID = ACCOUNTS.ACCOUNT_ID where JOURNAL_ENTRY_ID is ? ''',
-                (result[0],))
-
-            transactions = list()
-            transactions.extend(transaction_cursor.fetchall())
-
-            transaction_cursor.close()
-
-            transactions_dicts = list()
-
-            for transaction in transactions:
-                transactions_dicts.append({"account_id": transaction[0], "amount": transaction[1],
-                                           "account_title": transaction[2]})
-
-            transactions_dicts.sort(reverse=True, key=get_transaction_amount)
-
-            results_dict_list.append(
-                {"journal_entry_id": result[0], "user_id": result[1], "date": result[2],
-                 "description": result[3], "type": result[4], "status": result[5], "posting_reference": result[6],
-                 "posting_manager": result[7], "transactions": transactions_dicts})
+        results_dict = {"journal_entry_id": result[0], "user_id": result[1], "date": result[2],
+                        "description": result[3], "type": result[4], "status": result[5],
+                        "posting_reference": result[6],
+                        "posting_manager": result[7], "transactions": transactions_dicts}
 
         db.close()
-        return results_dict_list
+        return results_dict
 
-    def set_journal_entry_data(self, journal_entry_id, category, value):
-        self.update_data("JOURNAL_ENTRIES", category, "JOURNAL_ENTRY_ID", journal_entry_id, value)
-        return str(value) == str(self.get_journal_entry_data(journal_entry_id, category))
 
-    def get_journal_entry_data(self, journal_entry_id, category):
-        return self.get_data("JOURNAL_ENTRIES", category, "JOURNAL_ENTRY_ID", journal_entry_id)[0][0]
+def get_user_has_journal_access(self, user_id, journal_entry_id):
+    if self.get_user_type(user_id) == "admin":
+        return False
+    if self.get_user_type(user_id) == "manager":
+        return True
+    return False  # TODO Check with the User Journal Access table to verify
 
-    def post_journal_entry(self, journal_entry_id, user_id):
-        db = sqlite3.connect(self.database_file_name)
-        post_journal_cursor = db.cursor()
-        post_journal_cursor.execute(
-            '''Insert into POSTINGS (JOURNAL_ENTRY_ID, POSTING_MANAGER, POSTING_DATE)  values (?, ?, ?);''',
-            (journal_entry_id, user_id, datetime.today().strftime(self.date_string_format)))
-        db.commit()
 
-        posting_reference = post_journal_cursor.lastrowid
-        post_journal_cursor.close()
-        try:
-            float(posting_reference)
-        except ValueError:
-            return None
+def get_viewable_journal_entries(self, user_id):
+    db = sqlite3.connect(self.database_file_name)
+    journal_cursor = db.cursor()
 
-        #
+    journal_cursor.execute(
+        '''Select JOURNAL_ENTRY_ID, USER_ID, DATE, DESCRIPTION, TYPE, STATUS, POSTING_REFERENCE, POSTING_MANAGER
+        from JOURNAL_ENTRIES''')
 
-        db.close()
-        return posting_reference
+    results = list()
+    results.extend(journal_cursor.fetchall())
 
-    def get_account_balance(self, account_id):
-        db = sqlite3.connect(self.database_file_name)
-        amount_cursor = db.cursor()
+    journal_cursor.close()
 
-        amount_cursor.execute('''Select Sum(Transactions.Amount) from transactions where Transactions.Account_ID is ? 
+    if len(results) is 0:
+        return None
+
+    results_dict_list = list()
+    for result in results:
+        transaction_cursor = db.cursor()
+
+        transaction_cursor.execute(
+            '''Select TRANSACTIONS.ACCOUNT_ID, TRANSACTIONS.AMOUNT, ACCOUNTS.ACCOUNT_TITLE from TRANSACTIONS 
+             left join ACCOUNTS on TRANSACTIONS.ACCOUNT_ID = ACCOUNTS.ACCOUNT_ID where JOURNAL_ENTRY_ID is ? ''',
+            (result[0],))
+
+        transactions = list()
+        transactions.extend(transaction_cursor.fetchall())
+
+        transaction_cursor.close()
+
+        transactions_dicts = list()
+
+        for transaction in transactions:
+            transactions_dicts.append({"account_id": transaction[0], "amount": transaction[1],
+                                       "account_title": transaction[2]})
+
+        transactions_dicts.sort(reverse=True, key=get_transaction_amount)
+
+        results_dict_list.append(
+            {"journal_entry_id": result[0], "user_id": result[1], "date": result[2],
+             "description": result[3], "type": result[4], "status": result[5], "posting_reference": result[6],
+             "posting_manager": result[7], "transactions": transactions_dicts})
+
+    db.close()
+    return results_dict_list
+
+
+def set_journal_entry_data(self, journal_entry_id, category, value):
+    self.update_data("JOURNAL_ENTRIES", category, "JOURNAL_ENTRY_ID", journal_entry_id, value)
+    return str(value) == str(self.get_journal_entry_data(journal_entry_id, category))
+
+
+def get_journal_entry_data(self, journal_entry_id, category):
+    return self.get_data("JOURNAL_ENTRIES", category, "JOURNAL_ENTRY_ID", journal_entry_id)[0][0]
+
+
+def post_journal_entry(self, journal_entry_id, user_id):
+    db = sqlite3.connect(self.database_file_name)
+    post_journal_cursor = db.cursor()
+    post_journal_cursor.execute(
+        '''Insert into POSTINGS (JOURNAL_ENTRY_ID, POSTING_MANAGER, POSTING_DATE)  values (?, ?, ?);''',
+        (journal_entry_id, user_id, datetime.today().strftime(self.date_string_format)))
+    db.commit()
+
+    posting_reference = post_journal_cursor.lastrowid
+    post_journal_cursor.close()
+    try:
+        float(posting_reference)
+    except ValueError:
+        return None
+
+    #
+
+    db.close()
+    return posting_reference
+
+
+def get_account_balance(self, account_id):
+    db = sqlite3.connect(self.database_file_name)
+    amount_cursor = db.cursor()
+
+    amount_cursor.execute('''Select Sum(Transactions.Amount) from transactions where Transactions.Account_ID is ? 
                             and Transactions.Journal_Entry_ID in (Select Journal_Entries.Journal_Entry_ID from 
                             Journal_Entries where Journal_Entries.Status is 'posted')''', (account_id,))
-        amount = amount_cursor.fetchall()
+    amount = amount_cursor.fetchall()
 
-        db.commit()
-        amount_cursor.close()
-        db.close()
-        return amount[0][0] if amount[0][0] is not None else 0
+    db.commit()
+    amount_cursor.close()
+    db.close()
+    return amount[0][0] if amount[0][0] is not None else 0
 
 
 class InvalidUserType(PostitHTTPError):
@@ -745,8 +755,10 @@ class InvalidUserType(PostitHTTPError):
 
 
 class DuplicateIDException(PostitHTTPError):
-    def __init__(self, id_type, identifier):
-        PostitHTTPError.__init__(self, "A user with the " + id_type + " " + identifier + " already exists.")
+    def __init__(self, id_type=None, identifier=None, message=None):
+        PostitHTTPError.__init__(self,
+                                 "A user with the " + id_type + " " + identifier + " already exists." if
+                                 message is None else message)
 
 
 def generate_auth_token():
