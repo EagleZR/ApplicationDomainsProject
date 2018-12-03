@@ -79,22 +79,6 @@
     {
       "transactions": [
         {
-          "account_id": 500012,
-          "amount": 120
-        },
-        {
-          "account_id": 100001,
-          "amount": -120
-        }
-      ],
-      "user_id": 1,
-      "description": "Cash paid for advertising.",
-      "journal_type": "regular",
-      "status": "pending"
-    },
-    {
-      "transactions": [
-        {
           "account_id": 100081,
           "amount": 1800
         },
@@ -108,19 +92,37 @@
       "journal_type": "regular",
       "status": "pending"
     },
+
+
     {
       "transactions": [
         {
           "account_id": 100001,
-          "amount": 700
+          "amount": 800
         },
         {
           "account_id": 100022,
-          "amount": -700
+          "amount": -800
         }
       ],
       "user_id": 1,
       "description": "Cash received on accounts receivable.",
+      "journal_type": "regular",
+      "status": "pending"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 500012,
+          "amount": 120
+        },
+        {
+          "account_id": 100001,
+          "amount": -120
+        }
+      ],
+      "user_id": 1,
+      "description": "Cash paid for advertising.",
       "journal_type": "regular",
       "status": "pending"
     },
@@ -188,6 +190,8 @@
       "journal_type": "regular",
       "status": "pending"
     },
+
+
     {
       "transactions": [
         {
@@ -240,15 +244,31 @@
       "transactions": [
         {
           "account_id": 100001,
-          "amount": 3175
+          "amount": 1600
         },
         {
           "account_id": 100022,
-          "amount": -3175
+          "amount": -1600
         }
       ],
       "user_id": 1,
-      "description": "Cash received on a past account.",
+      "description": "Cash received on an account receivable.",
+      "journal_type": "regular",
+      "status": "pending"
+    },
+    {
+      "transactions": [
+        {
+          "account_id": 500022,
+          "amount": 400
+        },
+        {
+          "account_id": 100001,
+          "amount": -400
+        }
+      ],
+      "user_id": 1,
+      "description": "Salaries paid with cash.",
       "journal_type": "regular",
       "status": "pending"
     },
@@ -264,7 +284,7 @@
         }
       ],
       "user_id": 1,
-      "description": "Telephone Expense paid in cash.",
+      "description": "Paid telephone expenses.",
       "journal_type": "regular",
       "status": "pending"
     },
@@ -300,15 +320,16 @@
       "journal_type": "regular",
       "status": "pending"
     },
+
     {
       "transactions": [
         {
           "account_id": 100022,
-          "amount": 3175
+          "amount": 1000
         },
         {
           "account_id": 400002,
-          "amount": -3175
+          "amount": -1000
         }
       ],
       "user_id": 1,
@@ -319,12 +340,12 @@
     {
       "transactions": [
         {
-          "account_id": 5000022,
-          "amount": 3175
+          "account_id": 500022,
+          "amount": 4500
         },
         {
           "account_id": 100001,
-          "amount": -3175
+          "amount": -4500
         }
       ],
       "user_id": 1,
