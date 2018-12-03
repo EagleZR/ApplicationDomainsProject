@@ -64,6 +64,7 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/account_data_set
 with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/journal_setup_data.json', 'r') as json_file:
     json_data = json.load(json_file)
     journal_entries = json_data['journal_entries']
+    os.mkdir(os.path.join(upload_folder))
     for journal_entry in journal_entries:
         transactions = journal_entry['transactions']
         user_id = journal_entry['user_id']
