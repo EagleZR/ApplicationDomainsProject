@@ -11,11 +11,6 @@ from postit import databasecontroller, EventLog
 logging.basicConfig(filename="/var/www/markzeagler.com/postit.log", datefmt="%d-%b-%Y %H:%M:%S", level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s')
 
-config = configparser.ConfigParser()
-config.read(os.path.dirname(os.path.realpath(__file__)) + '/postit/config.ini')
-
-upload_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), config['files']['upload_folder'])
-
 
 # https://stackoverflow.com/questions/553303/generate-a-random-date-between-two-other-dates
 def random_date(start, end, prop):
@@ -73,17 +68,6 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/journal_setup_da
         journal_entry_id = db.create_journal_entry(transactions, user_id,
                                                    datetime.today().strftime(db.date_string_format), description,
                                                    journal_type)
-        if os.path.isdir(upload_folder + str(journal_entry_id)):
-            logging.warning('The folder for a journal entry\'s files already exists. Its contents will be deleted.')
-            for a_file in os.listdir(upload_folder + str(journal_entry_id)):
-                path = os.path.join(upload_folder + str(journal_entry_id), a_file)
-                try:
-                    os.unlink(path)
-                except Exception:
-                    logging.warning('There was an error deleting the folder\'s contents.')
-        else:
-            os.mkdir(os.path.join(upload_folder, str(journal_entry_id)))
-
         if not status == 'pending':
             db.set_journal_entry_data(journal_entry_id, 'status', status)
             db.set_journal_entry_data(journal_entry_id, "POSTING_MANAGER", 1)
