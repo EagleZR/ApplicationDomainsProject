@@ -122,8 +122,7 @@
       "user_id": 1,
       "description": "Cash received on accounts receivable.",
       "journal_type": "regular",
-      "status": "rejected",
-      "rejection_reason": "Amount of cash was $800"
+      "status": "posted"
     },
     {
       "transactions": [
