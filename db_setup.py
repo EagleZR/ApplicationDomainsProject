@@ -70,6 +70,8 @@ with open(os.path.dirname(os.path.realpath(__file__)) + '/setup/journal_setup_da
                                                    journal_type)
         if not status == 'pending':
             db.set_journal_entry_data(journal_entry_id, 'status', status)
+            db.set_journal_entry_data(journal_entry_id, "POSTING_MANAGER", 1)
+            db.set_journal_entry_data(journal_entry_id, "POSTING_REFERENCE", journal_entry_id)
             if status == 'rejected':
                 db.set_journal_entry_data(journal_entry_id, 'description',
                                           db.get_journal_entry_data(journal_entry_id, 'description') + journal_entry[
