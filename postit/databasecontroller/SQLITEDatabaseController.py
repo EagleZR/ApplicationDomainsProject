@@ -464,11 +464,28 @@ class SQLITEDatabaseController(AbstractDatabaseController):
 
         results_dict_list = list()
         for result in results:
+            transactions_cursor = db.cursor()
+
+            transactions_cursor.execute('''Select DATE, DESCRIPTION, POSTING_REFERENCE, AMOUNT
+                            from transactions left join JOURNAL_ENTRIES ON TRANSACTIONS.JOURNAL_ENTRY_ID = JOURNAL_ENTRIES.JOURNAL_ENTRY_ID
+                            where TRANSACTIONS.ACCOUNT_ID is ? and JOURNAL_ENTRIES.STATUS is not null and JOURNAL_ENTRIES.STATUS is 'posted'
+                            order by POSTING_REFERENCE;''',
+                                        (result[0],))
+
+            transactions = transactions_cursor.fetchall()
+            transaction_dict_list = list()
+
+            for transaction in transactions:
+                transaction_dict_list.append({"date": transaction[0], "description": transaction[1],
+                                              "posting_reference": transaction[2], "amount": transaction[3]})
+            transactions_cursor.close()
+
             results_dict_list.append(
                 {"account_id": result[0], "account_title": result[1], "normal_side": result[2],
                  "balance": self.get_account_balance(result[0]), "date_created": result[3], "created_by": result[4],
                  "last_edited_date": result[5], "last_edited_by": result[6], "description": result[7],
-                 "is_active": result[8], "category": result[9], "subcategory": result[10]})
+                 "is_active": result[8], "category": result[9], "subcategory": result[10],
+                 "transactions": transaction_dict_list})
 
         db.close()
 
