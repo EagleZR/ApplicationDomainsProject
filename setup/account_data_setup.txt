@@ -46,8 +46,8 @@
 400002, Service Fees, Credit, Amount charged for service provided on the product. For example installation charges, Revenue, Operating Revenue
 400003, Repair Fees, Credit, Amount charged for the repair of product, Revenue, Operating Revenue
 400004, Sales, Credit, Revenue earned on sale of produced goods, Revenue, Operating Revenue
-400005, Sales Returns and Allowance, Credit, Return on Sales, Revenue, Contra-entry Revenue
-400006, Sales Discounts, Credit, Discount provided on Sales, Revenue, Contra-entry Revenue
+400005, Sales Returns and Allowance, Debit, Return on Sales, Revenue, Contra-entry Revenue
+400006, Sales Discounts, Debit, Discount provided on Sales, Revenue, Contra-entry Revenue
 400011, Interest Revenue, Credit, Interest earned by the business, Revenue, Other Revenue
 400012, Rent Revenue, Credit, Rent earned by the business, Revenue, Other Revenue
 400013, Subscriptions Revenue, Credit, Subscriptions earned by the business, Revenue, Other Revenue
