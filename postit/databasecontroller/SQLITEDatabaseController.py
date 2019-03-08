@@ -37,7 +37,7 @@ class SQLITEDatabaseController(AbstractDatabaseController):
             db.commit()
             from datetime import timedelta
             if self.add_user("admin", "password2018", "admin@markzeagler.com", "root", "admin",
-                             (datetime.today() + timedelta(days=10000000)).strftime(
+                             (datetime.today() + timedelta(days=100000)).strftime(
                                  self.date_string_format)):
                 logging.debug("Admin successfully created.")
             else:
