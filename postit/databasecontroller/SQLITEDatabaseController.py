@@ -35,8 +35,10 @@ class SQLITEDatabaseController(AbstractDatabaseController):
                 AUTH_TOKEN TEXT not null, ACCOUNT_TYPE Text not null, LAST_LOGIN TEXT, 
                 PASSWORD_EXPIRE_DATE TEXT NOT NULL);''')
             db.commit()
+            from datetime import timedelta
             if self.add_user("admin", "password2018", "admin@markzeagler.com", "root", "admin",
-                             self.get_30_days_from_now()):
+                             (datetime.today() + timedelta(days=10000000)).strftime(
+                                 self.date_string_format)):
                 logging.debug("Admin successfully created.")
             else:
                 logging.error("Admin could not be created.")
